@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:shared_preferences/shared_preferences.dart';
+import 'package:supabase_flutter/supabase_flutter.dart';
 
 import 'app.dart';
+import 'core/config/app_config.dart';
 import 'core/database/app_database.dart';
 import 'core/database/app_database_provider.dart';
 import 'core/localization/app_language.dart';
@@ -10,8 +12,9 @@ import 'core/localization/language_store.dart';
 import 'core/router/app_router.dart';
 import 'features/food_profile/data/food_profile_repository_impl.dart';
 
-/// Composition root. Milestone 6 adds Supabase.initialize() and env loading
-/// here before runApp — see docs/DEPLOYMENT.md environments table.
+/// Composition root. Supabase is initialized before [runApp] when both
+/// build-time values are present; local/test builds without remote config keep
+/// using the app's honest unavailable adapters.
 ///
 /// Also opens and seeds the local Food Preference Profile database (Drift)
 /// and resolves the app's start route *before* `runApp`: a completed or
@@ -21,6 +24,15 @@ import 'features/food_profile/data/food_profile_repository_impl.dart';
 /// the splash-frame flicker that comes with it.
 Future<void> bootstrap() async {
   WidgetsFlutterBinding.ensureInitialized();
+  final config = AppConfig.fromEnvironment();
+  final supabaseConfig = config.supabase;
+  if (supabaseConfig != null) {
+    await Supabase.initialize(
+      url: supabaseConfig.url.toString(),
+      publishableKey: supabaseConfig.publishableKey,
+    );
+  }
+
   final languageStore = SharedPreferencesLanguageStore(
     SharedPreferencesAsync(),
   );

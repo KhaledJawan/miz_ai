@@ -12,6 +12,11 @@
 .swiftpm/
 migrate_working_dir/
 
+# Local build-time configuration. Commit only the placeholder template.
+.env.json
+.env.*.json
+!.env.example.json
+
 # IntelliJ related
 *.iml
 *.ipr

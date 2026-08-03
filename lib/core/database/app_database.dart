@@ -16,9 +16,11 @@ import 'daos/intolerance_dao.dart';
 import 'daos/profile_history_dao.dart';
 import 'seed/seed_runner.dart';
 import 'tables/catalog_tables.dart';
+import 'tables/conversation_tables.dart';
 import 'tables/food_item_tables.dart';
 import 'tables/interaction_tables.dart';
 import 'tables/profile_tables.dart';
+import 'tables/saved_item_tables.dart';
 
 part 'app_database.g.dart';
 
@@ -48,6 +50,8 @@ part 'app_database.g.dart';
     UserFoodInteractions,
     UserHiddenEntities,
     ProfileChangeHistory,
+    SavedItems,
+    ConversationArchives,
   ],
   daos: [
     FoodProfileDao,
@@ -68,7 +72,7 @@ class AppDatabase extends _$AppDatabase {
   AppDatabase.forTesting(super.executor);
 
   @override
-  int get schemaVersion => 1;
+  int get schemaVersion => 3;
 
   @override
   MigrationStrategy get migration => MigrationStrategy(
@@ -77,10 +81,22 @@ class AppDatabase extends _$AppDatabase {
       await _createIndexes(this);
       await SeedRunner(this).run();
     },
-    // Future schema bumps add stepped `onUpgrade` migrations here (new
-    // tables via `migrator.createTable`, new columns via
-    // `migrator.addColumn`) — never a destructive drop/recreate once real
-    // user data exists. See docs/DATABASE.md.
+    onUpgrade: (migrator, from, to) async {
+      if (from < 2) {
+        await migrator.createTable(savedItems);
+        await customStatement(
+          'CREATE INDEX IF NOT EXISTS idx_saved_items_user_time '
+          'ON saved_items (local_user_id, saved_at DESC)',
+        );
+      }
+      if (from < 3) {
+        await migrator.createTable(conversationArchives);
+        await customStatement(
+          'CREATE INDEX IF NOT EXISTS idx_conversation_archives_user_time '
+          'ON conversation_archives (local_user_id, updated_at DESC)',
+        );
+      }
+    },
   );
 
   static Future<void> _createIndexes(AppDatabase db) async {
@@ -95,6 +111,14 @@ class AppDatabase extends _$AppDatabase {
     await db.customStatement(
       'CREATE INDEX IF NOT EXISTS idx_ingredients_parent '
       'ON ingredients (parent_id)',
+    );
+    await db.customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_saved_items_user_time '
+      'ON saved_items (local_user_id, saved_at DESC)',
+    );
+    await db.customStatement(
+      'CREATE INDEX IF NOT EXISTS idx_conversation_archives_user_time '
+      'ON conversation_archives (local_user_id, updated_at DESC)',
     );
   }
 }

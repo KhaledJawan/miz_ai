@@ -1,8 +1,8 @@
-# DesignGD — Miz Soft Orbit UI/UX Direction
+# DesignGD — Miz Spatial Glass UI/UX Direction
 
-Status: Approved and active. The shared system and implemented M0/M1 screens were migrated on 2026-08-01; future screens adopt this direction as their milestones begin.
+Status: Approved and active. Spatial Glass supersedes Soft Orbit for Home, conversation, camera, bookmarks, and profile/settings while preserving the established Archivo type scale, Miz Mono Red palette, semantic spacing, and the fully working Food Profile.
 
-This document defines the practical visual and interaction direction for the next version of Miz. It replaces the previous square-only execution guideline with a rounded, layered, calm, AI-native system inspired by the supplied references. It keeps Miz's product model from [docs/PRD.md](docs/PRD.md): decisions should be made through useful interfaces, not long chat transcripts.
+This document defines Miz's cinematic, calm, AI-native interface. It keeps the product model from [docs/PRD.md](docs/PRD.md): decisions should be made through useful interfaces, not long chat transcripts. Theme-aware culinary-AI artwork provides the atmosphere; solid white spatial surfaces provide clear hierarchy and context.
 
 The references are inspiration for shape, atmosphere, depth, and motion. Miz must remain recognizably a food and restaurant product rather than imitate a generic AI assistant.
 
@@ -23,9 +23,9 @@ The new language uses continuous rounded corners, circular actions, capsules, an
 
 Do not make every object a pill. Large text-heavy surfaces need readable rounded rectangles.
 
-### Layered clarity
+### Spatial clarity
 
-Depth comes from tonal separation, blur, borders, and soft shadows. Each screen should have a clear base layer, content layer, and optional floating action layer. Decorative effects must never compete with restaurant information or primary actions.
+Depth comes from tonal separation between the 20%-blurred artwork and fully opaque white controls, plus borderless neutral iOS-style shadows. Each screen has a base atmosphere, a sharp interaction plane, and an optional contextual overlay. Decorative effects must never compete with restaurant information or primary actions.
 
 ### UI-first conversation
 
@@ -35,19 +35,27 @@ Miz remains a generative UI product. Prefer tappable choices, restaurant cards, 
 
 Transitions should make context feel continuous. Elements expand, collapse, glide, and cross-fade from their source instead of screens appearing as unrelated pages.
 
+### Focused Home
+
+Home is an immersive intent surface, not a dashboard. It contains only the centered city capsule, central AI composer with send, exactly three circular actions (camera, bookmarks, profile/settings), and an abstract food background. No header, logo, card feed, greeting, categories, voice action, or bottom navigation appears there.
+
+### Honest capability states
+
+Unavailable device services and remote intelligence are first-class states. Camera, AI, recognition, QR verification, and OCR surfaces must explain what is unavailable and offer a safe next action. Current city uses foreground approximate device location only after an explicit tap, with denied, disabled, and outside-service-area states. No surface shows fabricated results.
+
 ## 2. Visual character
 
 The intended mood is:
 
 - Modern, focused, confident, and premium.
-- Softly futuristic, but grounded in real food and real places.
+- Cinematic and softly futuristic, but grounded in real food and real places.
 - Spacious and editorial, without the severe brutalist edges of the previous system.
 - Expressive in key moments and quiet during decision-heavy flows.
 
 Avoid:
 
 - Hard square cards and controls.
-- Excessive glassmorphism or blur on every surface.
+- Glass on every surface or multiple nested backdrop filters.
 - Neon gradients behind body copy.
 - Multicolor UI accents, rainbow gradients, or colored shadows.
 - Heavy black shadows, skeuomorphic gloss, and plastic-looking controls.
@@ -168,13 +176,24 @@ Base spacing scale: `4 / 8 / 12 / 16 / 20 / 24 / 32 / 40 / 48`.
 
 Use asymmetry only for hero/editorial areas. Forms, menus, filters, and comparisons require strict alignment.
 
-## 7. Depth, materials, and shadows
+## 7. Spatial White materials, depth, and shadows
 
-Use four material levels:
+Use six semantic glass levels. Their exact Flutter values live in `core/theme/app_glass.dart`; feature code never supplies raw blur, opacity, border, or shadow values.
+
+1. `subtle`: background affordances and quiet groupings.
+2. `secondary`: compact controls and contextual selectors.
+3. `primary`: input, result, and primary interaction surfaces.
+4. `elevated`: floating actions and dismiss controls.
+5. `modal`: spatial sheets and full attention overlays.
+6. `disabled`: visible but inert capability states.
+
+Interactive and content surfaces use fully opaque `#FFFFFF`, no `BackdropFilter`, no visible border, black/gray foreground content, and layered neutral iOS-style shadows. Red is reserved for primary actions and selected states. The semantic glass levels remain in code for hierarchy and compatibility, but their approved prominent treatment is solid white.
+
+The page itself still uses four depth planes:
 
 1. `base`: page background; no shadow.
-2. `raised`: standard card; soft border plus subtle shadow.
-3. `floating`: navigation, input dock, map control, sticky CTA; translucent or solid surface plus medium shadow.
+2. `raised`: solid-white standard card plus subtle shadow.
+3. `floating`: solid-white navigation, input dock, map control, or sticky CTA plus medium shadow.
 4. `overlay`: modal/sheet; stronger shadow and scrim.
 
 Suggested light-theme shadow tokens:
@@ -186,15 +205,19 @@ Suggested light-theme shadow tokens:
 | `shadow-md` | `0 10 30 #5A463526` |
 | `shadow-lg` | `0 20 54 #5A463533` |
 
-Dark mode uses lower-opacity black shadow plus a subtle light border so elevation remains visible.
+Dark mode retains the same white interaction plane over the dark artwork, using deeper neutral shadows and black foreground content.
 
 Rules:
 
 - Do not use the default Material elevation appearance.
-- A card usually uses one subtle border and one soft shadow; avoid stacked dark outlines.
-- Glass surfaces are reserved for floating navigation, voice controls, map controls, and the composer over imagery.
-- Glass requires a fallback opaque surface for reduced transparency, performance constraints, and contrast.
-- Blur radius should remain restrained (approximately 16–24); large animated blur fields must be profiled.
+- Prominent cards and controls are borderless and use one layered neutral shadow treatment.
+- Solid-white surfaces are used for contextual controls, composers, modal groups, and results over the cinematic background.
+- Never blur the foreground interaction plane.
+- Background artwork uses sigma `5.6`, defined as the approved 20% treatment relative to the former sigma-28 reference. Never animate the blur itself.
+
+### Cinematic food atmosphere
+
+Miz uses coordinated dark and light culinary-AI artwork combining floating food ingredients, restrained magical red energy, neural connection lines, and refracted droplets. Home applies very slow scale/drift; secondary routes use the same artwork in a static, calmer, more-dimmed state. Both use the approved 20% blur, `RepaintBoundary`, precaching, lifecycle pausing, and reduced-motion fallback.
 
 ## 8. Photography and illustration
 
@@ -213,7 +236,7 @@ Food photography is full color in the new direction. Images should feel warm, na
 ### Buttons
 
 - Primary: 52 high, `radius-full`, brand fill, high-contrast label, optional trailing icon.
-- Secondary: 48–52 high, `radius-full`, surface fill, soft border.
+- Secondary: 48–52 high, `radius-full`, solid white, black label, no border, neutral shadow.
 - Tertiary: text/icon action with a 44×44 minimum hit area.
 - Destructive: quiet by default; error color becomes stronger only at confirmation.
 - Pressed state: 0.98 scale plus tonal shift within 100ms.
@@ -227,7 +250,7 @@ Food photography is full color in the new direction. Images should feel warm, na
 
 ### Cards
 
-- Standard card: `radius-lg`, surface fill, `shadow-sm`, optional soft border.
+- Standard card: `radius-lg`, solid white, black/gray content, no border, `shadow-sm` or `shadow-md`.
 - Feature/hero card: `radius-xl`, may use an ambient gradient or large image.
 - Horizontal restaurant card: rounded thumbnail, aligned facts, one clear action.
 - Avoid nesting more than two raised cards; use tonal groups inside a card instead.
@@ -242,16 +265,24 @@ Food photography is full color in the new direction. Images should feel warm, na
 ### Inputs and composer
 
 - Standard field: 52 high, `radius-lg` or `radius-full` depending on context.
-- Conversational composer: floating `radius-xl` dock with text, add, voice, camera, and send actions.
-- Disabled future actions remain visible, labeled, and clearly inactive.
+- Home and conversation composers contain only multiline text and a send action.
+- Empty Home composers rotate localized example prompts via a soft fade. Rotation pauses on focus or typing and resumes only when empty and unfocused.
 - Keyboard opening must smoothly lift the composer without jumping the page.
 
-### Navigation
+### Spatial navigation
 
-- Use a floating rounded bottom navigation dock for the primary destinations only when more than two persistent destinations exist.
-- Active destination uses a filled circle/capsule and text label where space allows.
-- Detail and task flows use a compact top bar with circular back and overflow actions.
-- Do not show bottom navigation during checkout, reservation confirmation, voice focus, or other immersive tasks.
+- Do not use a standard bottom navigation bar or permanent rail.
+- Root actions live contextually on Home. Secondary pages use a discoverable floating circular close/back control, Android system back, and optional edge/drag gestures.
+- Do not place a standard back arrow in a top-left app bar. The dismiss control uses a close or collapse metaphor and adapts placement with `EdgeInsetsDirectional` for RTL.
+- Route transitions fade and scale from 0.98 with reduced-motion fallback to a short fade.
+
+### City selector
+
+The centered capsule never assumes a city. Its states are unselected, manually selected, current-location pending/denied/unavailable, recent, and saved default. Manual selection is always available; the live adapter requests only foreground approximate location after an explicit tap, matches locally to a supported city, and never stores or uploads coordinates.
+
+### Camera shell
+
+Camera is one immersive shell with a clear three-mode selector: Food recognition, Miz QR, and Menu scan. Permission, live preview, review, processing, uncertain, unavailable/offline, failure, and result states share one typed state machine. Food uses a large rounded white preview, explicit camera/gallery actions, a secure-upload note, one red Identify food action, and up to three white candidate cards with confidence and a visible no-allergy-safety disclaimer. Menu scan is the default and uses the same capture clarity, removable/reorderable page rows, an explicit secure-upload note, and one red Explain menu action. Menu results are UI-first: overview, menu sections, white dish cards, price, concise explanation, restrained tags, possible-allergen text, and a persistent safety disclaimer. No capture is uploaded silently or retained by Miz after the flow; gallery originals are never deleted. Miz QR uses a real live decoder; payloads are schema-checked locally and require trusted backend verification before navigation.
 
 ### Sheets and dialogs
 
@@ -287,7 +318,7 @@ Use emphasized ease-out for entrances and standard ease-in-out for rearrangement
 
 ### Required transitions
 
-- Home quick action → Conversation: selected action expands into the first prompt header.
+- Home composer → Conversation: the composer shifts toward the lower interaction plane while the background calms and conversation content fades in through depth.
 - Answer → Summary Chip: choice compresses and moves into the chip rail; next question fades/slides up.
 - Summary Chip edit: tapped chip expands back into its selection panel; later chips fade/slide away.
 - Thinking → Results: orb contracts into the result header while cards enter with a short stagger.
@@ -329,21 +360,20 @@ The AI/UI contract remains typed and validated. Visual redesign does not permit 
 
 ### Home
 
-- Focused monochrome header with circular profile action and location capsule.
-- Place the current offer directly below the header; do not add a separate greeting hero.
-- Keep the four primary actions immediately after the offer, using black/white rounded cards with one restrained red featured state.
-- Favorites may use a horizontal restaurant rail when non-empty; Nearby results belong in Discovery and do not add length to Home.
-- Offers use a solid red banner with high-contrast white content; no gradient, flashing, or auto-advance.
-- Do not add Popular Cravings or meal-period chip sections to Home; preference refinement belongs in Conversation/Results.
-- The persistent composer asks “What do you want to eat?” so its purpose is explicit.
-- Floating navigation/composer must not cover content.
+- Show only the centered city capsule, central multiline AI composer with integrated send, exactly three circular actions (camera, bookmarks, profile/settings), and the abstract food atmosphere.
+- Do not show a header/logo, greeting, offers, category/action cards, lists, favorites/nearby rails, voice/camera inside the input, permanent action labels, or bottom navigation.
+- The city capsule starts unselected and opens the privacy-conscious manual/current/recent/default selector.
+- Rotate one localized example prompt at a time by fade; pause on focus/typing.
+- Keep the interaction group visually centered when possible and lift it above the keyboard without hiding typed text.
 
 ### Conversation
 
-- Compact header, Summary Chip rail, current-question panel, and floating composer.
+- Compact header with History and New Chat actions; the conversation page has no close/X control.
 - Background may use a very faint red field, while answer controls sit on stable monochrome surfaces.
-- Typed input stays available without turning the page into a long chat transcript.
+- User turns use solid black bubbles with white type, aligned to the directional end. Miz turns use white surfaces with black type, aligned to the directional start and identified by a small red AI marker. Do not repeat copy icons on messages.
+- Typed input stays available without turning the page into a long chat transcript. Sending dismisses the keyboard and advances the viewport so the newest response is visible.
 - Thinking uses the Miz orb and an honest, concise status message.
+- Starting a new chat archives the non-empty current thread locally before clearing the canvas. History is a dedicated offline page; opening History also snapshots the current thread, and each archive can be reviewed or deleted.
 
 ### Results and recommendations
 
@@ -475,4 +505,4 @@ Every changed screen must pass:
 9. Visual QA against approved redesign frames on small phones first, then larger devices.
 10. Performance profile and final documentation sync before declaring a milestone complete.
 
-Do not mix the old square component language and the new Soft Orbit language within a released screen. Migrate by complete component family and validate each affected flow before moving on.
+Do not mix the old square/dashboard shell and Spatial Glass within a released screen. Migrate by complete component family and validate each affected flow before moving on.

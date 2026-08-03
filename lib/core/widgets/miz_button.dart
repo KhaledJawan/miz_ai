@@ -78,11 +78,7 @@ class MizButton extends StatelessWidget {
       BoxBorder? border,
     ) = switch (variant) {
       MizButtonVariant.primary => (colors.accent, colors.onAccent, null),
-      MizButtonVariant.secondary => (
-        colors.surface,
-        colors.text,
-        Border.all(color: colors.divider),
-      ),
+      MizButtonVariant.secondary => (Colors.white, Colors.black, null),
       MizButtonVariant.ghost => (Colors.transparent, colors.accent, null),
     };
 
@@ -132,6 +128,16 @@ class MizButton extends StatelessWidget {
             decoration: BoxDecoration(
               border: border,
               borderRadius: BorderRadius.circular(AppRadii.full),
+              boxShadow: variant == MizButtonVariant.secondary
+                  ? [
+                      BoxShadow(
+                        color: Colors.black.withValues(alpha: 0.16),
+                        blurRadius: 18,
+                        spreadRadius: -4,
+                        offset: const Offset(0, 10),
+                      ),
+                    ]
+                  : null,
             ),
             child: content,
           ),

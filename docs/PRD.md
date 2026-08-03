@@ -41,8 +41,11 @@ Make deciding what to eat and getting it feel instant, personal, and effortless 
 ## Functional requirements
 
 - **Onboarding**: 3-step intro (value prop, location rationale, remember-preferences opt-in), skippable after step 1.
-- **Home**: compact decision surface with the current offer first, a quick-action grid (Hungry, Order Food, Reserve a Table, Find a Café), optional favorites, and a persistent food-intent composer. Nearby browsing belongs in Discovery rather than adding another Home section.
+- **Home**: focused Spatial Glass intent surface containing only an unassumed city selector, central multiline AI composer with send, exactly three circular actions (camera, bookmarks, profile/settings), and abstract blurred food atmosphere. No feed, offer, categories, labels, or bottom navigation.
+- **City**: manual search/selection, recent/default city, clear/reset, and privacy-conscious live foreground approximate-location lookup with denied/unavailable states; coordinates are matched locally and never persisted.
+- **Camera**: one shell with Food recognition, Miz QR, and multi-page Menu scan modes. Food and Menu accept explicit camera/gallery input and use separate secure AI analysis functions in English, German, and Farsi with upload consent and typed uncertainty; food-photo output never claims ingredients or allergy safety. Miz QR uses a real live decoder and strict local payload validation, while authenticity/publication/table verification remains unavailable until the trusted restaurant backend ships.
 - **Conversational flow (Summary Chips)**: a short sequence of tappable questions (cuisine, budget, distance, dietary) that collapse into editable chips; editing a chip re-enters the flow at that step without discarding later answers structurally (later answers reset, as in the approved prototype).
+- **Conversation shell and history**: user and Miz turns are visually unmistakable, sending dismisses the keyboard and reveals the latest answer, messages do not repeat copy controls, and New Chat archives the non-empty current thread into a local offline History page before resetting.
 - **Generative UI / Results**: AI (or, pre-AI-integration, a scripted flow) selects and renders recommendation cards with rating, price, distance, ETA, and a one-line reason.
 - **Restaurant details**: hero photo, rating/price/distance/open status, reserve/order actions, menu highlights, photo grid, a review, and an "Ask Miz about this restaurant" affordance.
 - **Discovery**: map + filterable list view of nearby restaurants.
@@ -50,8 +53,9 @@ Make deciding what to eat and getting it feel instant, personal, and effortless 
 - **Checkout**: cart review, delivery/pickup toggle, address/pickup info, place order.
 - **Reservation**: date → time → guest count → confirm, with a confirmation screen.
 - **Order tracking**: status steps (placed/preparing/on the way) with live map placeholder.
-- **Profile/Settings**: working English/Farsi/German language selector, dark mode, notifications, location permission, remember-preferences, privacy, about, help, logout, delete data, delete account.
-- **Offline**: profile, preferences, recent restaurants, bookmarks, recent searches, and conversation summaries remain available without connectivity.
+- **Bookmarks**: unified local saved items with search, compact type filters, removal, recent sort, empty state, and offline access through the existing Drift database.
+- **Profile/Settings**: one combined spatial page with local user/account state, fully editable Food Profile, English/Farsi/German language selector, dark mode, notifications, location/default city, personalization/activity, privacy/help, logout, and Food Profile reset controls.
+- **Offline**: profile, preferences, recent restaurants, bookmarks, recent searches, conversation summaries, and archived chat transcripts remain available without connectivity.
 
 ## Non-functional requirements
 
@@ -64,7 +68,7 @@ Make deciding what to eat and getting it feel instant, personal, and effortless 
 
 ## Future vision (not built now — architected for)
 
-Voice input, camera/vision-based dish recognition, OpenAI Realtime API for live conversation, RAG over restaurant knowledge, MCP-based tool integrations, multi-provider AI (not locked to OpenAI), group ordering, loyalty/rewards.
+Voice input, trusted Miz QR authenticity/publication/table verification behind the live scanner, OpenAI Realtime API for live conversation, RAG over restaurant knowledge, MCP-based tool integrations, multi-provider AI (not locked to OpenAI), group ordering, loyalty/rewards.
 
 ## Out of scope (for the current roadmap)
 

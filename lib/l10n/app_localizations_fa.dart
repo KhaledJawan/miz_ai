@@ -576,4 +576,521 @@ class AppLocalizationsFa extends AppLocalizations {
   @override
   String get foodProfilePrivacyNotice =>
       'پروفایل ذائقهٔ شما روی همین دستگاه ذخیره می‌شود و برای شخصی‌سازی پیشنهادهای Miz استفاده می‌شود. جایگزین تأیید مستقیم آلرژن‌ها با رستوران نیست.';
+
+  @override
+  String get spatialHomeInputLabel => 'به Miz بگویید چه می‌خواهید بخورید';
+
+  @override
+  String get promptWhatToday => 'امروز چه بخورم؟';
+
+  @override
+  String get promptMatchTaste => 'چیزی متناسب با ذائقه‌ام پیدا کن.';
+
+  @override
+  String get promptRestaurantsNearby => 'رستوران‌های عالی نزدیک را نشان بده.';
+
+  @override
+  String get promptSomethingNew => 'می‌خواهم چیز تازه‌ای امتحان کنم.';
+
+  @override
+  String get promptLightMeal => 'برای امشب یک غذای سبک پیدا کن.';
+
+  @override
+  String get promptNearMeNow => 'همین حالا نزدیک من چه می‌توانم بخورم؟';
+
+  @override
+  String get promptSpicy => 'یک غذای تند می‌خواهم.';
+
+  @override
+  String get promptCafe => 'یک کافهٔ خوب نزدیک پیدا کن.';
+
+  @override
+  String get cameraAction => 'باز کردن دوربین';
+
+  @override
+  String get bookmarksAction => 'باز کردن ذخیره‌شده‌ها';
+
+  @override
+  String get profileSettingsAction => 'باز کردن پروفایل و تنظیمات';
+
+  @override
+  String get selectCity => 'انتخاب شهر';
+
+  @override
+  String get noCitySelected => 'یک شهر انتخاب کنید';
+
+  @override
+  String get locationNeededTitle => 'نیاز به موقعیت مکانی';
+
+  @override
+  String get locationNeededBody =>
+      'یک شهر انتخاب کنید یا موقعیت مکانی خود را به اشتراک بگذارید تا Miz بتواند مکان‌های نزدیک شما را پیدا کند.';
+
+  @override
+  String changeCity(String city) {
+    return 'تغییر شهر: $city';
+  }
+
+  @override
+  String get searchCity => 'جست‌وجوی شهر';
+
+  @override
+  String get useCurrentLocation => 'استفاده از موقعیت فعلی';
+
+  @override
+  String get currentLocationPrivacy =>
+      'فقط با انتخاب شما درخواست می‌شود. انتخاب دستی شهر همیشه در دسترس است.';
+
+  @override
+  String get recentCities => 'شهرهای اخیر';
+
+  @override
+  String get availableCities => 'شهرهای موجود';
+
+  @override
+  String get setAsDefault => 'این شهر پیش‌فرض باشد';
+
+  @override
+  String get clearLocation => 'پاک کردن شهر انتخابی و پیش‌فرض';
+
+  @override
+  String get locationDeniedTitle => 'دسترسی موقعیت رد شد';
+
+  @override
+  String get locationDeniedBody =>
+      'شهر را دستی انتخاب کنید یا موقعیت تقریبی را در تنظیمات سیستم فعال کنید.';
+
+  @override
+  String get locationUnavailableTitle => 'موقعیت فعلی در دسترس نیست';
+
+  @override
+  String get locationUnavailableBody =>
+      'موقعیت دستگاه را روشن کنید یا یک شهر پشتیبانی‌شده را دستی انتخاب کنید. مختصات شما ذخیره نمی‌شود.';
+
+  @override
+  String get closePage => 'بستن صفحه';
+
+  @override
+  String get bookmarksTitle => 'ذخیره‌شده‌ها';
+
+  @override
+  String get searchBookmarks => 'جست‌وجوی موارد ذخیره‌شده';
+
+  @override
+  String get filterAll => 'همه';
+
+  @override
+  String get filterRestaurants => 'رستوران‌ها';
+
+  @override
+  String get filterFoods => 'غذاها';
+
+  @override
+  String get filterMenuItems => 'آیتم‌های منو';
+
+  @override
+  String get noBookmarksTitle => 'هنوز چیزی ذخیره نشده';
+
+  @override
+  String get noBookmarksBody =>
+      'رستوران‌ها، غذاها، آیتم‌های منو و یافته‌های ذخیره‌شده به‌صورت آفلاین اینجا می‌مانند.';
+
+  @override
+  String get removeBookmark => 'حذف نشانک';
+
+  @override
+  String get savedOffline => 'روی این دستگاه ذخیره شد';
+
+  @override
+  String get profileSettingsTitle => 'پروفایل و تنظیمات';
+
+  @override
+  String get accountNotConnected => 'استفادهٔ محلی از Miz';
+
+  @override
+  String get connectAccount => 'اتصال حساب هنوز در دسترس نیست';
+
+  @override
+  String get personalization => 'شخصی‌سازی';
+
+  @override
+  String get appearance => 'ظاهر';
+
+  @override
+  String get locationSettings => 'موقعیت';
+
+  @override
+  String get dataPrivacy => 'داده و حریم خصوصی';
+
+  @override
+  String get localActivity => 'فعالیت محلی';
+
+  @override
+  String get conversationInputLabel => 'ادامهٔ جست‌وجوی غذا';
+
+  @override
+  String get aiUnavailableTitle => 'هوش مصنوعی Miz موقتاً در دسترس نیست';
+
+  @override
+  String get aiUnavailableBody =>
+      'دستیار اکنون نتوانست پاسخ دهد. پیام شما در این نشست می‌ماند.';
+
+  @override
+  String get aiTimeoutTitle => 'Miz به زمان بیشتری نیاز دارد';
+
+  @override
+  String get aiTimeoutBody =>
+      'پاسخ بیش از حد طول کشید. همان درخواست را دوباره امتحان کنید.';
+
+  @override
+  String get aiRateLimitTitle => 'Miz اکنون مشغول است';
+
+  @override
+  String get aiRateLimitBody =>
+      'درخواست‌های زیادی در حال پردازش است. کمی صبر کنید و دوباره تلاش کنید.';
+
+  @override
+  String get placesUnavailableTitle => 'جست‌وجوی مکان در دسترس نیست';
+
+  @override
+  String get placesUnavailableBody =>
+      'Miz اکنون نتوانست رستوران‌ها را جست‌وجو کند. کمی بعد دوباره تلاش کنید.';
+
+  @override
+  String get noPlacesTitle => 'رستورانی پیدا نشد';
+
+  @override
+  String get noPlacesBody =>
+      'غذای دیگری، محدودهٔ بزرگ‌تر یا فیلترهای کمتری را امتحان کنید.';
+
+  @override
+  String get aiRequestErrorTitle => 'Miz نتوانست درخواست را کامل کند';
+
+  @override
+  String get aiRequestErrorBody =>
+      'درخواست را کمی تغییر دهید یا دوباره تلاش کنید.';
+
+  @override
+  String get retry => 'تلاش دوباره';
+
+  @override
+  String get copyAction => 'کپی';
+
+  @override
+  String get saveDiscovery => 'ذخیرهٔ یافته';
+
+  @override
+  String get newSearch => 'جست‌وجوی تازه';
+
+  @override
+  String get closeConversation => 'بستن گفت‌وگو';
+
+  @override
+  String get newChat => 'گفت‌وگوی تازه';
+
+  @override
+  String get chatHistory => 'تاریخچهٔ گفت‌وگو';
+
+  @override
+  String get noChatHistory => 'هنوز گفت‌وگویی ندارید';
+
+  @override
+  String get noChatHistoryBody =>
+      'گفت‌وگویی را با Miz شروع کنید. با آغاز گفت‌وگوی تازه یا خروج از صفحه، گفت‌وگوی فعلی اینجا نمایش داده می‌شود.';
+
+  @override
+  String get chatHistoryUnavailable => 'تاریخچهٔ گفت‌وگو بارگذاری نشد.';
+
+  @override
+  String get deleteChat => 'حذف گفت‌وگو';
+
+  @override
+  String restaurantResultsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count نتیجهٔ رستوران',
+      one: '۱ نتیجهٔ رستوران',
+      zero: 'نتایج رستوران‌ها',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get cameraTitle => 'دوربین';
+
+  @override
+  String get foodRecognitionMode => 'غذا';
+
+  @override
+  String get mizQrMode => 'QR میز';
+
+  @override
+  String get menuScanMode => 'منو';
+
+  @override
+  String get changeCameraMode => 'تغییر حالت دوربین';
+
+  @override
+  String get cameraPermissionTitle => 'دسترسی دوربین لازم است';
+
+  @override
+  String get cameraPermissionBody =>
+      'Miz فقط پس از انتخاب حالت از دوربین استفاده می‌کند. عکس‌ها موقت‌اند و بی‌اجازه بارگذاری نمی‌شوند.';
+
+  @override
+  String get allowCamera => 'اجازه به دوربین';
+
+  @override
+  String get cameraDeniedTitle => 'دسترسی دوربین رد شد';
+
+  @override
+  String get cameraDeniedBody =>
+      'برای اسکن غذا، QR میز یا منو، دوربین را در تنظیمات سیستم فعال کنید.';
+
+  @override
+  String get cameraUnavailableTitle => 'دوربین در دسترس نیست';
+
+  @override
+  String get cameraUnavailableBody =>
+      'دوربین قابل استفاده‌ای در این دستگاه در دسترس نیست. برای تحلیل غذا یا منو همچنان می‌توانید عکس انتخاب کنید.';
+
+  @override
+  String get offlineTitle => 'آفلاین هستید';
+
+  @override
+  String get offlineBody =>
+      'تشخیص و تأیید راه‌دور به اینترنت نیاز دارد. هیچ تصویری بارگذاری نشده است.';
+
+  @override
+  String get liveCamera => 'پیش‌نمایش زندهٔ دوربین';
+
+  @override
+  String get capture => 'عکس گرفتن';
+
+  @override
+  String get preview => 'پیش‌نمایش';
+
+  @override
+  String get retake => 'عکس دوباره';
+
+  @override
+  String get confirm => 'تأیید';
+
+  @override
+  String get processing => 'پردازش امن';
+
+  @override
+  String get noConfidentResult => 'نتیجهٔ مطمئنی نیست';
+
+  @override
+  String get resultDetails => 'جزئیات نتیجه';
+
+  @override
+  String get backendRequired => 'بک‌اند امن لازم است';
+
+  @override
+  String get cloudProcessingNotice =>
+      'ادامه به پردازش امن ابری نیاز دارد. Miz پیش از هر بارگذاری اجازه می‌گیرد.';
+
+  @override
+  String get scanQrInstruction =>
+      'QR رستوران یا میز Miz را داخل قاب قرار دهید.';
+
+  @override
+  String get mizQrOnlyNotice =>
+      'فقط کدهای امضاشده رستوران و میز Miz پذیرفته می‌شوند. لینک‌های QR دیگر هرگز خودکار باز نمی‌شوند.';
+
+  @override
+  String get qrScannerUnavailableTitle => 'اسکنر QR در دسترس نیست';
+
+  @override
+  String get qrScannerUnavailableBody =>
+      'Miz نتوانست دوربین زنده QR را اجرا کند. مجوز دوربین را بررسی و دوباره تلاش کنید.';
+
+  @override
+  String get scanAgain => 'اسکن دوباره';
+
+  @override
+  String get invalidQrTitle => 'QR نامعتبر Miz';
+
+  @override
+  String get invalidQrBody => 'این کد دادهٔ معتبر Miz نیست و باز نشد.';
+
+  @override
+  String get expiredQrTitle => 'این QR منقضی شده است';
+
+  @override
+  String get expiredQrBody => 'از رستوران کد تازه بخواهید.';
+
+  @override
+  String get unpublishedQrTitle => 'رستوران منتشر نشده است';
+
+  @override
+  String get unpublishedQrBody => 'این رستوران Miz اکنون قابل باز کردن نیست.';
+
+  @override
+  String get inactiveTableTitle => 'میز غیرفعال است';
+
+  @override
+  String get inactiveTableBody =>
+      'این میز اکنون نمی‌تواند نشستی را شروع کند یا به آن بپیوندد.';
+
+  @override
+  String get qrVerificationRequired =>
+      'قالب QR معتبر است. پیش از باز کردن رستوران یا نشست میز، تأیید شبکه لازم است.';
+
+  @override
+  String get foodPhotoInstruction =>
+      'از یک غذای آماده عکس واضح بگیرید یا عکسی از گالری انتخاب کنید.';
+
+  @override
+  String get foodUploadConsent =>
+      'با زدن شناسایی غذا، این عکس موقت برای تحلیل امن هوش مصنوعی ارسال می‌شود. Miz آن را ذخیره نمی‌کند.';
+
+  @override
+  String get identifyFood => 'شناسایی غذا';
+
+  @override
+  String get foodRecognizedTitle => 'غذا شناسایی شد';
+
+  @override
+  String get possibleMatchesTitle => 'نتایج احتمالی';
+
+  @override
+  String foodConfidence(int percent) {
+    return '٪$percent تطابق';
+  }
+
+  @override
+  String get foodRecognitionDisclaimer =>
+      'شناسایی هوش مصنوعی ممکن است اشتباه باشد و نمی‌تواند مواد اولیه یا ایمنی حساسیت را از روی عکس تأیید کند.';
+
+  @override
+  String get scanAnotherFood => 'اسکن غذای دیگر';
+
+  @override
+  String get foodUncertainTitle => 'Miz نتوانست این غذا را شناسایی کند';
+
+  @override
+  String get foodUncertainBody =>
+      'یک غذای روشن و واضح را بدون بسته‌بندی یا شلوغی در مرکز عکس قرار دهید.';
+
+  @override
+  String get foodAnalysisFailedTitle => 'شناسایی غذا کامل نشد';
+
+  @override
+  String get foodAnalysisFailedBody =>
+      'تحلیل امن ناموفق بود. عکس شما ذخیره نشد. اتصال را بررسی کرده و عکس دیگری امتحان کنید.';
+
+  @override
+  String get menuPagesTitle => 'صفحه‌های منو';
+
+  @override
+  String get addPage => 'افزودن صفحه';
+
+  @override
+  String pageNumber(int number) {
+    return 'صفحهٔ $number';
+  }
+
+  @override
+  String get reorderPage => 'جابجایی صفحه';
+
+  @override
+  String get deletePage => 'حذف صفحه';
+
+  @override
+  String get confirmPages => 'تأیید همهٔ صفحه‌ها';
+
+  @override
+  String get menuIncompleteTitle => 'اسکن منو کامل نیست';
+
+  @override
+  String get menuIncompleteBody =>
+      'پیش از ادامه دست‌کم یک صفحهٔ خوانا بگیرید. قیمت و مواد ممکن است به اصلاح دستی نیاز داشته باشند.';
+
+  @override
+  String get takePhoto => 'عکس گرفتن';
+
+  @override
+  String get choosePhoto => 'انتخاب عکس';
+
+  @override
+  String get menuPhotoInstruction =>
+      'یک عکس واضح و مستقیم از منو بگیرید یا تصویری از گالری انتخاب کنید.';
+
+  @override
+  String get menuImageUnavailableBody =>
+      'این عکس باز نشد. تصویر دیگری انتخاب کنید.';
+
+  @override
+  String get menuUploadConsent =>
+      'با زدن «توضیح منو»، این عکس‌های موقت به‌صورت امن برای تحلیل هوش مصنوعی ارسال می‌شوند. Miz عکس‌ها را ذخیره نمی‌کند.';
+
+  @override
+  String get explainMenu => 'توضیح منو';
+
+  @override
+  String get menuExplainedTitle => 'توضیح منوی شما';
+
+  @override
+  String get menuNotesTitle => 'نکته‌های مفید';
+
+  @override
+  String possibleAllergens(String allergens) {
+    return 'آلرژن‌های احتمالی: $allergens';
+  }
+
+  @override
+  String get menuAllergenDisclaimer =>
+      'هوش مصنوعی ممکن است اشتباه کند. پیش از سفارش، مواد و آلرژن‌ها را حتماً با رستوران تأیید کنید.';
+
+  @override
+  String get scanAnotherMenu => 'اسکن منوی دیگر';
+
+  @override
+  String get tryAnotherPhoto => 'امتحان عکس دیگر';
+
+  @override
+  String get menuUnreadableTitle => 'منو به‌اندازهٔ کافی واضح نبود';
+
+  @override
+  String get menuUnreadableBody =>
+      'عکسی روشن‌تر و مستقیم بگیرید که همهٔ متن منو در فوکوس باشد.';
+
+  @override
+  String get menuAnalysisFailedTitle => 'Miz نتوانست این منو را توضیح دهد';
+
+  @override
+  String get menuAnalysisFailedBody =>
+      'تحلیل امن کامل نشد. عکس‌های شما ذخیره نشدند. با یک عکس واضح دوباره تلاش کنید.';
+
+  @override
+  String get menuImageTooLargeTitle => 'عکس بیش از حد بزرگ است';
+
+  @override
+  String get menuImageTooLargeBody =>
+      'عکس کوچک‌تری انتخاب کنید یا صفحه‌های کمتری را هم‌زمان بفرستید.';
+
+  @override
+  String get menuImageUnsupportedTitle => 'فرمت عکس پشتیبانی نمی‌شود';
+
+  @override
+  String get menuImageUnsupportedBody =>
+      'یک عکس JPEG، PNG، WebP، HEIC یا HEIF انتخاب کنید.';
+
+  @override
+  String get menuTooManyPagesTitle => 'صفحه‌های منو بیش از حد است';
+
+  @override
+  String get menuTooManyPagesBody =>
+      'هر بار می‌توانید تا چهار صفحهٔ منو را برای توضیح بفرستید.';
+
+  @override
+  String get localDatabaseErrorTitle => 'ذخیره‌شده‌ها در دسترس نیستند';
+
+  @override
+  String get localDatabaseErrorBody =>
+      'Miz نتوانست موارد ذخیره‌شدهٔ این دستگاه را بخواند. صفحه را ببندید و دوباره باز کنید.';
 }

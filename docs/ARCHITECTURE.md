@@ -37,7 +37,8 @@ lib/
     theme/                # colors, typography, spacing, radii, shadows, app_theme.dart
     router/                # app_router.dart (GoRouter), route name constants
     network/                # dio_client.dart, api_exception.dart, interceptors
-    database/                # LIVE: Drift db/tables/daos/seed for the local Food Preference Profile — see docs/DATABASE.md "Local database (Drift)"
+    database/                # LIVE: one Drift db for Food Profile + local saved items
+    bookmarks/               # shared saved-item entity/repository/provider used by features
     storage/                # secure_storage.dart, prefs.dart (Drift itself lives in core/database/, not here — see ADR-013)
     error/                # failures.dart, exceptions.dart, result.dart
     analytics/                # AnalyticsClient interface + NoopAnalyticsClient
@@ -51,7 +52,10 @@ lib/
   features/
     food_profile/{domain,data,presentation}/     # Food Preference Profile: onboarding + editable Settings section, LIVE (see docs/DATABASE.md)
     home/{domain,data,presentation}/
-    conversation/{domain,data,presentation}/     # chat, thinking, results — Summary Chip flow
+    location/{domain,data,presentation}/         # city/default/recent states + replaceable OS adapter
+    conversation/{domain,data,presentation}/     # typed chat state; backend-unavailable adapter today
+    camera/{domain,data,presentation}/           # shared 3-mode state machine + replaceable device/analysis adapters
+    bookmarks/presentation/                      # unified local saved-items page
     restaurant/{domain,data,presentation}/       # details + discovery
     menu/{domain,data,presentation}/             # browser + cart
     reservation/{domain,data,presentation}/
@@ -72,28 +76,34 @@ Each `presentation/` splits into `pages/`, `widgets/`, `providers/`. A feature w
 
 ## 5. Navigation (GoRouter)
 
-Single `GoRouter` instance in `core/router/app_router.dart`. Every screen from `docs/DESIGN.md` §6 has a named route from day one (Phase 1 scaffold); unbuilt milestones route to a shared "coming soon" stub rather than a 404 or a fake finished screen. Auth/onboarding-gate redirects live in the router's `redirect` callback, not scattered through widgets.
+Single `GoRouter` instance in `core/router/app_router.dart`. Spatial routes (`/city`, `/chat`, `/chat-history`, `/camera`, `/bookmarks`, `/profile`, `/food-profile`) use one fade/scale transition; Android system back remains native. Conversation deliberately replaces the generic dismiss control with History and New Chat actions. `/chat?q=` validates and length-limits deep-link text before it reaches presentation. Unbuilt milestones route to an honest shared "coming soon" stub rather than a 404 or fake finished screen. The onboarding gate is resolved in `bootstrap.dart` before `runApp`, not scattered through widgets.
 
 ## 6. Offline strategy
 
 Cached locally (Drift): profile, preferences, recent restaurants (from Discovery/Results), bookmarks, recent searches, conversation summaries (Summary Chips). Cache-aside pattern: repository reads try Supabase first when online, fall back to Drift when offline; writes go to Drift immediately and sync to Supabase when connectivity returns (`connectivity_plus` gates the sync queue). Conflict rule: server wins on read-sync (Supabase is the source of truth); local writes queue and replay, last-write-wins per row — documented per-table if a feature needs stronger guarantees.
 
-**Exception, already live**: the Food Preference Profile (`core/database/`, `features/food_profile/`) is local-only today, not a cache in front of Supabase — there is no remote counterpart yet. It's opened and seeded once in `bootstrap.dart` before `runApp` (so the app's start route can be resolved synchronously, with no async GoRouter redirect/splash flicker), never mixes data across local users, and every table carries a `local_user_id`/nullable sync-readiness column specifically so a future backend-sync milestone is additive rather than a schema rewrite. See `docs/DATABASE.md` "Local database (Drift)" and ADR-013/ADR-014.
+**Exceptions, already live**: the Food Preference Profile, unified saved items, and chat archives use the same local Drift database. None has a remote counterpart yet. The database is opened and seeded once in `bootstrap.dart`; every user-owned table carries `local_user_id`. Schema v2 added `saved_items`; schema v3 adds immutable conversation snapshots non-destructively. Saved-item writes and chat archives are local-first and available offline. Future account sync remains additive rather than creating a second database or replacing local data. See `docs/DATABASE.md` and ADR-013/ADR-014/ADR-019/ADR-023.
 
-## 7. Backend independence
+## 7. Device and remote capability boundaries
 
-Miz's Flutter client and any backend logic it needs beyond raw Supabase queries live entirely inside Miz's own project. Miz never connects to Mizzz's database, schema, or internal services directly — any Mizzz data Miz needs is consumed through a versioned HTTP API, same as any third-party integration. See `docs/API.md`.
+`LocationService`, `CameraCaptureService`, `CameraAnalysisService`, and `ConversationService` are domain-facing interfaces exposed through generated Riverpod providers. `LocationService` has a production device adapter backed by `geolocator`: it requests foreground approximate permission only after an explicit tap, resolves the position locally to the nearest supported service city, and discards the coordinates. `ConversationService` has a production `MizAiService` adapter backed only by the `miz-ai` Edge Function; Gemini/Places secrets and orchestration remain server-side. Camera/gallery selection is backed by `image_picker`; typed food recognition and menu explanation are backed only by the separate `analyze-food` and `analyze-menu` Edge Functions. Miz QR frames are decoded locally by `mobile_scanner`, validated through `MizQrValidator`, and never opened as arbitrary links; remote authenticity/publication/table verification remains deliberately unavailable. Raw provider JSON never reaches presentation. Adapters can be injected without changing widgets or feature state machines; provider secrets never move into feature code.
 
-## 8. Scalability notes
+The composition root now reads the Supabase URL and publishable key through `AppConfig` and initializes `supabase_flutter` before the local database and application widget when both values are present. This establishes the remote-client boundary only; no presentation feature queries Supabase directly, and mock/local repositories remain active until a typed data implementation and reviewed RLS policy exist for that feature.
+
+## 8. Backend independence
+
+Miz's Flutter client and any backend logic it needs beyond raw Supabase queries live entirely inside Miz's own project. Miz never connects its client to Mizzz's database, schema, or internal services directly. The shared Central Food Catalog remains authoritative in Mizzz's existing `catalog.items` schema and is consumed only by Miz's backend through the bounded, versioned `food_catalog_v1_*` HTTPS/PostgREST RPC contract. Miz keeps no second trusted catalog. See `docs/API.md` §2.1.
+
+## 9. Scalability notes
 
 - Supabase Postgres with RLS scales read-heavy workloads via connection pooling (Supavisor) and read replicas as needed; heavy recommendation/AI orchestration is designed to live behind a stateless API layer (Edge Functions or a dedicated service) rather than in the Flutter client, so client logic never becomes a scaling bottleneck.
 - AI calls are provider-abstracted (`ai/core`) specifically so cost/latency-driven provider or model changes don't ripple into features.
 - Images served via CDN-backed Supabase Storage; client always requests via `cached_network_image`.
 
-## 9. Testing seams
+## 10. Testing seams
 
 Every repository interface exists precisely so `Testing Agent` (see `AGENTS.md`) can inject a fake/mock at the provider layer — no widget test should need a real Supabase or OpenAI call. See `docs/TESTING.md`.
 
-## 10. Localization and directionality
+## 11. Localization and directionality
 
 The settings domain stores an ISO-like language code rather than a translated display label. English (`en`), Farsi (`fa`), and German (`de`) are registered centrally. Flutter's localization layer derives LTR/RTL direction at the application root; widgets use directional start/end layout primitives so Farsi mirrors naturally. ARB generation provides compile-time-safe getters and placeholder types, and each added language requires a complete catalog plus directionality coverage.

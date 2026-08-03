@@ -1161,6 +1161,930 @@ abstract class AppLocalizations {
   /// In en, this message translates to:
   /// **'Your food profile is stored on this device and used to personalize what Miz suggests. It\'s not a substitute for confirming allergens directly with a restaurant.'**
   String get foodProfilePrivacyNotice;
+
+  /// No description provided for @spatialHomeInputLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell Miz what you want to eat'**
+  String get spatialHomeInputLabel;
+
+  /// No description provided for @promptWhatToday.
+  ///
+  /// In en, this message translates to:
+  /// **'What should I eat today?'**
+  String get promptWhatToday;
+
+  /// No description provided for @promptMatchTaste.
+  ///
+  /// In en, this message translates to:
+  /// **'Find something that matches my taste.'**
+  String get promptMatchTaste;
+
+  /// No description provided for @promptRestaurantsNearby.
+  ///
+  /// In en, this message translates to:
+  /// **'Show me great restaurants nearby.'**
+  String get promptRestaurantsNearby;
+
+  /// No description provided for @promptSomethingNew.
+  ///
+  /// In en, this message translates to:
+  /// **'I want to try something new.'**
+  String get promptSomethingNew;
+
+  /// No description provided for @promptLightMeal.
+  ///
+  /// In en, this message translates to:
+  /// **'Find a light meal for tonight.'**
+  String get promptLightMeal;
+
+  /// No description provided for @promptNearMeNow.
+  ///
+  /// In en, this message translates to:
+  /// **'What can I eat near me right now?'**
+  String get promptNearMeNow;
+
+  /// No description provided for @promptSpicy.
+  ///
+  /// In en, this message translates to:
+  /// **'I want something spicy.'**
+  String get promptSpicy;
+
+  /// No description provided for @promptCafe.
+  ///
+  /// In en, this message translates to:
+  /// **'Find a good café nearby.'**
+  String get promptCafe;
+
+  /// No description provided for @cameraAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Open camera'**
+  String get cameraAction;
+
+  /// No description provided for @bookmarksAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Open bookmarks'**
+  String get bookmarksAction;
+
+  /// No description provided for @profileSettingsAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Open profile and settings'**
+  String get profileSettingsAction;
+
+  /// No description provided for @selectCity.
+  ///
+  /// In en, this message translates to:
+  /// **'Select city'**
+  String get selectCity;
+
+  /// No description provided for @noCitySelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a city'**
+  String get noCitySelected;
+
+  /// No description provided for @locationNeededTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Location needed'**
+  String get locationNeededTitle;
+
+  /// No description provided for @locationNeededBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a city or share your location so Miz can find places near you.'**
+  String get locationNeededBody;
+
+  /// No description provided for @changeCity.
+  ///
+  /// In en, this message translates to:
+  /// **'Change city: {city}'**
+  String changeCity(String city);
+
+  /// No description provided for @searchCity.
+  ///
+  /// In en, this message translates to:
+  /// **'Search city'**
+  String get searchCity;
+
+  /// No description provided for @useCurrentLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Use current location'**
+  String get useCurrentLocation;
+
+  /// No description provided for @currentLocationPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Requested only when you choose this. Manual city selection always works.'**
+  String get currentLocationPrivacy;
+
+  /// No description provided for @recentCities.
+  ///
+  /// In en, this message translates to:
+  /// **'Recent cities'**
+  String get recentCities;
+
+  /// No description provided for @availableCities.
+  ///
+  /// In en, this message translates to:
+  /// **'Available cities'**
+  String get availableCities;
+
+  /// No description provided for @setAsDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Use this city by default'**
+  String get setAsDefault;
+
+  /// No description provided for @clearLocation.
+  ///
+  /// In en, this message translates to:
+  /// **'Clear selected and default city'**
+  String get clearLocation;
+
+  /// No description provided for @locationDeniedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Location access denied'**
+  String get locationDeniedTitle;
+
+  /// No description provided for @locationDeniedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a city manually or enable approximate location in system settings.'**
+  String get locationDeniedBody;
+
+  /// No description provided for @locationUnavailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Current location unavailable'**
+  String get locationUnavailableTitle;
+
+  /// No description provided for @locationUnavailableBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Turn on device location or choose a supported city manually. Your coordinates are not stored.'**
+  String get locationUnavailableBody;
+
+  /// No description provided for @closePage.
+  ///
+  /// In en, this message translates to:
+  /// **'Close page'**
+  String get closePage;
+
+  /// No description provided for @bookmarksTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved'**
+  String get bookmarksTitle;
+
+  /// No description provided for @searchBookmarks.
+  ///
+  /// In en, this message translates to:
+  /// **'Search saved items'**
+  String get searchBookmarks;
+
+  /// No description provided for @filterAll.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get filterAll;
+
+  /// No description provided for @filterRestaurants.
+  ///
+  /// In en, this message translates to:
+  /// **'Restaurants'**
+  String get filterRestaurants;
+
+  /// No description provided for @filterFoods.
+  ///
+  /// In en, this message translates to:
+  /// **'Foods'**
+  String get filterFoods;
+
+  /// No description provided for @filterMenuItems.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu items'**
+  String get filterMenuItems;
+
+  /// No description provided for @noBookmarksTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Nothing saved yet'**
+  String get noBookmarksTitle;
+
+  /// No description provided for @noBookmarksBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Restaurants, foods, menu items, and discoveries you save will stay available here offline.'**
+  String get noBookmarksBody;
+
+  /// No description provided for @removeBookmark.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove bookmark'**
+  String get removeBookmark;
+
+  /// No description provided for @savedOffline.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved on this device'**
+  String get savedOffline;
+
+  /// No description provided for @profileSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile & Settings'**
+  String get profileSettingsTitle;
+
+  /// No description provided for @accountNotConnected.
+  ///
+  /// In en, this message translates to:
+  /// **'Using Miz locally'**
+  String get accountNotConnected;
+
+  /// No description provided for @connectAccount.
+  ///
+  /// In en, this message translates to:
+  /// **'Account connection is not available yet'**
+  String get connectAccount;
+
+  /// No description provided for @personalization.
+  ///
+  /// In en, this message translates to:
+  /// **'Personalization'**
+  String get personalization;
+
+  /// No description provided for @appearance.
+  ///
+  /// In en, this message translates to:
+  /// **'Appearance'**
+  String get appearance;
+
+  /// No description provided for @locationSettings.
+  ///
+  /// In en, this message translates to:
+  /// **'Location'**
+  String get locationSettings;
+
+  /// No description provided for @dataPrivacy.
+  ///
+  /// In en, this message translates to:
+  /// **'Data & privacy'**
+  String get dataPrivacy;
+
+  /// No description provided for @localActivity.
+  ///
+  /// In en, this message translates to:
+  /// **'Local activity'**
+  String get localActivity;
+
+  /// No description provided for @conversationInputLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue your food search'**
+  String get conversationInputLabel;
+
+  /// No description provided for @aiUnavailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Miz AI is temporarily unavailable'**
+  String get aiUnavailableTitle;
+
+  /// No description provided for @aiUnavailableBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The assistant could not respond right now. Your message remains in this session.'**
+  String get aiUnavailableBody;
+
+  /// No description provided for @aiTimeoutTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Miz needs a little longer'**
+  String get aiTimeoutTitle;
+
+  /// No description provided for @aiTimeoutBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The response took too long. Try the same request again.'**
+  String get aiTimeoutBody;
+
+  /// No description provided for @aiRateLimitTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Miz is busy right now'**
+  String get aiRateLimitTitle;
+
+  /// No description provided for @aiRateLimitBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many requests are being handled. Wait a moment, then try again.'**
+  String get aiRateLimitBody;
+
+  /// No description provided for @placesUnavailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Place search is unavailable'**
+  String get placesUnavailableTitle;
+
+  /// No description provided for @placesUnavailableBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Miz could not search restaurants right now. Try again shortly.'**
+  String get placesUnavailableBody;
+
+  /// No description provided for @noPlacesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'No restaurants found'**
+  String get noPlacesTitle;
+
+  /// No description provided for @noPlacesBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a different food, a wider area, or fewer filters.'**
+  String get noPlacesBody;
+
+  /// No description provided for @aiRequestErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Miz couldn\'t complete that'**
+  String get aiRequestErrorTitle;
+
+  /// No description provided for @aiRequestErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Change the request slightly or try again.'**
+  String get aiRequestErrorBody;
+
+  /// No description provided for @retry.
+  ///
+  /// In en, this message translates to:
+  /// **'Retry'**
+  String get retry;
+
+  /// No description provided for @copyAction.
+  ///
+  /// In en, this message translates to:
+  /// **'Copy'**
+  String get copyAction;
+
+  /// No description provided for @saveDiscovery.
+  ///
+  /// In en, this message translates to:
+  /// **'Save discovery'**
+  String get saveDiscovery;
+
+  /// No description provided for @newSearch.
+  ///
+  /// In en, this message translates to:
+  /// **'New search'**
+  String get newSearch;
+
+  /// No description provided for @closeConversation.
+  ///
+  /// In en, this message translates to:
+  /// **'Close conversation'**
+  String get closeConversation;
+
+  /// No description provided for @newChat.
+  ///
+  /// In en, this message translates to:
+  /// **'New chat'**
+  String get newChat;
+
+  /// No description provided for @chatHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat history'**
+  String get chatHistory;
+
+  /// No description provided for @noChatHistory.
+  ///
+  /// In en, this message translates to:
+  /// **'No conversations yet'**
+  String get noChatHistory;
+
+  /// No description provided for @noChatHistoryBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Start a conversation with Miz. It will appear here when you begin a new chat or leave the conversation.'**
+  String get noChatHistoryBody;
+
+  /// No description provided for @chatHistoryUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Chat history could not be loaded.'**
+  String get chatHistoryUnavailable;
+
+  /// No description provided for @deleteChat.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete conversation'**
+  String get deleteChat;
+
+  /// No description provided for @restaurantResultsCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{Restaurant results} =1{1 restaurant result} other{{count} restaurant results}}'**
+  String restaurantResultsCount(int count);
+
+  /// No description provided for @cameraTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera'**
+  String get cameraTitle;
+
+  /// No description provided for @foodRecognitionMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Food'**
+  String get foodRecognitionMode;
+
+  /// No description provided for @mizQrMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Miz QR'**
+  String get mizQrMode;
+
+  /// No description provided for @menuScanMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu'**
+  String get menuScanMode;
+
+  /// No description provided for @changeCameraMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Change camera mode'**
+  String get changeCameraMode;
+
+  /// No description provided for @cameraPermissionTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera access needed'**
+  String get cameraPermissionTitle;
+
+  /// No description provided for @cameraPermissionBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Miz only uses the camera after you choose a mode. Captures stay temporary and are never uploaded silently.'**
+  String get cameraPermissionBody;
+
+  /// No description provided for @allowCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Allow camera'**
+  String get allowCamera;
+
+  /// No description provided for @cameraDeniedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera access denied'**
+  String get cameraDeniedTitle;
+
+  /// No description provided for @cameraDeniedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Enable camera access in system settings to scan food, Miz QR codes, or menus.'**
+  String get cameraDeniedBody;
+
+  /// No description provided for @cameraUnavailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Camera unavailable'**
+  String get cameraUnavailableTitle;
+
+  /// No description provided for @cameraUnavailableBody.
+  ///
+  /// In en, this message translates to:
+  /// **'No usable camera is available on this device. You can still choose a photo for food or menu analysis.'**
+  String get cameraUnavailableBody;
+
+  /// No description provided for @offlineTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You\'re offline'**
+  String get offlineTitle;
+
+  /// No description provided for @offlineBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Remote recognition and verification need a connection. No image has been uploaded.'**
+  String get offlineBody;
+
+  /// No description provided for @liveCamera.
+  ///
+  /// In en, this message translates to:
+  /// **'Live camera preview'**
+  String get liveCamera;
+
+  /// No description provided for @capture.
+  ///
+  /// In en, this message translates to:
+  /// **'Capture'**
+  String get capture;
+
+  /// No description provided for @preview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get preview;
+
+  /// No description provided for @retake.
+  ///
+  /// In en, this message translates to:
+  /// **'Retake'**
+  String get retake;
+
+  /// No description provided for @confirm.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm'**
+  String get confirm;
+
+  /// No description provided for @processing.
+  ///
+  /// In en, this message translates to:
+  /// **'Processing securely'**
+  String get processing;
+
+  /// No description provided for @noConfidentResult.
+  ///
+  /// In en, this message translates to:
+  /// **'No confident result'**
+  String get noConfidentResult;
+
+  /// No description provided for @resultDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Result details'**
+  String get resultDetails;
+
+  /// No description provided for @backendRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure backend required'**
+  String get backendRequired;
+
+  /// No description provided for @cloudProcessingNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Continuing would require secure cloud processing. Miz will ask before any upload.'**
+  String get cloudProcessingNotice;
+
+  /// No description provided for @scanQrInstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'Align a Miz restaurant or table QR code inside the frame.'**
+  String get scanQrInstruction;
+
+  /// No description provided for @mizQrOnlyNotice.
+  ///
+  /// In en, this message translates to:
+  /// **'Only signed Miz restaurant and table codes are accepted. Other QR links are never opened automatically.'**
+  String get mizQrOnlyNotice;
+
+  /// No description provided for @qrScannerUnavailableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'QR scanner unavailable'**
+  String get qrScannerUnavailableTitle;
+
+  /// No description provided for @qrScannerUnavailableBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Miz could not start the live QR camera. Check camera permission and try again.'**
+  String get qrScannerUnavailableBody;
+
+  /// No description provided for @scanAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan again'**
+  String get scanAgain;
+
+  /// No description provided for @invalidQrTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid Miz QR'**
+  String get invalidQrTitle;
+
+  /// No description provided for @invalidQrBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This code is not a trusted Miz payload and was not opened.'**
+  String get invalidQrBody;
+
+  /// No description provided for @expiredQrTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'This Miz QR has expired'**
+  String get expiredQrTitle;
+
+  /// No description provided for @expiredQrBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask the restaurant for a current code.'**
+  String get expiredQrBody;
+
+  /// No description provided for @unpublishedQrTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Restaurant not published'**
+  String get unpublishedQrTitle;
+
+  /// No description provided for @unpublishedQrBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This Miz restaurant is not currently available to open.'**
+  String get unpublishedQrBody;
+
+  /// No description provided for @inactiveTableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Table is inactive'**
+  String get inactiveTableTitle;
+
+  /// No description provided for @inactiveTableBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This table cannot start or join a session right now.'**
+  String get inactiveTableBody;
+
+  /// No description provided for @qrVerificationRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'The QR format is valid. Network verification is required before opening a restaurant or table session.'**
+  String get qrVerificationRequired;
+
+  /// No description provided for @foodPhotoInstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a clear photo of one prepared dish, or choose one from your library.'**
+  String get foodPhotoInstruction;
+
+  /// No description provided for @foodUploadConsent.
+  ///
+  /// In en, this message translates to:
+  /// **'When you tap Identify food, this temporary photo is sent securely for AI analysis. Miz does not save it.'**
+  String get foodUploadConsent;
+
+  /// No description provided for @identifyFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Identify food'**
+  String get identifyFood;
+
+  /// No description provided for @foodRecognizedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Food recognized'**
+  String get foodRecognizedTitle;
+
+  /// No description provided for @possibleMatchesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Possible matches'**
+  String get possibleMatchesTitle;
+
+  /// No description provided for @foodConfidence.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% match'**
+  String foodConfidence(int percent);
+
+  /// No description provided for @foodRecognitionDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'AI recognition can be wrong and cannot confirm ingredients or allergy safety from a photo.'**
+  String get foodRecognitionDisclaimer;
+
+  /// No description provided for @scanAnotherFood.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan another food'**
+  String get scanAnotherFood;
+
+  /// No description provided for @foodUncertainTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Miz could not identify this food'**
+  String get foodUncertainTitle;
+
+  /// No description provided for @foodUncertainBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Try one well-lit dish in the center of the photo without packaging or clutter.'**
+  String get foodUncertainBody;
+
+  /// No description provided for @foodAnalysisFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Food recognition did not finish'**
+  String get foodAnalysisFailedTitle;
+
+  /// No description provided for @foodAnalysisFailedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The secure analysis failed. Your photo was not saved. Check your connection and try another photo.'**
+  String get foodAnalysisFailedBody;
+
+  /// No description provided for @menuPagesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu pages'**
+  String get menuPagesTitle;
+
+  /// No description provided for @addPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Add page'**
+  String get addPage;
+
+  /// No description provided for @pageNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Page {number}'**
+  String pageNumber(int number);
+
+  /// No description provided for @reorderPage.
+  ///
+  /// In en, this message translates to:
+  /// **'Reorder page'**
+  String get reorderPage;
+
+  /// No description provided for @deletePage.
+  ///
+  /// In en, this message translates to:
+  /// **'Delete page'**
+  String get deletePage;
+
+  /// No description provided for @confirmPages.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm all pages'**
+  String get confirmPages;
+
+  /// No description provided for @menuIncompleteTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Menu scan incomplete'**
+  String get menuIncompleteTitle;
+
+  /// No description provided for @menuIncompleteBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Capture at least one readable page before continuing. Prices and ingredients may still require manual correction.'**
+  String get menuIncompleteBody;
+
+  /// No description provided for @takePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Take photo'**
+  String get takePhoto;
+
+  /// No description provided for @choosePhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose photo'**
+  String get choosePhoto;
+
+  /// No description provided for @menuPhotoInstruction.
+  ///
+  /// In en, this message translates to:
+  /// **'Take a clear, straight photo of the menu or choose one from your library.'**
+  String get menuPhotoInstruction;
+
+  /// No description provided for @menuImageUnavailableBody.
+  ///
+  /// In en, this message translates to:
+  /// **'This photo could not be opened. Choose another image.'**
+  String get menuImageUnavailableBody;
+
+  /// No description provided for @menuUploadConsent.
+  ///
+  /// In en, this message translates to:
+  /// **'When you tap Explain menu, these temporary photos are sent securely for AI analysis. Miz does not save the photos.'**
+  String get menuUploadConsent;
+
+  /// No description provided for @explainMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Explain menu'**
+  String get explainMenu;
+
+  /// No description provided for @menuExplainedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Your menu, explained'**
+  String get menuExplainedTitle;
+
+  /// No description provided for @menuNotesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Helpful notes'**
+  String get menuNotesTitle;
+
+  /// No description provided for @possibleAllergens.
+  ///
+  /// In en, this message translates to:
+  /// **'Possible allergens: {allergens}'**
+  String possibleAllergens(String allergens);
+
+  /// No description provided for @menuAllergenDisclaimer.
+  ///
+  /// In en, this message translates to:
+  /// **'AI can make mistakes. Always confirm ingredients and allergens with the restaurant before ordering.'**
+  String get menuAllergenDisclaimer;
+
+  /// No description provided for @scanAnotherMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Scan another menu'**
+  String get scanAnotherMenu;
+
+  /// No description provided for @tryAnotherPhoto.
+  ///
+  /// In en, this message translates to:
+  /// **'Try another photo'**
+  String get tryAnotherPhoto;
+
+  /// No description provided for @menuUnreadableTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'The menu was not clear enough'**
+  String get menuUnreadableTitle;
+
+  /// No description provided for @menuUnreadableBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a brighter, straighter photo with the full menu text in focus.'**
+  String get menuUnreadableBody;
+
+  /// No description provided for @menuAnalysisFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Miz could not explain this menu'**
+  String get menuAnalysisFailedTitle;
+
+  /// No description provided for @menuAnalysisFailedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The secure analysis did not finish. Your photos were not saved. Try again with a clear photo.'**
+  String get menuAnalysisFailedBody;
+
+  /// No description provided for @menuImageTooLargeTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo is too large'**
+  String get menuImageTooLargeTitle;
+
+  /// No description provided for @menuImageTooLargeBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a smaller photo or photograph fewer menu pages at once.'**
+  String get menuImageTooLargeBody;
+
+  /// No description provided for @menuImageUnsupportedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Photo format is not supported'**
+  String get menuImageUnsupportedTitle;
+
+  /// No description provided for @menuImageUnsupportedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose a JPEG, PNG, WebP, HEIC, or HEIF photo.'**
+  String get menuImageUnsupportedBody;
+
+  /// No description provided for @menuTooManyPagesTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Too many menu pages'**
+  String get menuTooManyPagesTitle;
+
+  /// No description provided for @menuTooManyPagesBody.
+  ///
+  /// In en, this message translates to:
+  /// **'You can explain up to four menu pages at a time.'**
+  String get menuTooManyPagesBody;
+
+  /// No description provided for @localDatabaseErrorTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Saved items unavailable'**
+  String get localDatabaseErrorTitle;
+
+  /// No description provided for @localDatabaseErrorBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Miz couldn\'t read saved items from this device. Try closing and reopening this page.'**
+  String get localDatabaseErrorBody;
 }
 
 class _AppLocalizationsDelegate

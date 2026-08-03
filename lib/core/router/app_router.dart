@@ -1,10 +1,19 @@
+import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
 import '../localization/localization.dart';
 import '../../features/food_profile/presentation/food_profile_page.dart';
 import '../../features/food_profile/presentation/onboarding/food_profile_onboarding_page.dart';
+import '../../features/bookmarks/presentation/pages/bookmarks_page.dart';
+import '../../features/camera/presentation/pages/camera_page.dart';
+import '../../features/conversation/presentation/pages/conversation_page.dart';
+import '../../features/conversation/presentation/pages/conversation_history_page.dart';
 import '../../features/home/presentation/pages/home_page.dart';
+import '../../features/location/presentation/pages/city_selector_page.dart';
+import '../../features/profile_settings/presentation/pages/profile_settings_page.dart';
+import '../theme/app_motion.dart';
+import '../widgets/miz_spatial_transition.dart';
 import 'coming_soon_page.dart';
 
 /// Every screen named in docs/DESIGN.md §6 has a route from Milestone 0.
@@ -18,7 +27,12 @@ class AppRoutes {
   static const onboarding = '/onboarding';
   static const home = '/home';
   static const foodProfile = '/food-profile';
+  static const city = '/city';
+  static const bookmarks = '/bookmarks';
+  static const profile = '/profile';
+  static const camera = '/camera';
   static const chat = '/chat';
+  static const chatHistory = '/chat-history';
   static const results = '/results';
   static const restaurantDetails = '/restaurant/:id';
   static const discovery = '/discovery';
@@ -47,7 +61,8 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRoutes.foodProfile,
-        builder: (context, state) => const FoodProfilePage(),
+        pageBuilder: (context, state) =>
+            _spatialPage(state, const FoodProfilePage()),
       ),
       GoRoute(
         path: AppRoutes.home,
@@ -55,8 +70,40 @@ final appRouterProvider = Provider<GoRouter>((ref) {
       ),
       GoRoute(
         path: AppRoutes.chat,
-        builder: (context, state) =>
-            ComingSoonPage(title: context.l10n.conversationTitle),
+        pageBuilder: (context, state) {
+          final extra = state.extra;
+          final queryPrompt = state.uri.queryParameters['q'];
+          final rawPrompt = extra is String ? extra : queryPrompt ?? '';
+          final prompt = rawPrompt.length > 1000
+              ? rawPrompt.substring(0, 1000)
+              : rawPrompt;
+          return _spatialPage(state, ConversationPage(initialPrompt: prompt));
+        },
+      ),
+      GoRoute(
+        path: AppRoutes.chatHistory,
+        pageBuilder: (context, state) =>
+            _spatialPage(state, const ConversationHistoryPage()),
+      ),
+      GoRoute(
+        path: AppRoutes.city,
+        pageBuilder: (context, state) =>
+            _spatialPage(state, const CitySelectorPage()),
+      ),
+      GoRoute(
+        path: AppRoutes.bookmarks,
+        pageBuilder: (context, state) =>
+            _spatialPage(state, const BookmarksPage()),
+      ),
+      GoRoute(
+        path: AppRoutes.profile,
+        pageBuilder: (context, state) =>
+            _spatialPage(state, const ProfileSettingsPage()),
+      ),
+      GoRoute(
+        path: AppRoutes.camera,
+        pageBuilder: (context, state) =>
+            _spatialPage(state, const CameraPage()),
       ),
       GoRoute(
         path: AppRoutes.results,
@@ -96,3 +143,14 @@ final appRouterProvider = Provider<GoRouter>((ref) {
     ],
   );
 });
+
+CustomTransitionPage<void> _spatialPage(GoRouterState state, Widget child) {
+  return CustomTransitionPage<void>(
+    key: state.pageKey,
+    child: child,
+    transitionDuration: AppMotion.standard,
+    reverseTransitionDuration: AppMotion.fast,
+    transitionsBuilder: (context, animation, secondaryAnimation, child) =>
+        MizSpatialTransition(animation: animation, child: child),
+  );
+}

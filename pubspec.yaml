@@ -46,6 +46,11 @@ dependencies:
   path_provider: ^2.1.6
   path: ^1.9.1
   sqlite3_flutter_libs: ^0.5.42
+  supabase_flutter: ^2.16.0
+  google_generative_ai: ^0.4.7
+  geolocator: ^14.0.3
+  image_picker: ^1.2.3
+  mobile_scanner: ^7.4.0
 dev_dependencies:
   flutter_test:
     sdk: flutter
@@ -79,6 +84,7 @@ flutter:
   assets:
     - assets/images/restaurants/
     - assets/images/food_items/
+    - assets/images/spatial/
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

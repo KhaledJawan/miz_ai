@@ -1,6 +1,6 @@
 import 'package:flutter/animation.dart';
 
-/// Soft Orbit motion tokens. Reduced-motion handling lives at the animation
+/// Spatial Glass motion tokens. Reduced-motion handling lives at the animation
 /// call site because it depends on the active [MediaQuery].
 class AppMotion {
   const AppMotion._();

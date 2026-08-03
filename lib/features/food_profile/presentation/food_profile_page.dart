@@ -39,20 +39,55 @@ class FoodProfilePage extends ConsumerWidget {
   @override
   Widget build(BuildContext context, WidgetRef ref) {
     final l10n = context.l10n;
-    final colors = context.mizColors;
     final asyncSnapshot = ref.watch(foodProfileSnapshotProvider);
 
     return Scaffold(
-      backgroundColor: colors.background,
-      appBar: AppBar(
-        backgroundColor: colors.background,
-        elevation: 0,
-        title: Text(l10n.foodProfileTitle),
-      ),
-      body: asyncSnapshot.when(
-        loading: () => const Center(child: CircularProgressIndicator()),
-        error: (error, _) => Center(child: Text('$error')),
-        data: (snapshot) => _FoodProfileBody(snapshot: snapshot),
+      body: Stack(
+        children: [
+          const MizAnimatedFoodBackground(calm: true),
+          SafeArea(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsetsDirectional.fromSTEB(
+                    AppSpacing.lgPlus,
+                    AppSpacing.md,
+                    AppSpacing.lgPlus,
+                    AppSpacing.sm,
+                  ),
+                  child: Row(
+                    children: [
+                      const SizedBox(width: 48),
+                      Expanded(
+                        child: Text(
+                          l10n.foodProfileTitle,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.titleLarge,
+                        ),
+                      ),
+                      MizFloatingDismissButton(
+                        semanticLabel: l10n.closePage,
+                        onPressed: () => Navigator.of(context).maybePop(),
+                      ),
+                    ],
+                  ),
+                ),
+                Expanded(
+                  child: asyncSnapshot.when(
+                    loading: () => const Center(
+                      child: CircularProgressIndicator.adaptive(),
+                    ),
+                    error: (error, _) => Center(child: Text('$error')),
+                    data: (snapshot) => Theme(
+                      data: AppTheme.light(),
+                      child: _FoodProfileBody(snapshot: snapshot),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ],
       ),
     );
   }
@@ -398,9 +433,9 @@ class _CompletenessCard extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.all(AppSpacing.lg),
       decoration: BoxDecoration(
-        color: colors.surface,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(AppRadii.lg),
-        border: Border.all(color: colors.divider),
+        boxShadow: AppShadows.md(colors.shadow),
       ),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -442,13 +477,21 @@ class _SectionLabel extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Padding(
-      padding: const EdgeInsetsDirectional.only(start: AppSpacing.xs),
+    return Container(
+      padding: const EdgeInsets.symmetric(
+        horizontal: AppSpacing.md,
+        vertical: AppSpacing.xs,
+      ),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(AppRadii.full),
+        boxShadow: AppShadows.sm(Colors.black),
+      ),
       child: Text(
         label,
-        style: Theme.of(context).textTheme.labelMedium?.copyWith(
-          color: context.mizColors.textSecondary,
-        ),
+        style: Theme.of(
+          context,
+        ).textTheme.labelMedium?.copyWith(color: Colors.black),
       ),
     );
   }
@@ -465,10 +508,9 @@ class _SettingsGroup extends StatelessWidget {
     return Container(
       padding: const EdgeInsets.symmetric(vertical: AppSpacing.xs),
       decoration: BoxDecoration(
-        color: colors.surface,
+        color: Colors.white,
         borderRadius: BorderRadius.circular(AppRadii.lg),
-        border: Border.all(color: colors.divider),
-        boxShadow: AppShadows.sm(colors.shadow),
+        boxShadow: AppShadows.md(colors.shadow),
       ),
       child: Column(
         children: [

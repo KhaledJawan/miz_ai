@@ -15,6 +15,8 @@ Full task-level detail lives in [`docs/LINEAR_BACKLOG.md`](LINEAR_BACKLOG.md) (m
 | M8 | Offline & Hardening | Drift offline cache wired, security review, performance pass, full test coverage | ⚪ Not started |
 | M9 | Beta Polish & Release Prep | Analytics wired, CI/CD, store submission prep | ⚪ Not started |
 
+Spatial Glass foundation (2026-08-02) is a cross-milestone product-shell implementation: Home, city selection with live foreground approximate-location lookup, typed conversation, local saved items/history, combined profile/settings, and the camera shell are live. Food/menu camera and gallery capture, secure AI recognition/explanation, and live local Miz QR decoding are implemented. This does not mark remote M2/M3/M7 behavior complete: restaurant result opening and trusted QR authenticity/publication/table verification still require their secure backends.
+
 Legend: 🔵 in progress · ⚪ not started · 🟢 done
 
 M1's placeholder onboarding (generic intro + location rationale, no lasting data) has since been replaced by the full Food Preference Profile onboarding — a local-only, deterministic (no AI) taste/allergy/preference flow backed by a live Drift database, permanently editable from Settings. See `docs/DATABASE.md` "Local database (Drift)" and ADR-013/014/015. This is additive depth within M1's original scope, not a new milestone.

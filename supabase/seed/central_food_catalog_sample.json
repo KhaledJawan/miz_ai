@@ -1,0 +1,123 @@
+{
+  "sourceName": "Merlin ICT curated starter sample",
+  "sourceVersion": "2026-08-03",
+  "sourceUrl": null,
+  "license": "Proprietary - Merlin ICT",
+  "foods": [
+    {
+      "canonicalName": "Kabuli Pulao",
+      "slug": "kabuli-pulao",
+      "language": "en",
+      "shortDescription": "An Afghan rice dish commonly prepared with meat, carrots, raisins, and aromatic spices.",
+      "foodTypeSlug": "prepared-dish",
+      "cuisineSlug": "afghan",
+      "originCountryIso2": "AF",
+      "servingTemperature": "hot",
+      "category": "Rice Dish",
+      "ingredients": ["rice", "carrots", "raisins", "meat", "spices"],
+      "aliases": [
+        {"name": "Qabili Palaw", "type": "alternative_spelling", "language": "en"},
+        {"name": "Kabuli Palaw", "type": "alternative_spelling", "language": "en"},
+        {"name": "قابلی پلو", "type": "regional_name", "language": "fa", "transliteration": "Qabili Palaw"},
+        {"name": "کابلی پلو", "type": "regional_name", "language": "fa", "transliteration": "Kabuli Palaw"}
+      ],
+      "translations": [
+        {"language": "fa", "name": "قابلی پلو"},
+        {"language": "de", "name": "Kabuli-Pilaw"}
+      ],
+      "confidence": 0.97
+    },
+    {
+      "canonicalName": "Mantu",
+      "slug": "mantu",
+      "language": "en",
+      "shortDescription": "Afghan steamed dumplings traditionally served with sauce and toppings.",
+      "foodTypeSlug": "prepared-dish",
+      "cuisineSlug": "afghan",
+      "originCountryIso2": "AF",
+      "servingTemperature": "hot",
+      "ingredients": ["dough", "filling", "sauce"],
+      "aliases": [
+        {"name": "منتو", "type": "regional_name", "language": "fa", "transliteration": "Mantu"}
+      ],
+      "translations": [{"language": "fa", "name": "منتو"}],
+      "confidence": 0.96
+    },
+    {
+      "canonicalName": "Ashak",
+      "slug": "ashak",
+      "language": "en",
+      "shortDescription": "Afghan dumplings commonly filled with greens and served with sauces.",
+      "foodTypeSlug": "prepared-dish",
+      "cuisineSlug": "afghan",
+      "originCountryIso2": "AF",
+      "servingTemperature": "hot",
+      "ingredients": ["dough", "greens", "sauce"],
+      "aliases": [
+        {"name": "آشک", "type": "regional_name", "language": "fa", "transliteration": "Ashak"}
+      ],
+      "translations": [{"language": "fa", "name": "آشک"}],
+      "confidence": 0.96
+    },
+    {
+      "canonicalName": "Chicken Kabsa",
+      "slug": "chicken-kabsa",
+      "language": "en",
+      "shortDescription": "A spiced rice dish from the Arabian Peninsula served with chicken.",
+      "foodTypeSlug": "prepared-dish",
+      "cuisineSlug": "arabian-peninsula",
+      "originCountryIso2": "SA",
+      "servingTemperature": "hot",
+      "ingredients": ["rice", "chicken", "tomato", "spices"],
+      "aliases": [
+        {"name": "كبسة دجاج", "type": "regional_name", "language": "ar", "transliteration": "Kabsa Dajaj"}
+      ],
+      "translations": [{"language": "ar", "name": "كبسة دجاج"}],
+      "confidence": 0.96
+    },
+    {
+      "canonicalName": "Machboos Dajaj",
+      "slug": "machboos-dajaj",
+      "language": "en",
+      "shortDescription": "A Gulf rice dish prepared with chicken and aromatic spices.",
+      "foodTypeSlug": "prepared-dish",
+      "cuisineSlug": "emirati",
+      "originCountryIso2": "AE",
+      "servingTemperature": "hot",
+      "ingredients": ["rice", "chicken", "spices"],
+      "aliases": [
+        {"name": "مجبوس دجاج", "type": "regional_name", "language": "ar", "transliteration": "Machboos Dajaj"}
+      ],
+      "translations": [{"language": "ar", "name": "مجبوس دجاج"}],
+      "confidence": 0.94
+    },
+    {
+      "canonicalName": "Margherita Pizza",
+      "slug": "margherita-pizza",
+      "language": "en",
+      "shortDescription": "An Italian pizza commonly topped with tomato, mozzarella, and basil.",
+      "foodTypeSlug": "prepared-dish",
+      "cuisineSlug": "italian",
+      "originCountryIso2": "IT",
+      "servingTemperature": "hot",
+      "ingredients": ["dough", "tomato", "mozzarella", "basil"],
+      "aliases": [{"name": "Pizza Margherita", "type": "common_name", "language": "it"}],
+      "translations": [{"language": "de", "name": "Pizza Margherita"}],
+      "confidence": 0.98
+    },
+    {
+      "canonicalName": "Spaghetti Carbonara",
+      "slug": "spaghetti-carbonara",
+      "language": "en",
+      "shortDescription": "An Italian pasta dish associated with eggs, hard cheese, cured pork, and black pepper.",
+      "foodTypeSlug": "prepared-dish",
+      "cuisineSlug": "italian",
+      "originCountryIso2": "IT",
+      "servingTemperature": "hot",
+      "ingredients": ["spaghetti", "egg", "hard cheese", "cured pork", "black pepper"],
+      "aliases": [{"name": "Carbonara", "type": "common_name", "language": "it"}],
+      "translations": [{"language": "de", "name": "Spaghetti Carbonara"}],
+      "confidence": 0.98
+    }
+  ]
+}

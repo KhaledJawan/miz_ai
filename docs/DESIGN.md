@@ -1,97 +1,99 @@
 # Design System & UX Model — Miz
 
-Visual source of truth: [`DesignGD.md`](../DesignGD.md), design direction “Soft Orbit.” The earlier `Miz.dc.html` Modernist prototype remains a flow and content reference, but its square-only styling and grayscale image treatment are superseded by [ADR-010](DECISIONS.md).
+Visual source of truth: [`DesignGD.md`](../DesignGD.md), design direction “Miz Spatial Glass.” It supersedes Soft Orbit for the immersive product shell while retaining Archivo, the semantic radius/spacing scale, Miz Mono Red, and the existing Food Profile interaction model.
 
 Related: [`docs/PRD.md`](PRD.md), [`docs/ARCHITECTURE.md`](ARCHITECTURE.md), [`docs/API.md`](API.md).
 
-## 1. Soft Orbit foundation
+## 1. Spatial Glass foundation
 
-Miz is modern, focused, rounded, layered, and calm. Its interface uses black, white, neutral gray, and Miz red; natural food photography provides the only broad color range. Shape remains intentional rather than applying one radius everywhere:
+Miz is cinematic, calm, food-focused, and softly futuristic. Theme-aware culinary-AI artwork creates the atmosphere; the interaction plane stays solid white, black, neutral, and red.
 
-- Circles: compact icon actions, avatars, voice, status, and map markers.
-- Capsules: Summary Chips, filters, segmented controls, and short actions.
-- Rounded rectangles: cards, forms, sheets, menus, and information-heavy surfaces.
-- Superelliptical containers: hero modules and floating navigation/input surfaces.
-
-Core implementation rules:
-
-- Archivo 400/800 is bundled locally and remains the brand typeface.
-- All colors, spacing, radii, shadows, and motion use semantic tokens.
-- Light and dark themes are designed together.
-- Food photography is warm and full color; grayscale is no longer a global brand treatment.
-- Multicolor gradients and colored shadows are prohibited. At most one faint red ambient field may appear on a screen.
-- Glass/blur is selective: floating navigation, composer, map controls, and immersive voice surfaces only.
-- Every interaction has default, pressed, focused, disabled, selected/loading/error states where applicable.
-- Minimum hit target is 44×44 and all icon-only actions have semantic labels.
-- Reduced motion and reduced transparency receive stable fallbacks.
-- Every component uses directional start/end layout primitives. English and German are LTR; Farsi mirrors the interface to RTL at the app root without separate screen implementations.
-
-Exact tokens, component dimensions, transition timings, responsive rules, and page direction live in [`DesignGD.md`](../DesignGD.md).
+- `subtle`, `secondary`, `primary`, `elevated`, `modal`, and `disabled` are the only glass levels.
+- Blur, fill, border, highlight, shadow, dimming, contrast, motion, radii, and spacing are semantic tokens.
+- Prominent controls, cards, result objects, and sheets are fully opaque white, zero blur, borderless, and use layered neutral iOS-style shadows.
+- Black and gray foreground content is enforced inside white surfaces in both themes.
+- Feature code does not provide one-off material values.
+- Light mode uses a warm pale base; dark mode uses deep charcoal rather than pure black.
+- Food photos may retain natural color, but UI gradients and shadows never become rainbow or multicolor.
+- English/German are LTR and Farsi is RTL through one directional implementation.
+- Icon actions have tooltips, semantics, focus/pressed states, and 44×44 minimum targets.
 
 ## 2. Component kit
 
-Shared UI lives under `core/widgets/` and uses the `Miz` prefix:
+Shared UI lives under `core/widgets/` with the `Miz` prefix. The Spatial Glass additions are:
 
 | Component | Purpose |
 |---|---|
-| `MizButton` | Pill primary, secondary, and ghost actions |
-| `MizIconButton` | Circular icon action with a 44×44 minimum target |
-| `MizCard` | Rounded tonal/elevated content surface |
-| `MizTag` | Capsule filter and Summary Chip |
-| `MizInput` | Rounded standard text field |
-| `MizSegmentedControl` | Capsule single-select control |
-| `MizSwitch` | Rounded accessible toggle |
-| `MizDivider` | Quiet grouped-content separator |
-| `MizImageSlot` | Full-color restaurant media with a monochrome/red fallback |
-| `MizOrb` | AI presence for onboarding, Thinking, and voice states |
+| `MizGlassSurface` | Semantic surface with an approved solid-white prominent treatment and legacy glass levels |
+| `MizGlassCircleButton` | Haptic, accessible circular contextual action |
+| `MizGlassInput` | Multiline composer containing only text and send |
+| `MizLocationCapsule` | Compact city state and selector entry point |
+| `MizFloatingDismissButton` | Discoverable non-app-bar return/close control |
+| `MizSpatialSheet` | Modal glass overlay with an opaque accessibility fallback |
+| `MizResultCard` | Result, empty, unavailable, and error object |
+| `MizCameraModeSelector` | Three-mode contextual camera selector |
+| `MizAnimatedFoodBackground` | Isolated, lifecycle-aware abstract food atmosphere |
+| `MizPromptPlaceholder` | Configurable localized fade rotation that pauses on interaction |
+| `MizSpatialTransition` | Fade/0.98 scale page transition with reduced-motion fallback |
 
-Feature widgets compose these components; they do not recreate their shape, focus, shadow, or state behavior locally.
+Existing `MizButton`, `MizCard`, `MizTag`, `MizOptionTile`, and Food Profile widgets remain valid. Feature widgets compose the kit and do not recreate its materials locally.
 
-## 3. Generative UI model
+## 3. Home contract
 
-Miz is not a linear chat log. The AI—or the scripted flow before M7—selects the screen mode that best answers the user and supplies a typed payload:
+Home contains exactly five conceptual elements:
 
-`home · conversation · restaurant discovery · food discovery · recommendation · reservation · menu browser · restaurant details · comparison · checkout · tracking · map · settings`
+1. Centered city capsule.
+2. Central AI input.
+3. Send action inside the input.
+4. Exactly three unlabeled circular actions: camera, bookmarks, and profile/settings.
+5. Theme-aware culinary-AI artwork with an approved 20% blur and slow ambient drift.
 
-The mode-selection contract is defined in [`docs/API.md`](API.md). Presentation receives validated typed models, never raw model text or `dynamic` JSON.
+Home has no logo/header, greeting, offer, categories, feed, favorites rail, voice/camera/attachment action inside the field, label under the three actions, or bottom navigation. The composer moves above the keyboard and remains multiline. Empty prompts rotate by fade, pause on focus/typing, and localize through ARB.
 
-## 4. Summary Chip system
+## 4. Spatial navigation
 
-Summary Chips are the main conversational context model:
+There is no persistent bottom navigation or navigation rail. Root actions are contextual on Home. Secondary routes use a floating circular close control, Android system back, and the shared Spatial transition. No non-root Spatial screen uses a standard top-left app-bar arrow; the control placement mirrors with directionality.
 
-- Each answered question collapses into a tappable capsule above the current question.
-- Chips replace a long chat history and remain horizontally scrollable.
-- Tapping a chip reopens that step; all later answers reset with a clear transition.
-- Results retain the choices as an editable filter row.
-- Offline conversation summaries store the same structured choices.
-- The current question uses the most suitable interface—chips, tiles, slider, map, calendar, or form—not repetitive message bubbles.
+Active routes:
 
-## 5. Home is compact and decision-first
+- `/home`
+- `/city`
+- `/chat` (`?q=` is a validated deep-link input; `extra` is used for in-app prompts)
+- `/camera`
+- `/bookmarks`
+- `/profile`
+- `/food-profile`
 
-Home avoids a long vertical dashboard. It presents the current offer first, then the four primary quick actions, followed only by Favorites when available. The persistent composer asks “What do you want to eat?” Home has no greeting hero, popular-cravings section, meal-period chip row, or Nearby rail; nearby browsing belongs in Discovery.
+Existing future routes remain stable and honest coming-soon surfaces.
 
-## 6. Motion model
+## 5. City and privacy states
 
-Motion preserves context:
+No city is assumed on first use. The selector supports manual search/selection, recent cities, a separately stored default city, clearing both selected/default state, and current-location states (`requesting`, `denied`, `unavailable`). Manual selection always works. The device adapter asks for foreground approximate location only after the user taps the control, maps coordinates locally to the nearest supported city within the service radius, and never stores or uploads coordinates.
 
-- Quick action expands into Conversation.
-- Selected answer compresses into the Summary Chip rail.
-- Edited chip expands back into its selection step.
-- Thinking orb contracts into the Results header.
-- Restaurant card image/title transition into Details where performance allows.
-- Menu item feedback travels toward the floating cart summary.
-- Reservation uses a shared-axis step transition with persistent progress.
+## 6. Conversation
 
-Normal interaction and navigation range from 100–420ms. Ambient orb motion is slower and low amplitude. Reduced-motion mode replaces transforms, scale, parallax, and loops with short fades.
+Submitting Home moves into a calmer spatial conversation view. User turns are solid black/white-type objects aligned to the directional end; Miz turns are white/black-type objects aligned to the directional start with a compact red AI marker. Messages have no repetitive copy affordance. Sending dismisses the keyboard and scrolls the newest state into view. The header contains History and New Chat, never a close/X control: both preserve a non-empty current thread in the local archive before leaving or clearing it. Typed service and state boundaries support loading, retry, local history review/deletion, future result saving/opening, new chat, and continued text input. Error objects are specific and actionable: timeout, temporary AI unavailability, rate limit, place-search failure, no results, and location required each have localized copy and the appropriate retry or city-selection action. The UI never presents those runtime failures as “not connected” and never shows provider details.
 
-## 7. Screen inventory
+When AI results exist, food and restaurant responses render as `MizResultCard`-style UI objects and validated typed modes rather than raw model-controlled widget selection.
 
-Onboarding · Home · Conversation · Thinking · Results · Restaurant Details · Discovery (map/list) · Menu Browser and Cart · Reservation · Checkout · Order Tracking · Profile/Settings · Voice mode.
+## 7. Camera
 
-Page-specific composition and states are defined in [`DesignGD.md`](../DesignGD.md) §13–17. Unbuilt milestone routes remain honest “coming soon” screens; a redesign does not fake finished functionality.
+Camera is one shell with Food, Miz QR, and Menu modes. The shared state model covers permission, live, capture, preview, retake, processing, multiple matches, uncertainty, result, invalid/expired QR, denial, unavailable, offline, and error.
 
-## 8. Filling gaps
+- Food recognition offers equal Take photo and Choose photo actions, a preview and explicit upload notice, then renders up to three typed candidates from the secure `analyze-food` adapter with confidence and an image-recognition safety disclaimer.
+- Miz QR uses a real full-frame `mobile_scanner` preview for QR codes and accepts only `miz://v1/{restaurant|table}/…` payloads with safe public tokens, expiry, and signature shape. Invalid/expired codes offer Scan again. Local validation never grants trust; successful format validation still requires the future restaurant/table verification backend.
+- Menu scan opens as the default camera mode. It offers equal, explicit Take photo and Choose photo actions, previews one to four pages, supports review/reorder/delete, and places a plain-language upload notice immediately above Explain menu. Results use readable section and dish cards with printed price, short explanation, dietary tags, possible-allergen warnings, and notes. Unreadable, oversized, unsupported, offline, timeout, and backend failures preserve the captured pages when retry is useful and never claim allergy safety.
 
-When an approved flow lacks a state, the UX role extends Soft Orbit rather than inventing another visual language. Recurring choices are recorded in [`docs/DECISIONS.md`](DECISIONS.md), and both design documents are updated when the pattern becomes part of the system.
+Camera-created temporary captures are deleted by the capture service on removal or controller disposal; gallery originals are never deleted. No image is silently uploaded or persisted by Miz.
 
-Localized copy may expand significantly. Components allow flexible text, avoid fixed text widths, and are checked at 320 logical pixels in German and Farsi as well as English. Brand names and restaurant names keep their authored spelling; navigation, controls, units, cuisine labels, and semantics use the typed localization catalog.
+## 8. Bookmarks and Profile
+
+Bookmarks is one unified, locally persistent saved-items space. It supports restaurants, cafés, foods, menu items, discoveries, and scanned dishes through a single Drift repository. Search and compact top filters replace bottom tabs. The legacy restaurant favorites controller writes to the same repository.
+
+Profile and Settings is one grouped spatial page containing local profile/account status, a Food Profile summary and link, language, appearance, notifications, personalization, location, activity, privacy, help, and account availability. The existing Food Profile remains fully editable and retains its safety-critical separation between allergies, intolerances, restrictions, and taste preferences.
+
+## 9. Motion, performance, and accessibility
+
+Normal interaction/navigation is 100–420ms. Home uses one optimized theme-aware artwork asset at sigma `5.6`, isolated in a `RepaintBoundary`, precached, and paused when inactive/offscreen. Secondary routes reuse the artwork in a static, dimmed state. Foreground surfaces never run backdrop blur. Reduced motion stops drift and removes scale transitions.
+
+All layouts use constraints, SafeArea, keyboard insets, directional APIs, lazy lists, text wrapping, semantic labels, visible non-gesture dismissal, and color-plus-icon/text state communication. Reference QA sizes are 390×844 and 320×720, including Farsi RTL and keyboard-open states.

@@ -4,6 +4,38 @@ Short-form ADRs. Each entry: context → decision → consequences. Newest first
 
 ---
 
+## ADR-021: AI chat runs on Gemini's Interactions API via a `miz-ai` Edge Function, with backend-validated function calling
+
+**Context**: The Spatial chat surface (`ConversationService`) has always been an honest stub — `UnavailableConversationService` throwing until a secure backend exists (docs/API.md §3.2 explicitly anticipated this). The brief called for real Gemini-powered chat with two backend tools (`search_nearby_places` via Google Places, `get_user_food_profile` via the local Food Profile), strictly following "Gemini proposes, backend decides and executes" — Gemini must never reach Google Places, Supabase tables, device location, or private data directly. Both API keys were already provisioned as Supabase Edge Function secrets; no Edge Function infrastructure existed yet in the repo at all.
+**Decision**: New `supabase/functions/miz-ai/` (Deno/TypeScript, no framework, official REST fetch calls only — no Node SDK, for guaranteed Deno compatibility). Verified against live docs rather than guessed: Gemini's **Interactions API** (`POST .../v1beta/interactions`, GA and recommended over legacy `generateContent`) for the model call, and Google **Places API (New)** `searchNearby`/`searchText` for place lookups. `GEMINI_MODEL` is configurable, defaulting to `gemini-3.6-flash` (current, non-preview). The function-calling loop (`gemini_loop.ts`) is bounded to 3 rounds, validates every tool name against a hard allowlist and every argument against a schema before executing (`tools.ts`), and injects trusted location server-side — the `search_nearby_places` argument schema has no latitude/longitude field, so Gemini structurally cannot supply coordinates. On the Flutter side, `ConversationService`/`ConversationModels` were widened (structured request/reply, bounded history, `requiresLocation` flow reusing the existing city picker) and `MizAiService` replaces `UnavailableConversationService` only when Supabase is configured — offline/dev builds and every existing test are unaffected. The client's local (not-yet-Supabase-synced) Food Profile is summarized client-side (`buildFoodProfileAiContext`) and re-validated/clamped server-side rather than trusted verbatim, since no server-side Food Profile table exists yet.
+**Consequences**: Deno and the Supabase CLI are now dev-time dependencies (installed via Homebrew), with `deno fmt`/`deno check`/`deno test` (62 tests, zero live network calls, `fetch` stubbed) as part of the verification loop alongside `flutter analyze`/`flutter test` (111 tests total, 32 new). Rate limiting beyond request-shape limits (body size, history length, tool-round cap, Places result cap, timeouts) is out of scope for this pass — Edge Function isolates are stateless, so a true per-user limit needs external state not built yet; documented honestly in `docs/EDGE_FUNCTIONS.md` rather than oversold. `docs/API.md` §3 now describes this as the live contract instead of the aspirational OpenAI Responses API framing it previously carried. See `docs/EDGE_FUNCTIONS.md` for deployment/testing commands and `docs/SECURITY.md` for the updated secrets/trust-boundary rules.
+
+---
+
+## ADR-020: Current-city lookup uses foreground approximate device location and local service-area matching
+
+**Context**: Spatial City already exposed “Use current location,” but its default adapter always returned unavailable because no OS location plugin or platform permissions existed. Supabase configuration cannot supply a device's GPS position, and uploading raw coordinates merely to choose one of seven supported cities would add unnecessary privacy and network risk.
+**Decision**: Add `geolocator` behind the existing `LocationService` boundary. Request foreground approximate permission only after the explicit user action, acquire one low-accuracy position with a 15-second limit, and match it on-device to the nearest supported city within 120 km using fixed city-center coordinates. Declare only coarse/when-in-use permissions—no background permission—and discard latitude/longitude immediately after matching.
+**Consequences**: Trier, Berlin, Hamburg, Munich, Frankfurt, Cologne, and Düsseldorf can be selected automatically without Supabase or reverse-geocoding traffic. Permission denial, disabled services, plugin errors/timeouts, and positions outside the current service radius return honest existing states and preserve manual selection. Supporting arbitrary cities later requires a typed service-catalog/geocoding contract rather than silently selecting a distant city. This supersedes only ADR-018's statement that the default location adapter is unavailable; its camera and backend-capability decisions remain active.
+
+---
+
+## ADR-019: Unified local saved items extend the existing Drift database at schema v2
+
+**Context**: Restaurant favorites were a session-only `Set<String>`, while the Spatial Bookmarks experience must save restaurants, cafés, foods, menu items, discoveries, and scanned dishes offline. Creating a second persistence system would split favorite state and violate the single-database rule.
+**Decision**: Add a generic `saved_items` table to the existing `AppDatabase` through a non-destructive schema-v1→v2 migration. `BookmarkRepository` is the only persistence boundary. The unified Bookmarks page and compatibility `FavoritesController` both read/write it.
+**Consequences**: Existing Food Profile rows survive the migration; bookmarks sort offline by `saved_at`; remote account sync remains future work with an explicit local-write/server-read conflict rule. Older call sites can keep the favorite controller API while no duplicate bookmark store exists.
+
+---
+
+## ADR-018: Spatial Glass shell with honest device/backend capability adapters
+
+**Context**: The approved redesign replaces dashboard Home with a cinematic intent surface and adds city, conversation, camera, QR, menu scan, bookmarks, and combined profile/settings experiences. The repository has no OS camera/location integration and no secure AI, vision, OCR, or QR-verification backend; fabricated success would be unsafe.
+**Decision**: Spatial Glass supersedes Soft Orbit for the immersive shell. Home contains only city, composer/send, three circular actions, and an abstract food background. Secondary pages use contextual circular dismissal and one spatial route transition. Location, conversation, capture, and analysis are injected interfaces whose default adapters report unavailable. Camera is one typed three-mode state machine; Miz QR is locally shape/expiry validated but always backend-verified before trust.
+**Consequences**: The complete interaction architecture and honest states are testable now without secrets or fake results. Real device/backend adapters can replace providers without rewriting UI. The permanent Home animation is capped at three isolated image layers and secondary pages remain static for performance and test determinism.
+
+---
+
 ## ADR-017: `sqlite3_flutter_libs` pinned to `0.5.42`, not "latest"
 
 **Context**: ADR-014 added `sqlite3_flutter_libs` to bundle the native SQLite library the Drift-backed Food Preference Profile needs on-device. It was initially pinned to `^0.6.0+eol`, pub.dev's "latest" version — but that release is an **empty stub package** (no `android/` Gradle module, no bundled native library at all; its own description says "Not used anymore, update to version 3.x of package:sqlite3 instead"). On a real Android device this caused the app to hang forever on the native splash screen: `bootstrap.dart` awaits opening the database before `runApp`, and with no native SQLite library to load, that await never resolved and no exception ever surfaced (confirmed via `adb logcat`, which showed the Flutter engine endlessly retrying its first frame with no Dart-side error).
@@ -145,3 +177,40 @@ Short-form ADRs. Each entry: context → decision → consequences. Newest first
 **Context**: Could organize `lib/` by technical layer at the top (`presentation/`, `domain/`, `data/` each containing all features) or by feature at the top (each feature containing its own layers).
 **Decision**: Feature-first at the top level (`features/<name>/{data,domain,presentation}`), per the brief's explicit "feature-first architecture" requirement and to keep each feature independently reviewable/removable.
 **Consequences**: Cross-feature shared code must be deliberately promoted to `core/` rather than casually imported across feature boundaries — enforced in `CLAUDE.md` §3.
+## ADR-022: Treat Gemini and tool output as unreliable input behind layered reliability budgets
+
+**Context**: Live use showed two provider behaviors that compile-time schemas cannot prevent: transient Interactions API latency exceeded the former single 20-second deadline, and Gemini invented `get_user_location` even though only two tools were declared. The Edge Function depended too heavily on ideal model behavior, and Flutter collapsed every typed failure into the same unavailable card.
+
+**Decision**: Keep the provider boundary but harden every runtime edge. Gemini and Places now share a 58-second request deadline, each may retry once only for timeout/network/5xx, and the Gemini retry removes history. Tool names use an exact two-name allowlist; argument validation rejects unknown fields, wrong types/enums, duplicates, lengths, and numeric ranges. Unknown tools become function-result errors, missing location becomes a backend-owned structured flag (including explicit handling for invented location aliases), provider envelopes are runtime-validated, tool rounds/results/output are capped, and validated Places results survive a failed final narration. Errors use a stable safe structure and Flutter preserves each code as an actionable localized state. Logs contain only opaque correlation ids and bounded operational metadata.
+
+**Consequences**: Model updates, malformed calls, temporary latency, empty responses, and unexpected steps can no longer directly execute work or crash the request. Retries are deliberately finite and non-transient failures are not retried, controlling both cost and latency. Distributed per-user throttling still requires external shared state and remains a separate future security/reliability change.
+
+---
+
+## ADR-023: Conversation threads archive locally as typed snapshots
+
+**Context**: Conversation was an in-memory transcript with visually identical author surfaces, repeated copy buttons, a close/X action that discarded the thread, and a New Search action that cleared it without history. The composer also kept the keyboard open after send, obscuring the incoming response on a phone.
+
+**Decision**: Give user and Miz turns distinct monochrome author treatments, remove per-message copy controls and the conversation X, dismiss the keyboard and scroll after send, and replace destructive reset behavior with History and New Chat. Non-empty threads are upserted through a feature-owned repository into Drift schema v3 as a typed JSON snapshot; History can review or delete them offline. The archive stores message/place display data only and excludes precise location, profile context, tool traces, debug failures, and secrets.
+
+**Consequences**: Starting a new chat no longer loses the previous thread, and the author/keyboard behavior is immediately understandable. The local archive remains a cache rather than a server source of truth; authenticated cross-device sync and resumable backend conversations remain future work with the documented server-wins/queued-local-write conflict rule.
+
+---
+
+## ADR-024: Menu photos use explicit, ephemeral multimodal analysis
+
+**Context**: The camera shell exposed Menu mode but used unavailable device/analysis adapters and could not explain a real photographed menu. Menu images may contain personal background details, malicious printed instructions, unclear prices, and incomplete allergen information.
+
+**Decision**: Make Menu the default camera mode and use the native camera/gallery picker only after an explicit source tap. Keep one to four pages locally for review, then upload only after the separate Explain menu action and nearby privacy notice. Send bounded inline images to a dedicated `analyze-menu` Edge Function; never persist them in Storage/database or log image/content data. Treat photographed text as untrusted content, disable provider interaction storage, require schema-constrained output plus semantic validation, and expose possible allergens only as uncertain warnings. Do not automatically retry paid image requests.
+
+**Consequences**: Users can understand real menus without exposing Gemini credentials or silently uploading photos, while failures remain retryable and typed. Gallery originals are protected from cleanup. A user-visible manual retry may be needed for transient failures. Food recognition and local QR decoding subsequently shipped under ADR-025; trusted QR verification remains separate.
+
+---
+
+## ADR-025: Food vision is ephemeral; Miz QR decoding is local but trust is remote
+
+**Context**: Food and Miz QR modes were UI-state placeholders. Food capture always called an unavailable adapter, QR showed a decorative frame without decoding camera frames, and an unavailable state in one mode could leak into another. Food photos can reveal background details and cannot prove ingredients or allergy safety. QR payloads can be malicious, expired, forged, or unrelated web links.
+
+**Decision**: Use the existing explicit camera/gallery review pattern for one food photo, uploading only after Identify food to a dedicated bounded `analyze-food` Edge Function. Disable provider storage, exclude image/content data from logs, treat image text as untrusted, return at most three validated candidates, and prohibit ingredient/allergy-safety claims from appearance. Decode only QR format frames locally through `mobile_scanner`; never auto-open arbitrary URLs. Accept only bounded `miz://v1` restaurant/table payloads locally, suppress duplicate detections, and keep signature/publication/table/session verification behind a future trusted backend. Reset capability-specific failures when switching modes.
+
+**Consequences**: Food recognition and the QR camera are real device capabilities with accurate localized result/error states. No Gemini or signing secret reaches Flutter, no photo is retained, and a malformed model candidate cannot control UI. A locally valid Miz QR still cannot navigate until the restaurant backend supplies authoritative signed records; the app reports that limitation as verification unavailable, never camera unavailable or verified.

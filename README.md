@@ -6,7 +6,7 @@ Miz is not a chatbot bolted onto a food app. It's a conversation-driven, UI-firs
 
 ## Status
 
-M0 and M1 are complete. The current product-design migration adopts the rounded Soft Orbit system before Milestone 2 (Conversation + Summary Chips) begins. See [`docs/ROADMAP.md`](docs/ROADMAP.md) for milestone status.
+M0 and M1 are complete. The current product shell uses Miz Spatial Glass: focused AI Home, contextual navigation, city selection, persistent saved items and local chat history, combined profile/settings, and honest conversation/camera capability boundaries. See [`docs/ROADMAP.md`](docs/ROADMAP.md) for remote-feature milestone status.
 
 ## Stack
 
@@ -30,10 +30,11 @@ Read these **before** touching code — see [`CONTRIBUTING.md`](CONTRIBUTING.md)
 - [`log.md`](log.md) — append-only numbered summaries of repository changes made by agents
 - [`docs/PRD.md`](docs/PRD.md) — product requirements, personas, success metrics
 - [`docs/DESIGN.md`](docs/DESIGN.md) — design system, Generative UI, Summary Chips
-- [`DesignGD.md`](DesignGD.md) — approved Soft Orbit execution specification and page-level redesign direction
+- [`DesignGD.md`](DesignGD.md) — approved Miz Spatial Glass execution specification and page-level direction
 - [`docs/ARCHITECTURE.md`](docs/ARCHITECTURE.md) — layering, folder structure, scalability
 - [`docs/LOCALIZATION.md`](docs/LOCALIZATION.md) — language catalog, RTL/LTR rules, adding locales
 - [`docs/DATABASE.md`](docs/DATABASE.md) — Supabase schema and RLS
+- [`docs/SUPABASE_SETUP.md`](docs/SUPABASE_SETUP.md) — connect or replace a Supabase project safely
 - [`docs/API.md`](docs/API.md) — Mizzz independence contract, OpenAI integration contract
 - [`docs/ROADMAP.md`](docs/ROADMAP.md) — milestones
 - [`docs/LINEAR_BACKLOG.md`](docs/LINEAR_BACKLOG.md) — epics/tasks (mirrors Linear project "Miz")
@@ -48,7 +49,16 @@ Read these **before** touching code — see [`CONTRIBUTING.md`](CONTRIBUTING.md)
 
 ```bash
 flutter pub get
-flutter run --dart-define-from-file=.env.json   # see docs/SECURITY.md for .env.json shape
+cp .env.example.json .env.json                  # first setup only; add local values
+flutter run --dart-define-from-file=.env.json
+```
+
+The local `.env.json` is ignored by git. Supabase initializes only when both required values are present; see [`docs/DEPLOYMENT.md`](docs/DEPLOYMENT.md).
+
+Validate a new project's URL and publishable key without printing the key:
+
+```bash
+dart run tool/verify_supabase_config.dart
 ```
 
 Run tests:

@@ -2,7 +2,9 @@
 
 Related: [`docs/ARCHITECTURE.md`](ARCHITECTURE.md) §6–7, [`docs/SECURITY.md`](SECURITY.md), [`AGENTS.md`](../AGENTS.md) (Supabase Agent, Database Agent). For the local Food Preference Profile database, see "Local database (Drift)" below.
 
-This is the target schema for when features move off mock data (Milestone 6 onward). Nothing here is provisioned yet — no live Supabase project exists as of this writing. Table shapes are derived directly from the entities the approved prototype already uses, so the mock repositories in early milestones map cleanly onto these tables later.
+This is the target schema for when features move off mock data (Milestone 6 onward). A live Supabase project is now configured at build time and the Flutter client initializes it, but the schema below has not been claimed as provisioned or production-ready. No feature may query a table until its migration and explicit RLS policies are reviewed. Table shapes are derived directly from the entities the approved prototype already uses, so the mock repositories in early milestones map cleanly onto these tables later.
+
+The shared Central Food Catalog is intentionally not duplicated in this Miz database. Mizzz owns the existing canonical `catalog.items` schema and its controlled observation/proposal/audit pipeline. Miz AI accesses only verified, non-archived records through the versioned server-side HTTP/RPC contract documented in `docs/API.md` §2.1; neither this Flutter client nor local Drift writes the trusted catalog.
 
 ## Conventions
 
@@ -124,7 +126,7 @@ RLS: owner only.
 
 ## Local database (Drift)
 
-Unlike everything above, this is **live today** — `lib/core/database/`, SQLite via `drift`/`sqlite3_flutter_libs`, opened once in `bootstrap.dart` before `runApp` (see `docs/ARCHITECTURE.md` §6). It backs the Food Preference Profile: onboarding answers, the editable Settings → Food Profile section, and local interaction tracking. No account/auth exists yet, so every table carries `local_user_id` (always `kLocalUserId = 1` today — see ADR-013) rather than a Supabase `user_id`, keeping a future multi-account migration additive instead of a rewrite. All enum-shaped columns store the Dart enum's stable `.name` string, never an integer index (`lib/features/food_profile/domain/food_profile_enums.dart`), so reordering an enum's declaration order can never corrupt stored data.
+Unlike everything above, this is **live today** — `lib/core/database/`, SQLite via `drift`/`sqlite3_flutter_libs`, opened once in `bootstrap.dart` before `runApp` (see `docs/ARCHITECTURE.md` §6). One database backs the Food Preference Profile, local interaction tracking, and unified saved items; there is no second bookmark store. No account/auth exists yet, so every user-owned table carries `local_user_id` (always `kLocalUserId = 1` today — see ADR-013) rather than a Supabase `user_id`, keeping a future multi-account migration additive instead of a rewrite. All enum-shaped columns store the Dart enum's stable `.name` string, never an integer index, so reordering an enum's declaration order can never corrupt stored data.
 
 ### Profile & rules
 - **`food_profiles`** — one row per local user. `diet_type`, `onboarding_status` (`notStarted`/`inProgress`/`completed`/`skipped`), `onboarding_step`, `onboarding_version`, `personalization_enabled`, `profile_completeness` (0.0–1.0, see `ProfileCompletenessService`), `adventurousness_level`, `preferred_meal_weight`, `budget_level`, `top_priorities` (JSON-encoded list), `completed_at`/`skipped_at`.
@@ -143,13 +145,22 @@ Unlike everything above, this is **live today** — `lib/core/database/`, SQLite
 - **`user_hidden_entities`** — foods/restaurants the user explicitly hid, surfaced back in Settings → Food Profile → Hidden foods.
 - **`profile_change_history`** — append-only audit trail of explicit profile edits (`section`, `source`, `changed_at`), not of every keystroke.
 
+### Unified saved items
+- **`saved_items`** — schema-v2 local-first bookmarks keyed by (`local_user_id`, `item_type`, `item_id`) with `title`, optional `subtitle`/`image_asset`/`metadata_json`, and `saved_at`. `item_type` supports `restaurant`, `cafe`, `food`, `menuItem`, `discovery`, and `scannedDish`. The unified Bookmarks page and the legacy restaurant favorites controller both use `BookmarkRepository`; no parallel preference/set store exists.
+- Conflict rule when remote sync arrives: a local save/remove is applied immediately; queued mutations replay to the authenticated user's server rows. Server state wins on a later full read-sync unless a newer queued local mutation for the same composite key still exists.
+
+### Local conversation archive
+- **`conversation_archives`** — schema-v3 offline snapshots keyed by (`local_user_id`, `id`) with a first-user-message `title`, typed `messages_json`, optional backend `remote_conversation_id`, and `created_at`/`updated_at`. A non-empty thread is upserted when the user opens History, starts a new chat, or leaves through system navigation; empty canvases are never stored.
+- The JSON payload is owned by `DriftConversationHistoryRepository` and round-trips only typed `ConversationMessage`/`AiPlace` models. Precise device coordinates, food-profile context, provider tool traces, debug errors, and API keys are never persisted in an archive.
+- Archives are local-only today. When authenticated sync is introduced, server state wins on a completed read-sync unless a newer local snapshot for the same id is queued; deletion must sync as a tombstone before removing the queue entry.
+
 ### The safety-critical separation (`restriction_type` vs. `preference_state`)
 Every ingredient/food-rule row carries **two independent axes**, never conflated:
 - `preference_state` (`love`/`like`/`neutral`/`dislike`/`curious`/`neverTried`/`unknown`) — taste only, ranking-only, never blocks a food.
 - `restriction_type` (`none`/`strictExclude`/`dietaryExclude`/`ethicalExclude`/`religiousExclude`/`intolerance`/`allergy`) — safety/eligibility only. `FoodEligibilityService` (`lib/features/food_profile/domain/food_eligibility_service.dart`) reads *only* this axis (plus the dedicated `user_allergies`/`food_rules` tables) to decide `eligible`/`excluded`/`warning`/`unknown` — a "dislike" can never exclude a food, and an allergy can never be stored as a mere dislike.
 
 ### Seeding & migrations
-`lib/core/database/seed/seed_runner.dart` runs inside `AppDatabase`'s `onCreate` migration step, wrapped in one transaction, idempotent (select-or-insert keyed by each row's stable `code` — running it twice never duplicates rows, covered by `test/core/database/app_database_test.dart`). `schemaVersion` starts at `1` (no prior schema exists, so there's no destructive-migration risk yet); future bumps follow Drift's stepped `onUpgrade` and must never drop a user's existing rows (CLAUDE.md non-negotiables). Three custom indexes are created alongside the tables: `user_food_interactions (local_user_id, occurred_at desc)`, `user_food_interactions (entity_type, entity_id)`, `ingredients (parent_id)` — the hot paths for activity history and resolving the ingredient hierarchy.
+`lib/core/database/seed/seed_runner.dart` runs inside `AppDatabase`'s `onCreate` migration step, wrapped in one transaction and idempotent. Schema v2 creates only `saved_items` and its time index; schema v3 creates only `conversation_archives` and its user/time index, preserving every prior Food Profile and saved-item row. Future bumps follow Drift's stepped `onUpgrade` and must never drop user rows. Existing indexes cover interaction history/entity lookup, ingredient hierarchy, saved-item sorting, and conversation-history sorting.
 
 ### Local user model
 No login is required to use the app. `kLocalUserId` (`lib/core/database/local_user.dart`) is a fixed constant today; every table's `local_user_id` column exists so that adding real accounts later is a migration (populate real user ids, add a `remote_user_id`/`sync_status` column) rather than a schema rewrite — see ADR-013.

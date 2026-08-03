@@ -2,6 +2,8 @@
 
 Related: [`docs/LINEAR_BACKLOG.md`](LINEAR_BACKLOG.md) (Epic M9), [`docs/SECURITY.md`](SECURITY.md).
 
+For the complete new-project checklist and Dashboard settings, see [`docs/SUPABASE_SETUP.md`](SUPABASE_SETUP.md). For the `miz-ai`, `analyze-food`, and `analyze-menu` Edge Functions (structure, secrets, local dev, deploy, manual test steps), see [`docs/EDGE_FUNCTIONS.md`](EDGE_FUNCTIONS.md).
+
 ## Environments
 
 | Env | Purpose | Config source |
@@ -11,6 +13,16 @@ Related: [`docs/LINEAR_BACKLOG.md`](LINEAR_BACKLOG.md) (Epic M9), [`docs/SECURIT
 | Production | Live app | CI secret store, restricted access |
 
 No environment shares a Supabase project with another — staging data must never leak into or be confused with production data.
+
+Create local configuration from the committed placeholder, fill it with the client-safe project values, and pass it at run/build time:
+
+```bash
+cp .env.example.json .env.json
+flutter run --dart-define-from-file=.env.json
+flutter build apk --debug --dart-define-from-file=.env.json
+```
+
+`AppConfig` accepts Supabase only when `SUPABASE_URL` and `SUPABASE_PUBLISHABLE_KEY` are both present and the URL uses HTTPS. The legacy `SUPABASE_ANON_KEY` name remains accepted for older local/CI configuration. Builds with neither value remain supported for tests and honest offline/unavailable feature adapters; a partial or malformed configuration fails during bootstrap instead of silently targeting the wrong backend.
 
 ## Build flavors
 

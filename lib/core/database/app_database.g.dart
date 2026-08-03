@@ -10509,6 +10509,1015 @@ class ProfileChangeHistoryCompanion
   }
 }
 
+class $SavedItemsTable extends SavedItems
+    with TableInfo<$SavedItemsTable, SavedItem> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $SavedItemsTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _localUserIdMeta = const VerificationMeta(
+    'localUserId',
+  );
+  @override
+  late final GeneratedColumn<int> localUserId = GeneratedColumn<int>(
+    'local_user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _itemTypeMeta = const VerificationMeta(
+    'itemType',
+  );
+  @override
+  late final GeneratedColumn<String> itemType = GeneratedColumn<String>(
+    'item_type',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _itemIdMeta = const VerificationMeta('itemId');
+  @override
+  late final GeneratedColumn<String> itemId = GeneratedColumn<String>(
+    'item_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _subtitleMeta = const VerificationMeta(
+    'subtitle',
+  );
+  @override
+  late final GeneratedColumn<String> subtitle = GeneratedColumn<String>(
+    'subtitle',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _imageAssetMeta = const VerificationMeta(
+    'imageAsset',
+  );
+  @override
+  late final GeneratedColumn<String> imageAsset = GeneratedColumn<String>(
+    'image_asset',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _metadataJsonMeta = const VerificationMeta(
+    'metadataJson',
+  );
+  @override
+  late final GeneratedColumn<String> metadataJson = GeneratedColumn<String>(
+    'metadata_json',
+    aliasedName,
+    true,
+    type: DriftSqlType.string,
+    requiredDuringInsert: false,
+  );
+  static const VerificationMeta _savedAtMeta = const VerificationMeta(
+    'savedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> savedAt = GeneratedColumn<DateTime>(
+    'saved_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: false,
+    defaultValue: currentDateAndTime,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    localUserId,
+    itemType,
+    itemId,
+    title,
+    subtitle,
+    imageAsset,
+    metadataJson,
+    savedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'saved_items';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<SavedItem> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('local_user_id')) {
+      context.handle(
+        _localUserIdMeta,
+        localUserId.isAcceptableOrUnknown(
+          data['local_user_id']!,
+          _localUserIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('item_type')) {
+      context.handle(
+        _itemTypeMeta,
+        itemType.isAcceptableOrUnknown(data['item_type']!, _itemTypeMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_itemTypeMeta);
+    }
+    if (data.containsKey('item_id')) {
+      context.handle(
+        _itemIdMeta,
+        itemId.isAcceptableOrUnknown(data['item_id']!, _itemIdMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_itemIdMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('subtitle')) {
+      context.handle(
+        _subtitleMeta,
+        subtitle.isAcceptableOrUnknown(data['subtitle']!, _subtitleMeta),
+      );
+    }
+    if (data.containsKey('image_asset')) {
+      context.handle(
+        _imageAssetMeta,
+        imageAsset.isAcceptableOrUnknown(data['image_asset']!, _imageAssetMeta),
+      );
+    }
+    if (data.containsKey('metadata_json')) {
+      context.handle(
+        _metadataJsonMeta,
+        metadataJson.isAcceptableOrUnknown(
+          data['metadata_json']!,
+          _metadataJsonMeta,
+        ),
+      );
+    }
+    if (data.containsKey('saved_at')) {
+      context.handle(
+        _savedAtMeta,
+        savedAt.isAcceptableOrUnknown(data['saved_at']!, _savedAtMeta),
+      );
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {localUserId, itemType, itemId};
+  @override
+  SavedItem map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return SavedItem(
+      localUserId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}local_user_id'],
+      )!,
+      itemType: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}item_type'],
+      )!,
+      itemId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}item_id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      subtitle: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}subtitle'],
+      ),
+      imageAsset: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}image_asset'],
+      ),
+      metadataJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}metadata_json'],
+      ),
+      savedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}saved_at'],
+      )!,
+    );
+  }
+
+  @override
+  $SavedItemsTable createAlias(String alias) {
+    return $SavedItemsTable(attachedDatabase, alias);
+  }
+}
+
+class SavedItem extends DataClass implements Insertable<SavedItem> {
+  final int localUserId;
+  final String itemType;
+  final String itemId;
+  final String title;
+  final String? subtitle;
+  final String? imageAsset;
+  final String? metadataJson;
+  final DateTime savedAt;
+  const SavedItem({
+    required this.localUserId,
+    required this.itemType,
+    required this.itemId,
+    required this.title,
+    this.subtitle,
+    this.imageAsset,
+    this.metadataJson,
+    required this.savedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['local_user_id'] = Variable<int>(localUserId);
+    map['item_type'] = Variable<String>(itemType);
+    map['item_id'] = Variable<String>(itemId);
+    map['title'] = Variable<String>(title);
+    if (!nullToAbsent || subtitle != null) {
+      map['subtitle'] = Variable<String>(subtitle);
+    }
+    if (!nullToAbsent || imageAsset != null) {
+      map['image_asset'] = Variable<String>(imageAsset);
+    }
+    if (!nullToAbsent || metadataJson != null) {
+      map['metadata_json'] = Variable<String>(metadataJson);
+    }
+    map['saved_at'] = Variable<DateTime>(savedAt);
+    return map;
+  }
+
+  SavedItemsCompanion toCompanion(bool nullToAbsent) {
+    return SavedItemsCompanion(
+      localUserId: Value(localUserId),
+      itemType: Value(itemType),
+      itemId: Value(itemId),
+      title: Value(title),
+      subtitle: subtitle == null && nullToAbsent
+          ? const Value.absent()
+          : Value(subtitle),
+      imageAsset: imageAsset == null && nullToAbsent
+          ? const Value.absent()
+          : Value(imageAsset),
+      metadataJson: metadataJson == null && nullToAbsent
+          ? const Value.absent()
+          : Value(metadataJson),
+      savedAt: Value(savedAt),
+    );
+  }
+
+  factory SavedItem.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return SavedItem(
+      localUserId: serializer.fromJson<int>(json['localUserId']),
+      itemType: serializer.fromJson<String>(json['itemType']),
+      itemId: serializer.fromJson<String>(json['itemId']),
+      title: serializer.fromJson<String>(json['title']),
+      subtitle: serializer.fromJson<String?>(json['subtitle']),
+      imageAsset: serializer.fromJson<String?>(json['imageAsset']),
+      metadataJson: serializer.fromJson<String?>(json['metadataJson']),
+      savedAt: serializer.fromJson<DateTime>(json['savedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'localUserId': serializer.toJson<int>(localUserId),
+      'itemType': serializer.toJson<String>(itemType),
+      'itemId': serializer.toJson<String>(itemId),
+      'title': serializer.toJson<String>(title),
+      'subtitle': serializer.toJson<String?>(subtitle),
+      'imageAsset': serializer.toJson<String?>(imageAsset),
+      'metadataJson': serializer.toJson<String?>(metadataJson),
+      'savedAt': serializer.toJson<DateTime>(savedAt),
+    };
+  }
+
+  SavedItem copyWith({
+    int? localUserId,
+    String? itemType,
+    String? itemId,
+    String? title,
+    Value<String?> subtitle = const Value.absent(),
+    Value<String?> imageAsset = const Value.absent(),
+    Value<String?> metadataJson = const Value.absent(),
+    DateTime? savedAt,
+  }) => SavedItem(
+    localUserId: localUserId ?? this.localUserId,
+    itemType: itemType ?? this.itemType,
+    itemId: itemId ?? this.itemId,
+    title: title ?? this.title,
+    subtitle: subtitle.present ? subtitle.value : this.subtitle,
+    imageAsset: imageAsset.present ? imageAsset.value : this.imageAsset,
+    metadataJson: metadataJson.present ? metadataJson.value : this.metadataJson,
+    savedAt: savedAt ?? this.savedAt,
+  );
+  SavedItem copyWithCompanion(SavedItemsCompanion data) {
+    return SavedItem(
+      localUserId: data.localUserId.present
+          ? data.localUserId.value
+          : this.localUserId,
+      itemType: data.itemType.present ? data.itemType.value : this.itemType,
+      itemId: data.itemId.present ? data.itemId.value : this.itemId,
+      title: data.title.present ? data.title.value : this.title,
+      subtitle: data.subtitle.present ? data.subtitle.value : this.subtitle,
+      imageAsset: data.imageAsset.present
+          ? data.imageAsset.value
+          : this.imageAsset,
+      metadataJson: data.metadataJson.present
+          ? data.metadataJson.value
+          : this.metadataJson,
+      savedAt: data.savedAt.present ? data.savedAt.value : this.savedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SavedItem(')
+          ..write('localUserId: $localUserId, ')
+          ..write('itemType: $itemType, ')
+          ..write('itemId: $itemId, ')
+          ..write('title: $title, ')
+          ..write('subtitle: $subtitle, ')
+          ..write('imageAsset: $imageAsset, ')
+          ..write('metadataJson: $metadataJson, ')
+          ..write('savedAt: $savedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    localUserId,
+    itemType,
+    itemId,
+    title,
+    subtitle,
+    imageAsset,
+    metadataJson,
+    savedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is SavedItem &&
+          other.localUserId == this.localUserId &&
+          other.itemType == this.itemType &&
+          other.itemId == this.itemId &&
+          other.title == this.title &&
+          other.subtitle == this.subtitle &&
+          other.imageAsset == this.imageAsset &&
+          other.metadataJson == this.metadataJson &&
+          other.savedAt == this.savedAt);
+}
+
+class SavedItemsCompanion extends UpdateCompanion<SavedItem> {
+  final Value<int> localUserId;
+  final Value<String> itemType;
+  final Value<String> itemId;
+  final Value<String> title;
+  final Value<String?> subtitle;
+  final Value<String?> imageAsset;
+  final Value<String?> metadataJson;
+  final Value<DateTime> savedAt;
+  final Value<int> rowid;
+  const SavedItemsCompanion({
+    this.localUserId = const Value.absent(),
+    this.itemType = const Value.absent(),
+    this.itemId = const Value.absent(),
+    this.title = const Value.absent(),
+    this.subtitle = const Value.absent(),
+    this.imageAsset = const Value.absent(),
+    this.metadataJson = const Value.absent(),
+    this.savedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  SavedItemsCompanion.insert({
+    this.localUserId = const Value.absent(),
+    required String itemType,
+    required String itemId,
+    required String title,
+    this.subtitle = const Value.absent(),
+    this.imageAsset = const Value.absent(),
+    this.metadataJson = const Value.absent(),
+    this.savedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  }) : itemType = Value(itemType),
+       itemId = Value(itemId),
+       title = Value(title);
+  static Insertable<SavedItem> custom({
+    Expression<int>? localUserId,
+    Expression<String>? itemType,
+    Expression<String>? itemId,
+    Expression<String>? title,
+    Expression<String>? subtitle,
+    Expression<String>? imageAsset,
+    Expression<String>? metadataJson,
+    Expression<DateTime>? savedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (localUserId != null) 'local_user_id': localUserId,
+      if (itemType != null) 'item_type': itemType,
+      if (itemId != null) 'item_id': itemId,
+      if (title != null) 'title': title,
+      if (subtitle != null) 'subtitle': subtitle,
+      if (imageAsset != null) 'image_asset': imageAsset,
+      if (metadataJson != null) 'metadata_json': metadataJson,
+      if (savedAt != null) 'saved_at': savedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  SavedItemsCompanion copyWith({
+    Value<int>? localUserId,
+    Value<String>? itemType,
+    Value<String>? itemId,
+    Value<String>? title,
+    Value<String?>? subtitle,
+    Value<String?>? imageAsset,
+    Value<String?>? metadataJson,
+    Value<DateTime>? savedAt,
+    Value<int>? rowid,
+  }) {
+    return SavedItemsCompanion(
+      localUserId: localUserId ?? this.localUserId,
+      itemType: itemType ?? this.itemType,
+      itemId: itemId ?? this.itemId,
+      title: title ?? this.title,
+      subtitle: subtitle ?? this.subtitle,
+      imageAsset: imageAsset ?? this.imageAsset,
+      metadataJson: metadataJson ?? this.metadataJson,
+      savedAt: savedAt ?? this.savedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (localUserId.present) {
+      map['local_user_id'] = Variable<int>(localUserId.value);
+    }
+    if (itemType.present) {
+      map['item_type'] = Variable<String>(itemType.value);
+    }
+    if (itemId.present) {
+      map['item_id'] = Variable<String>(itemId.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (subtitle.present) {
+      map['subtitle'] = Variable<String>(subtitle.value);
+    }
+    if (imageAsset.present) {
+      map['image_asset'] = Variable<String>(imageAsset.value);
+    }
+    if (metadataJson.present) {
+      map['metadata_json'] = Variable<String>(metadataJson.value);
+    }
+    if (savedAt.present) {
+      map['saved_at'] = Variable<DateTime>(savedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('SavedItemsCompanion(')
+          ..write('localUserId: $localUserId, ')
+          ..write('itemType: $itemType, ')
+          ..write('itemId: $itemId, ')
+          ..write('title: $title, ')
+          ..write('subtitle: $subtitle, ')
+          ..write('imageAsset: $imageAsset, ')
+          ..write('metadataJson: $metadataJson, ')
+          ..write('savedAt: $savedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
+class $ConversationArchivesTable extends ConversationArchives
+    with TableInfo<$ConversationArchivesTable, ConversationArchive> {
+  @override
+  final GeneratedDatabase attachedDatabase;
+  final String? _alias;
+  $ConversationArchivesTable(this.attachedDatabase, [this._alias]);
+  static const VerificationMeta _localUserIdMeta = const VerificationMeta(
+    'localUserId',
+  );
+  @override
+  late final GeneratedColumn<int> localUserId = GeneratedColumn<int>(
+    'local_user_id',
+    aliasedName,
+    false,
+    type: DriftSqlType.int,
+    requiredDuringInsert: false,
+    defaultValue: const Constant(1),
+  );
+  static const VerificationMeta _idMeta = const VerificationMeta('id');
+  @override
+  late final GeneratedColumn<String> id = GeneratedColumn<String>(
+    'id',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _titleMeta = const VerificationMeta('title');
+  @override
+  late final GeneratedColumn<String> title = GeneratedColumn<String>(
+    'title',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _messagesJsonMeta = const VerificationMeta(
+    'messagesJson',
+  );
+  @override
+  late final GeneratedColumn<String> messagesJson = GeneratedColumn<String>(
+    'messages_json',
+    aliasedName,
+    false,
+    type: DriftSqlType.string,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _remoteConversationIdMeta =
+      const VerificationMeta('remoteConversationId');
+  @override
+  late final GeneratedColumn<String> remoteConversationId =
+      GeneratedColumn<String>(
+        'remote_conversation_id',
+        aliasedName,
+        true,
+        type: DriftSqlType.string,
+        requiredDuringInsert: false,
+      );
+  static const VerificationMeta _createdAtMeta = const VerificationMeta(
+    'createdAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> createdAt = GeneratedColumn<DateTime>(
+    'created_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  static const VerificationMeta _updatedAtMeta = const VerificationMeta(
+    'updatedAt',
+  );
+  @override
+  late final GeneratedColumn<DateTime> updatedAt = GeneratedColumn<DateTime>(
+    'updated_at',
+    aliasedName,
+    false,
+    type: DriftSqlType.dateTime,
+    requiredDuringInsert: true,
+  );
+  @override
+  List<GeneratedColumn> get $columns => [
+    localUserId,
+    id,
+    title,
+    messagesJson,
+    remoteConversationId,
+    createdAt,
+    updatedAt,
+  ];
+  @override
+  String get aliasedName => _alias ?? actualTableName;
+  @override
+  String get actualTableName => $name;
+  static const String $name = 'conversation_archives';
+  @override
+  VerificationContext validateIntegrity(
+    Insertable<ConversationArchive> instance, {
+    bool isInserting = false,
+  }) {
+    final context = VerificationContext();
+    final data = instance.toColumns(true);
+    if (data.containsKey('local_user_id')) {
+      context.handle(
+        _localUserIdMeta,
+        localUserId.isAcceptableOrUnknown(
+          data['local_user_id']!,
+          _localUserIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('id')) {
+      context.handle(_idMeta, id.isAcceptableOrUnknown(data['id']!, _idMeta));
+    } else if (isInserting) {
+      context.missing(_idMeta);
+    }
+    if (data.containsKey('title')) {
+      context.handle(
+        _titleMeta,
+        title.isAcceptableOrUnknown(data['title']!, _titleMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_titleMeta);
+    }
+    if (data.containsKey('messages_json')) {
+      context.handle(
+        _messagesJsonMeta,
+        messagesJson.isAcceptableOrUnknown(
+          data['messages_json']!,
+          _messagesJsonMeta,
+        ),
+      );
+    } else if (isInserting) {
+      context.missing(_messagesJsonMeta);
+    }
+    if (data.containsKey('remote_conversation_id')) {
+      context.handle(
+        _remoteConversationIdMeta,
+        remoteConversationId.isAcceptableOrUnknown(
+          data['remote_conversation_id']!,
+          _remoteConversationIdMeta,
+        ),
+      );
+    }
+    if (data.containsKey('created_at')) {
+      context.handle(
+        _createdAtMeta,
+        createdAt.isAcceptableOrUnknown(data['created_at']!, _createdAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_createdAtMeta);
+    }
+    if (data.containsKey('updated_at')) {
+      context.handle(
+        _updatedAtMeta,
+        updatedAt.isAcceptableOrUnknown(data['updated_at']!, _updatedAtMeta),
+      );
+    } else if (isInserting) {
+      context.missing(_updatedAtMeta);
+    }
+    return context;
+  }
+
+  @override
+  Set<GeneratedColumn> get $primaryKey => {localUserId, id};
+  @override
+  ConversationArchive map(Map<String, dynamic> data, {String? tablePrefix}) {
+    final effectivePrefix = tablePrefix != null ? '$tablePrefix.' : '';
+    return ConversationArchive(
+      localUserId: attachedDatabase.typeMapping.read(
+        DriftSqlType.int,
+        data['${effectivePrefix}local_user_id'],
+      )!,
+      id: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}id'],
+      )!,
+      title: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}title'],
+      )!,
+      messagesJson: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}messages_json'],
+      )!,
+      remoteConversationId: attachedDatabase.typeMapping.read(
+        DriftSqlType.string,
+        data['${effectivePrefix}remote_conversation_id'],
+      ),
+      createdAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}created_at'],
+      )!,
+      updatedAt: attachedDatabase.typeMapping.read(
+        DriftSqlType.dateTime,
+        data['${effectivePrefix}updated_at'],
+      )!,
+    );
+  }
+
+  @override
+  $ConversationArchivesTable createAlias(String alias) {
+    return $ConversationArchivesTable(attachedDatabase, alias);
+  }
+}
+
+class ConversationArchive extends DataClass
+    implements Insertable<ConversationArchive> {
+  final int localUserId;
+  final String id;
+  final String title;
+  final String messagesJson;
+  final String? remoteConversationId;
+  final DateTime createdAt;
+  final DateTime updatedAt;
+  const ConversationArchive({
+    required this.localUserId,
+    required this.id,
+    required this.title,
+    required this.messagesJson,
+    this.remoteConversationId,
+    required this.createdAt,
+    required this.updatedAt,
+  });
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    map['local_user_id'] = Variable<int>(localUserId);
+    map['id'] = Variable<String>(id);
+    map['title'] = Variable<String>(title);
+    map['messages_json'] = Variable<String>(messagesJson);
+    if (!nullToAbsent || remoteConversationId != null) {
+      map['remote_conversation_id'] = Variable<String>(remoteConversationId);
+    }
+    map['created_at'] = Variable<DateTime>(createdAt);
+    map['updated_at'] = Variable<DateTime>(updatedAt);
+    return map;
+  }
+
+  ConversationArchivesCompanion toCompanion(bool nullToAbsent) {
+    return ConversationArchivesCompanion(
+      localUserId: Value(localUserId),
+      id: Value(id),
+      title: Value(title),
+      messagesJson: Value(messagesJson),
+      remoteConversationId: remoteConversationId == null && nullToAbsent
+          ? const Value.absent()
+          : Value(remoteConversationId),
+      createdAt: Value(createdAt),
+      updatedAt: Value(updatedAt),
+    );
+  }
+
+  factory ConversationArchive.fromJson(
+    Map<String, dynamic> json, {
+    ValueSerializer? serializer,
+  }) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return ConversationArchive(
+      localUserId: serializer.fromJson<int>(json['localUserId']),
+      id: serializer.fromJson<String>(json['id']),
+      title: serializer.fromJson<String>(json['title']),
+      messagesJson: serializer.fromJson<String>(json['messagesJson']),
+      remoteConversationId: serializer.fromJson<String?>(
+        json['remoteConversationId'],
+      ),
+      createdAt: serializer.fromJson<DateTime>(json['createdAt']),
+      updatedAt: serializer.fromJson<DateTime>(json['updatedAt']),
+    );
+  }
+  @override
+  Map<String, dynamic> toJson({ValueSerializer? serializer}) {
+    serializer ??= driftRuntimeOptions.defaultSerializer;
+    return <String, dynamic>{
+      'localUserId': serializer.toJson<int>(localUserId),
+      'id': serializer.toJson<String>(id),
+      'title': serializer.toJson<String>(title),
+      'messagesJson': serializer.toJson<String>(messagesJson),
+      'remoteConversationId': serializer.toJson<String?>(remoteConversationId),
+      'createdAt': serializer.toJson<DateTime>(createdAt),
+      'updatedAt': serializer.toJson<DateTime>(updatedAt),
+    };
+  }
+
+  ConversationArchive copyWith({
+    int? localUserId,
+    String? id,
+    String? title,
+    String? messagesJson,
+    Value<String?> remoteConversationId = const Value.absent(),
+    DateTime? createdAt,
+    DateTime? updatedAt,
+  }) => ConversationArchive(
+    localUserId: localUserId ?? this.localUserId,
+    id: id ?? this.id,
+    title: title ?? this.title,
+    messagesJson: messagesJson ?? this.messagesJson,
+    remoteConversationId: remoteConversationId.present
+        ? remoteConversationId.value
+        : this.remoteConversationId,
+    createdAt: createdAt ?? this.createdAt,
+    updatedAt: updatedAt ?? this.updatedAt,
+  );
+  ConversationArchive copyWithCompanion(ConversationArchivesCompanion data) {
+    return ConversationArchive(
+      localUserId: data.localUserId.present
+          ? data.localUserId.value
+          : this.localUserId,
+      id: data.id.present ? data.id.value : this.id,
+      title: data.title.present ? data.title.value : this.title,
+      messagesJson: data.messagesJson.present
+          ? data.messagesJson.value
+          : this.messagesJson,
+      remoteConversationId: data.remoteConversationId.present
+          ? data.remoteConversationId.value
+          : this.remoteConversationId,
+      createdAt: data.createdAt.present ? data.createdAt.value : this.createdAt,
+      updatedAt: data.updatedAt.present ? data.updatedAt.value : this.updatedAt,
+    );
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ConversationArchive(')
+          ..write('localUserId: $localUserId, ')
+          ..write('id: $id, ')
+          ..write('title: $title, ')
+          ..write('messagesJson: $messagesJson, ')
+          ..write('remoteConversationId: $remoteConversationId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt')
+          ..write(')'))
+        .toString();
+  }
+
+  @override
+  int get hashCode => Object.hash(
+    localUserId,
+    id,
+    title,
+    messagesJson,
+    remoteConversationId,
+    createdAt,
+    updatedAt,
+  );
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ConversationArchive &&
+          other.localUserId == this.localUserId &&
+          other.id == this.id &&
+          other.title == this.title &&
+          other.messagesJson == this.messagesJson &&
+          other.remoteConversationId == this.remoteConversationId &&
+          other.createdAt == this.createdAt &&
+          other.updatedAt == this.updatedAt);
+}
+
+class ConversationArchivesCompanion
+    extends UpdateCompanion<ConversationArchive> {
+  final Value<int> localUserId;
+  final Value<String> id;
+  final Value<String> title;
+  final Value<String> messagesJson;
+  final Value<String?> remoteConversationId;
+  final Value<DateTime> createdAt;
+  final Value<DateTime> updatedAt;
+  final Value<int> rowid;
+  const ConversationArchivesCompanion({
+    this.localUserId = const Value.absent(),
+    this.id = const Value.absent(),
+    this.title = const Value.absent(),
+    this.messagesJson = const Value.absent(),
+    this.remoteConversationId = const Value.absent(),
+    this.createdAt = const Value.absent(),
+    this.updatedAt = const Value.absent(),
+    this.rowid = const Value.absent(),
+  });
+  ConversationArchivesCompanion.insert({
+    this.localUserId = const Value.absent(),
+    required String id,
+    required String title,
+    required String messagesJson,
+    this.remoteConversationId = const Value.absent(),
+    required DateTime createdAt,
+    required DateTime updatedAt,
+    this.rowid = const Value.absent(),
+  }) : id = Value(id),
+       title = Value(title),
+       messagesJson = Value(messagesJson),
+       createdAt = Value(createdAt),
+       updatedAt = Value(updatedAt);
+  static Insertable<ConversationArchive> custom({
+    Expression<int>? localUserId,
+    Expression<String>? id,
+    Expression<String>? title,
+    Expression<String>? messagesJson,
+    Expression<String>? remoteConversationId,
+    Expression<DateTime>? createdAt,
+    Expression<DateTime>? updatedAt,
+    Expression<int>? rowid,
+  }) {
+    return RawValuesInsertable({
+      if (localUserId != null) 'local_user_id': localUserId,
+      if (id != null) 'id': id,
+      if (title != null) 'title': title,
+      if (messagesJson != null) 'messages_json': messagesJson,
+      if (remoteConversationId != null)
+        'remote_conversation_id': remoteConversationId,
+      if (createdAt != null) 'created_at': createdAt,
+      if (updatedAt != null) 'updated_at': updatedAt,
+      if (rowid != null) 'rowid': rowid,
+    });
+  }
+
+  ConversationArchivesCompanion copyWith({
+    Value<int>? localUserId,
+    Value<String>? id,
+    Value<String>? title,
+    Value<String>? messagesJson,
+    Value<String?>? remoteConversationId,
+    Value<DateTime>? createdAt,
+    Value<DateTime>? updatedAt,
+    Value<int>? rowid,
+  }) {
+    return ConversationArchivesCompanion(
+      localUserId: localUserId ?? this.localUserId,
+      id: id ?? this.id,
+      title: title ?? this.title,
+      messagesJson: messagesJson ?? this.messagesJson,
+      remoteConversationId: remoteConversationId ?? this.remoteConversationId,
+      createdAt: createdAt ?? this.createdAt,
+      updatedAt: updatedAt ?? this.updatedAt,
+      rowid: rowid ?? this.rowid,
+    );
+  }
+
+  @override
+  Map<String, Expression> toColumns(bool nullToAbsent) {
+    final map = <String, Expression>{};
+    if (localUserId.present) {
+      map['local_user_id'] = Variable<int>(localUserId.value);
+    }
+    if (id.present) {
+      map['id'] = Variable<String>(id.value);
+    }
+    if (title.present) {
+      map['title'] = Variable<String>(title.value);
+    }
+    if (messagesJson.present) {
+      map['messages_json'] = Variable<String>(messagesJson.value);
+    }
+    if (remoteConversationId.present) {
+      map['remote_conversation_id'] = Variable<String>(
+        remoteConversationId.value,
+      );
+    }
+    if (createdAt.present) {
+      map['created_at'] = Variable<DateTime>(createdAt.value);
+    }
+    if (updatedAt.present) {
+      map['updated_at'] = Variable<DateTime>(updatedAt.value);
+    }
+    if (rowid.present) {
+      map['rowid'] = Variable<int>(rowid.value);
+    }
+    return map;
+  }
+
+  @override
+  String toString() {
+    return (StringBuffer('ConversationArchivesCompanion(')
+          ..write('localUserId: $localUserId, ')
+          ..write('id: $id, ')
+          ..write('title: $title, ')
+          ..write('messagesJson: $messagesJson, ')
+          ..write('remoteConversationId: $remoteConversationId, ')
+          ..write('createdAt: $createdAt, ')
+          ..write('updatedAt: $updatedAt, ')
+          ..write('rowid: $rowid')
+          ..write(')'))
+        .toString();
+  }
+}
+
 abstract class _$AppDatabase extends GeneratedDatabase {
   _$AppDatabase(QueryExecutor e) : super(e);
   $AppDatabaseManager get managers => $AppDatabaseManager(this);
@@ -10545,6 +11554,9 @@ abstract class _$AppDatabase extends GeneratedDatabase {
       $UserHiddenEntitiesTable(this);
   late final $ProfileChangeHistoryTable profileChangeHistory =
       $ProfileChangeHistoryTable(this);
+  late final $SavedItemsTable savedItems = $SavedItemsTable(this);
+  late final $ConversationArchivesTable conversationArchives =
+      $ConversationArchivesTable(this);
   late final FoodProfileDao foodProfileDao = FoodProfileDao(
     this as AppDatabase,
   );
@@ -10592,6 +11604,8 @@ abstract class _$AppDatabase extends GeneratedDatabase {
     userFoodInteractions,
     userHiddenEntities,
     profileChangeHistory,
+    savedItems,
+    conversationArchives,
   ];
 }
 
@@ -18794,6 +19808,526 @@ typedef $$ProfileChangeHistoryTableProcessedTableManager =
       ProfileChangeHistoryData,
       PrefetchHooks Function()
     >;
+typedef $$SavedItemsTableCreateCompanionBuilder =
+    SavedItemsCompanion Function({
+      Value<int> localUserId,
+      required String itemType,
+      required String itemId,
+      required String title,
+      Value<String?> subtitle,
+      Value<String?> imageAsset,
+      Value<String?> metadataJson,
+      Value<DateTime> savedAt,
+      Value<int> rowid,
+    });
+typedef $$SavedItemsTableUpdateCompanionBuilder =
+    SavedItemsCompanion Function({
+      Value<int> localUserId,
+      Value<String> itemType,
+      Value<String> itemId,
+      Value<String> title,
+      Value<String?> subtitle,
+      Value<String?> imageAsset,
+      Value<String?> metadataJson,
+      Value<DateTime> savedAt,
+      Value<int> rowid,
+    });
+
+class $$SavedItemsTableFilterComposer
+    extends Composer<_$AppDatabase, $SavedItemsTable> {
+  $$SavedItemsTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get localUserId => $composableBuilder(
+    column: $table.localUserId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get itemType => $composableBuilder(
+    column: $table.itemType,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get itemId => $composableBuilder(
+    column: $table.itemId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get subtitle => $composableBuilder(
+    column: $table.subtitle,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get imageAsset => $composableBuilder(
+    column: $table.imageAsset,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get metadataJson => $composableBuilder(
+    column: $table.metadataJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get savedAt => $composableBuilder(
+    column: $table.savedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$SavedItemsTableOrderingComposer
+    extends Composer<_$AppDatabase, $SavedItemsTable> {
+  $$SavedItemsTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get localUserId => $composableBuilder(
+    column: $table.localUserId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get itemType => $composableBuilder(
+    column: $table.itemType,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get itemId => $composableBuilder(
+    column: $table.itemId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get subtitle => $composableBuilder(
+    column: $table.subtitle,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get imageAsset => $composableBuilder(
+    column: $table.imageAsset,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get metadataJson => $composableBuilder(
+    column: $table.metadataJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get savedAt => $composableBuilder(
+    column: $table.savedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$SavedItemsTableAnnotationComposer
+    extends Composer<_$AppDatabase, $SavedItemsTable> {
+  $$SavedItemsTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get localUserId => $composableBuilder(
+    column: $table.localUserId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get itemType =>
+      $composableBuilder(column: $table.itemType, builder: (column) => column);
+
+  GeneratedColumn<String> get itemId =>
+      $composableBuilder(column: $table.itemId, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get subtitle =>
+      $composableBuilder(column: $table.subtitle, builder: (column) => column);
+
+  GeneratedColumn<String> get imageAsset => $composableBuilder(
+    column: $table.imageAsset,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get metadataJson => $composableBuilder(
+    column: $table.metadataJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get savedAt =>
+      $composableBuilder(column: $table.savedAt, builder: (column) => column);
+}
+
+class $$SavedItemsTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $SavedItemsTable,
+          SavedItem,
+          $$SavedItemsTableFilterComposer,
+          $$SavedItemsTableOrderingComposer,
+          $$SavedItemsTableAnnotationComposer,
+          $$SavedItemsTableCreateCompanionBuilder,
+          $$SavedItemsTableUpdateCompanionBuilder,
+          (
+            SavedItem,
+            BaseReferences<_$AppDatabase, $SavedItemsTable, SavedItem>,
+          ),
+          SavedItem,
+          PrefetchHooks Function()
+        > {
+  $$SavedItemsTableTableManager(_$AppDatabase db, $SavedItemsTable table)
+    : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$SavedItemsTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$SavedItemsTableOrderingComposer($db: db, $table: table),
+          createComputedFieldComposer: () =>
+              $$SavedItemsTableAnnotationComposer($db: db, $table: table),
+          updateCompanionCallback:
+              ({
+                Value<int> localUserId = const Value.absent(),
+                Value<String> itemType = const Value.absent(),
+                Value<String> itemId = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String?> subtitle = const Value.absent(),
+                Value<String?> imageAsset = const Value.absent(),
+                Value<String?> metadataJson = const Value.absent(),
+                Value<DateTime> savedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SavedItemsCompanion(
+                localUserId: localUserId,
+                itemType: itemType,
+                itemId: itemId,
+                title: title,
+                subtitle: subtitle,
+                imageAsset: imageAsset,
+                metadataJson: metadataJson,
+                savedAt: savedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> localUserId = const Value.absent(),
+                required String itemType,
+                required String itemId,
+                required String title,
+                Value<String?> subtitle = const Value.absent(),
+                Value<String?> imageAsset = const Value.absent(),
+                Value<String?> metadataJson = const Value.absent(),
+                Value<DateTime> savedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => SavedItemsCompanion.insert(
+                localUserId: localUserId,
+                itemType: itemType,
+                itemId: itemId,
+                title: title,
+                subtitle: subtitle,
+                imageAsset: imageAsset,
+                metadataJson: metadataJson,
+                savedAt: savedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$SavedItemsTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $SavedItemsTable,
+      SavedItem,
+      $$SavedItemsTableFilterComposer,
+      $$SavedItemsTableOrderingComposer,
+      $$SavedItemsTableAnnotationComposer,
+      $$SavedItemsTableCreateCompanionBuilder,
+      $$SavedItemsTableUpdateCompanionBuilder,
+      (SavedItem, BaseReferences<_$AppDatabase, $SavedItemsTable, SavedItem>),
+      SavedItem,
+      PrefetchHooks Function()
+    >;
+typedef $$ConversationArchivesTableCreateCompanionBuilder =
+    ConversationArchivesCompanion Function({
+      Value<int> localUserId,
+      required String id,
+      required String title,
+      required String messagesJson,
+      Value<String?> remoteConversationId,
+      required DateTime createdAt,
+      required DateTime updatedAt,
+      Value<int> rowid,
+    });
+typedef $$ConversationArchivesTableUpdateCompanionBuilder =
+    ConversationArchivesCompanion Function({
+      Value<int> localUserId,
+      Value<String> id,
+      Value<String> title,
+      Value<String> messagesJson,
+      Value<String?> remoteConversationId,
+      Value<DateTime> createdAt,
+      Value<DateTime> updatedAt,
+      Value<int> rowid,
+    });
+
+class $$ConversationArchivesTableFilterComposer
+    extends Composer<_$AppDatabase, $ConversationArchivesTable> {
+  $$ConversationArchivesTableFilterComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnFilters<int> get localUserId => $composableBuilder(
+    column: $table.localUserId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get messagesJson => $composableBuilder(
+    column: $table.messagesJson,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<String> get remoteConversationId => $composableBuilder(
+    column: $table.remoteConversationId,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnFilters(column),
+  );
+
+  ColumnFilters<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnFilters(column),
+  );
+}
+
+class $$ConversationArchivesTableOrderingComposer
+    extends Composer<_$AppDatabase, $ConversationArchivesTable> {
+  $$ConversationArchivesTableOrderingComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  ColumnOrderings<int> get localUserId => $composableBuilder(
+    column: $table.localUserId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get id => $composableBuilder(
+    column: $table.id,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get title => $composableBuilder(
+    column: $table.title,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get messagesJson => $composableBuilder(
+    column: $table.messagesJson,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<String> get remoteConversationId => $composableBuilder(
+    column: $table.remoteConversationId,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get createdAt => $composableBuilder(
+    column: $table.createdAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+
+  ColumnOrderings<DateTime> get updatedAt => $composableBuilder(
+    column: $table.updatedAt,
+    builder: (column) => ColumnOrderings(column),
+  );
+}
+
+class $$ConversationArchivesTableAnnotationComposer
+    extends Composer<_$AppDatabase, $ConversationArchivesTable> {
+  $$ConversationArchivesTableAnnotationComposer({
+    required super.$db,
+    required super.$table,
+    super.joinBuilder,
+    super.$addJoinBuilderToRootComposer,
+    super.$removeJoinBuilderFromRootComposer,
+  });
+  GeneratedColumn<int> get localUserId => $composableBuilder(
+    column: $table.localUserId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get id =>
+      $composableBuilder(column: $table.id, builder: (column) => column);
+
+  GeneratedColumn<String> get title =>
+      $composableBuilder(column: $table.title, builder: (column) => column);
+
+  GeneratedColumn<String> get messagesJson => $composableBuilder(
+    column: $table.messagesJson,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<String> get remoteConversationId => $composableBuilder(
+    column: $table.remoteConversationId,
+    builder: (column) => column,
+  );
+
+  GeneratedColumn<DateTime> get createdAt =>
+      $composableBuilder(column: $table.createdAt, builder: (column) => column);
+
+  GeneratedColumn<DateTime> get updatedAt =>
+      $composableBuilder(column: $table.updatedAt, builder: (column) => column);
+}
+
+class $$ConversationArchivesTableTableManager
+    extends
+        RootTableManager<
+          _$AppDatabase,
+          $ConversationArchivesTable,
+          ConversationArchive,
+          $$ConversationArchivesTableFilterComposer,
+          $$ConversationArchivesTableOrderingComposer,
+          $$ConversationArchivesTableAnnotationComposer,
+          $$ConversationArchivesTableCreateCompanionBuilder,
+          $$ConversationArchivesTableUpdateCompanionBuilder,
+          (
+            ConversationArchive,
+            BaseReferences<
+              _$AppDatabase,
+              $ConversationArchivesTable,
+              ConversationArchive
+            >,
+          ),
+          ConversationArchive,
+          PrefetchHooks Function()
+        > {
+  $$ConversationArchivesTableTableManager(
+    _$AppDatabase db,
+    $ConversationArchivesTable table,
+  ) : super(
+        TableManagerState(
+          db: db,
+          table: table,
+          createFilteringComposer: () =>
+              $$ConversationArchivesTableFilterComposer($db: db, $table: table),
+          createOrderingComposer: () =>
+              $$ConversationArchivesTableOrderingComposer(
+                $db: db,
+                $table: table,
+              ),
+          createComputedFieldComposer: () =>
+              $$ConversationArchivesTableAnnotationComposer(
+                $db: db,
+                $table: table,
+              ),
+          updateCompanionCallback:
+              ({
+                Value<int> localUserId = const Value.absent(),
+                Value<String> id = const Value.absent(),
+                Value<String> title = const Value.absent(),
+                Value<String> messagesJson = const Value.absent(),
+                Value<String?> remoteConversationId = const Value.absent(),
+                Value<DateTime> createdAt = const Value.absent(),
+                Value<DateTime> updatedAt = const Value.absent(),
+                Value<int> rowid = const Value.absent(),
+              }) => ConversationArchivesCompanion(
+                localUserId: localUserId,
+                id: id,
+                title: title,
+                messagesJson: messagesJson,
+                remoteConversationId: remoteConversationId,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          createCompanionCallback:
+              ({
+                Value<int> localUserId = const Value.absent(),
+                required String id,
+                required String title,
+                required String messagesJson,
+                Value<String?> remoteConversationId = const Value.absent(),
+                required DateTime createdAt,
+                required DateTime updatedAt,
+                Value<int> rowid = const Value.absent(),
+              }) => ConversationArchivesCompanion.insert(
+                localUserId: localUserId,
+                id: id,
+                title: title,
+                messagesJson: messagesJson,
+                remoteConversationId: remoteConversationId,
+                createdAt: createdAt,
+                updatedAt: updatedAt,
+                rowid: rowid,
+              ),
+          withReferenceMapper: (p0) => p0
+              .map((e) => (e.readTable(table), BaseReferences(db, table, e)))
+              .toList(),
+          prefetchHooksCallback: null,
+        ),
+      );
+}
+
+typedef $$ConversationArchivesTableProcessedTableManager =
+    ProcessedTableManager<
+      _$AppDatabase,
+      $ConversationArchivesTable,
+      ConversationArchive,
+      $$ConversationArchivesTableFilterComposer,
+      $$ConversationArchivesTableOrderingComposer,
+      $$ConversationArchivesTableAnnotationComposer,
+      $$ConversationArchivesTableCreateCompanionBuilder,
+      $$ConversationArchivesTableUpdateCompanionBuilder,
+      (
+        ConversationArchive,
+        BaseReferences<
+          _$AppDatabase,
+          $ConversationArchivesTable,
+          ConversationArchive
+        >,
+      ),
+      ConversationArchive,
+      PrefetchHooks Function()
+    >;
 
 class $AppDatabaseManager {
   final _$AppDatabase _db;
@@ -18847,4 +20381,8 @@ class $AppDatabaseManager {
       $$UserHiddenEntitiesTableTableManager(_db, _db.userHiddenEntities);
   $$ProfileChangeHistoryTableTableManager get profileChangeHistory =>
       $$ProfileChangeHistoryTableTableManager(_db, _db.profileChangeHistory);
+  $$SavedItemsTableTableManager get savedItems =>
+      $$SavedItemsTableTableManager(_db, _db.savedItems);
+  $$ConversationArchivesTableTableManager get conversationArchives =>
+      $$ConversationArchivesTableTableManager(_db, _db.conversationArchives);
 }

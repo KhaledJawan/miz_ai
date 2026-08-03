@@ -5,6 +5,11 @@ import 'package:miz_ai/core/database/app_database.dart';
 import 'package:miz_ai/core/database/local_user.dart';
 import 'package:miz_ai/core/database/seed/catalog_data.dart';
 import 'package:miz_ai/core/database/seed/seed_runner.dart';
+import 'package:miz_ai/core/bookmarks/drift_bookmark_repository.dart';
+import 'package:miz_ai/core/bookmarks/saved_item.dart' as domain;
+import 'package:miz_ai/features/conversation/data/drift_conversation_history_repository.dart';
+import 'package:miz_ai/features/conversation/domain/conversation_models.dart'
+    as conversation;
 
 void main() {
   late AppDatabase db;
@@ -151,6 +156,78 @@ void main() {
         kLocalUserId,
       );
       expect(afterDelete, isEmpty);
+    });
+  });
+
+  group('saved items', () {
+    test(
+      'uses one local database for save, offline read, and removal',
+      () async {
+        final repository = DriftBookmarkRepository(db);
+        final savedAt = DateTime.utc(2026, 8, 2);
+
+        await repository.save(
+          domain.SavedItem(
+            id: 'r1',
+            type: domain.SavedItemType.restaurant,
+            title: 'Trattoria Nove',
+            savedAt: savedAt,
+          ),
+        );
+
+        final items = await repository.watchAll().first;
+        expect(items, hasLength(1));
+        expect(items.single.title, 'Trattoria Nove');
+        expect(await repository.restaurantIds(), {'r1'});
+
+        await repository.remove(domain.SavedItemType.restaurant, 'r1');
+        expect(await repository.watchAll().first, isEmpty);
+      },
+    );
+  });
+
+  group('conversation history', () {
+    test('persists typed messages offline and removes an archive', () async {
+      final repository = DriftConversationHistoryRepository(db);
+      final now = DateTime.utc(2026, 8, 3, 12);
+      await repository.save(
+        conversation.ConversationArchive(
+          id: 'chat-1',
+          title: 'Find ramen',
+          createdAt: now,
+          updatedAt: now,
+          messages: const [
+            conversation.ConversationMessage(
+              id: 'user-1',
+              author: conversation.ConversationAuthor.user,
+              text: 'Find ramen',
+            ),
+            conversation.ConversationMessage(
+              id: 'miz-1',
+              author: conversation.ConversationAuthor.miz,
+              text: 'Here are two options.',
+              places: [
+                conversation.AiPlace(
+                  id: 'place-1',
+                  name: 'Noodle House',
+                  address: 'Main Street 1',
+                  latitude: 49,
+                  longitude: 6,
+                  rating: 4.7,
+                ),
+              ],
+            ),
+          ],
+        ),
+      );
+
+      final archives = await repository.watchAll().first;
+      expect(archives, hasLength(1));
+      expect(archives.single.title, 'Find ramen');
+      expect(archives.single.messages.last.places.single.rating, 4.7);
+
+      await repository.delete('chat-1');
+      expect(await repository.watchAll().first, isEmpty);
     });
   });
 }

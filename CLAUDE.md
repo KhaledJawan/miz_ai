@@ -9,7 +9,7 @@ Miz is an AI-first Food & Restaurant Assistant by Merlin ICT. It is conversation
 Non-negotiables:
 - Production-ready quality at every milestone. No placeholders, no "TODO: implement later" widgets shipped as if done, no ugly interim layouts.
 - Miz and Mizzz (a separate Merlin ICT product) are fully independent. Miz never touches Mizzz's database directly — API only. See [`docs/API.md`](docs/API.md).
-- The approved Soft Orbit direction in [`DesignGD.md`](DesignGD.md) is the source of truth for visual identity. The older `Miz.dc.html` prototype remains a product-flow reference, not a source for the superseded square-only styling. Fill genuine gaps with professional UX decisions that never reduce usability, and document recurring decisions in [`docs/DECISIONS.md`](docs/DECISIONS.md).
+- The approved Miz Spatial Glass direction in [`DesignGD.md`](DesignGD.md) is the source of truth for visual identity. The older `Miz.dc.html` prototype and Soft Orbit implementation remain product-flow/history references, not sources for the current shell styling. Fill genuine gaps with professional UX decisions that never reduce usability, and document recurring decisions in [`docs/DECISIONS.md`](docs/DECISIONS.md).
 
 ## 2. Architecture
 
@@ -62,7 +62,7 @@ Never let `presentation/` import a concrete data-source class directly — depen
 
 ## 8. UI rules
 
-- Match the approved Soft Orbit direction on layout, spacing, shape, type scale, color, depth, and motion. Use the semantic theme tokens and required transitions in [`DesignGD.md`](DesignGD.md); do not mix the retired square system into redesigned screens.
+- Match the approved Spatial Glass direction on layout, spacing, shape, type scale, color, depth, and motion. Use the semantic theme/glass tokens and required transitions in [`DesignGD.md`](DesignGD.md); do not mix retired square or dashboard-shell patterns into redesigned screens.
 - Every interactive element needs visible pressed/focused/disabled states and a Semantics label for accessibility. Disabled mic/camera controls remain visibly present, visibly inert, and labeled "coming soon."
 - Dark mode is a first-class theme, not an afterthought — both light and dark tokens must be defined together in `core/theme/`.
 

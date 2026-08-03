@@ -1,4 +1,4 @@
-/// Soft Orbit spacing scale. Feature widgets reference these tokens instead
+/// Spatial Glass spacing scale. Feature widgets reference these tokens instead
 /// of introducing one-off layout values.
 class AppSpacing {
   const AppSpacing._();

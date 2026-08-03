@@ -10,7 +10,7 @@ Any agent that changes repository files must also append its completed-work entr
 
 **Responsibilities**: Build screens and widgets matching the approved design pixel-for-pixel; implement the `Miz*` design-system widget kit; wire widgets to Riverpod providers (never own business logic itself).
 
-**Input**: A screen/state from the approved Soft Orbit direction (`DesignGD.md` / `docs/DESIGN.md`), plus the relevant `domain/` entities and provider contracts. The older `Miz.dc.html` prototype is a flow/content reference only.
+**Input**: A screen/state from the approved Spatial Glass direction (`DesignGD.md` / `docs/DESIGN.md`), plus the relevant `domain/` entities and provider contracts. Soft Orbit and the older `Miz.dc.html` prototype are flow/history references only.
 
 **Output**: Widget files under `features/<feature>/presentation/` or `core/widgets/`, plus a widget test for the primary state.
 

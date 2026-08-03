@@ -2,20 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:go_router/go_router.dart';
 
-import '../../../../core/router/app_router.dart';
 import '../../../../core/localization/localization.dart';
+import '../../../../core/router/app_router.dart';
 import '../../../../core/theme/app_motion.dart';
 import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/widgets.dart';
-import '../../../profile_settings/presentation/widgets/profile_settings_sheet.dart';
-import '../../../restaurant/domain/restaurant.dart';
-import '../providers/home_providers.dart';
-import '../widgets/home_header.dart';
-import '../widgets/home_input_bar.dart';
-import '../widgets/offers_banner.dart';
-import '../widgets/quick_action_grid.dart';
-import '../widgets/restaurant_rail.dart';
+import '../../../location/presentation/providers/city_controller.dart';
 
 class HomePage extends ConsumerStatefulWidget {
   const HomePage({super.key});
@@ -25,144 +17,177 @@ class HomePage extends ConsumerStatefulWidget {
 }
 
 class _HomePageState extends ConsumerState<HomePage> {
-  static const _homeBottomPadding = AppSpacing.xxxl * 2;
   final _inputController = TextEditingController();
+  final _focusNode = FocusNode();
+  bool _canSend = false;
 
   @override
   void dispose() {
     _inputController.dispose();
+    _focusNode.dispose();
     super.dispose();
   }
 
-  void _openRestaurant(Restaurant restaurant) => context.push(
-    AppRoutes.restaurantDetails.replaceFirst(':id', restaurant.id),
-  );
+  void _handleChanged(String value) {
+    final next = value.trim().isNotEmpty;
+    if (next != _canSend) setState(() => _canSend = next);
+  }
 
-  void _submitInput(String value) {
-    if (value.trim().isEmpty) return;
-    _inputController.clear();
-    context.push(AppRoutes.chat);
+  void _submit() {
+    final message = _inputController.text.trim();
+    if (message.isEmpty) return;
+    _focusNode.unfocus();
+    context.push(AppRoutes.chat, extra: message);
   }
 
   @override
   Widget build(BuildContext context) {
-    final favorites = ref.watch(favoriteRestaurantsProvider);
     final l10n = context.l10n;
+    final city = ref.watch(cityControllerProvider).valueOrNull?.selectedCity;
+    final prompts = [
+      l10n.promptWhatToday,
+      l10n.promptMatchTaste,
+      l10n.promptRestaurantsNearby,
+      l10n.promptSomethingNew,
+      l10n.promptLightMeal,
+      l10n.promptNearMeNow,
+      l10n.promptSpicy,
+      l10n.promptCafe,
+    ];
+    final keyboardInset = MediaQuery.viewInsetsOf(context).bottom;
 
     return Scaffold(
-      extendBody: true,
       resizeToAvoidBottomInset: false,
-      body: MizBackdrop(
-        child: Column(
-          children: [
-            HomeHeader(onOpenProfile: () => ProfileSettingsSheet.show(context)),
-            Expanded(
-              child: SingleChildScrollView(
-                padding: const EdgeInsetsDirectional.fromSTEB(
-                  AppSpacing.lgPlus,
-                  AppSpacing.sm,
-                  AppSpacing.lgPlus,
-                  _homeBottomPadding,
-                ),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    OffersBanner(onTap: () => context.push(AppRoutes.results)),
-                    const SizedBox(height: AppSpacing.xl),
-                    QuickActionGrid(
-                      actions: [
-                        QuickAction(
-                          label: l10n.hungry,
-                          icon: Icons.restaurant_menu,
-                          onTap: () => context.push(AppRoutes.chat),
-                        ),
-                        QuickAction(
-                          label: l10n.orderFood,
-                          icon: Icons.shopping_bag_outlined,
-                          onTap: () => context.push(AppRoutes.menu),
-                        ),
-                        QuickAction(
-                          label: l10n.reserveTable,
-                          icon: Icons.event_seat_outlined,
-                          onTap: () => context.push(AppRoutes.discovery),
-                        ),
-                        QuickAction(
-                          label: l10n.findCafe,
-                          icon: Icons.coffee_outlined,
-                          onTap: () => context.push(AppRoutes.discovery),
-                        ),
-                      ],
+      body: Stack(
+        children: [
+          const MizAnimatedFoodBackground(),
+          AnimatedPadding(
+            duration: MediaQuery.disableAnimationsOf(context)
+                ? Duration.zero
+                : AppMotion.standard,
+            curve: AppMotion.enter,
+            padding: EdgeInsets.only(bottom: keyboardInset),
+            child: SafeArea(
+              child: Column(
+                children: [
+                  Padding(
+                    padding: const EdgeInsetsDirectional.fromSTEB(
+                      AppSpacing.lgPlus,
+                      AppSpacing.md,
+                      AppSpacing.lgPlus,
+                      0,
                     ),
-                    const SizedBox(height: AppSpacing.xxl),
-                    favorites.when(
-                      data: (list) => list.isEmpty
-                          ? const SizedBox.shrink()
-                          : _RestaurantSection(
-                              title: l10n.yourFavorites,
-                              restaurants: list,
-                              onTap: _openRestaurant,
+                    child: Center(
+                      child: ConstrainedBox(
+                        constraints: const BoxConstraints(maxWidth: 260),
+                        child: MizLocationCapsule(
+                          key: const ValueKey('home-city-selector'),
+                          label: city ?? l10n.noCitySelected,
+                          semanticLabel: city == null
+                              ? l10n.selectCity
+                              : l10n.changeCity(city),
+                          isSelected: city != null,
+                          prominent: true,
+                          onTap: () => context.push(AppRoutes.city),
+                        ),
+                      ),
+                    ),
+                  ),
+                  Expanded(
+                    child: LayoutBuilder(
+                      builder: (context, constraints) {
+                        return SingleChildScrollView(
+                          keyboardDismissBehavior:
+                              ScrollViewKeyboardDismissBehavior.onDrag,
+                          padding: const EdgeInsetsDirectional.fromSTEB(
+                            AppSpacing.lgPlus,
+                            AppSpacing.lg,
+                            AppSpacing.lgPlus,
+                            AppSpacing.xl,
+                          ),
+                          child: ConstrainedBox(
+                            constraints: BoxConstraints(
+                              minHeight:
+                                  constraints.maxHeight -
+                                  AppSpacing.lg -
+                                  AppSpacing.xl,
                             ),
-                      loading: () => const SizedBox.shrink(),
-                      error: (_, _) => const SizedBox.shrink(),
+                            child: Center(
+                              child: ConstrainedBox(
+                                constraints: const BoxConstraints(
+                                  maxWidth: 620,
+                                ),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    MizGlassInput(
+                                      controller: _inputController,
+                                      focusNode: _focusNode,
+                                      semanticLabel: l10n.spatialHomeInputLabel,
+                                      sendLabel: l10n.send,
+                                      onChanged: _handleChanged,
+                                      onSend: _canSend ? _submit : null,
+                                      prominent: true,
+                                      placeholder: MizPromptPlaceholder(
+                                        prompts: prompts,
+                                        controller: _inputController,
+                                        focusNode: _focusNode,
+                                        highContrast: true,
+                                      ),
+                                    ),
+                                    const SizedBox(height: AppSpacing.xl),
+                                    Row(
+                                      mainAxisAlignment:
+                                          MainAxisAlignment.center,
+                                      children: [
+                                        MizGlassCircleButton(
+                                          key: const ValueKey(
+                                            'home-camera-action',
+                                          ),
+                                          icon: Icons.camera_rounded,
+                                          semanticLabel: l10n.cameraAction,
+                                          prominent: true,
+                                          onPressed: () =>
+                                              context.push(AppRoutes.camera),
+                                        ),
+                                        const SizedBox(width: AppSpacing.xl),
+                                        MizGlassCircleButton(
+                                          key: const ValueKey(
+                                            'home-bookmarks-action',
+                                          ),
+                                          icon: Icons.bookmarks_rounded,
+                                          semanticLabel: l10n.bookmarksAction,
+                                          prominent: true,
+                                          onPressed: () =>
+                                              context.push(AppRoutes.bookmarks),
+                                        ),
+                                        const SizedBox(width: AppSpacing.xl),
+                                        MizGlassCircleButton(
+                                          key: const ValueKey(
+                                            'home-profile-action',
+                                          ),
+                                          icon: Icons.account_circle_rounded,
+                                          semanticLabel:
+                                              l10n.profileSettingsAction,
+                                          prominent: true,
+                                          onPressed: () =>
+                                              context.push(AppRoutes.profile),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        );
+                      },
                     ),
-                  ],
-                ),
+                  ),
+                ],
               ),
             ),
-          ],
-        ),
-      ),
-      bottomNavigationBar: AnimatedPadding(
-        duration: AppMotion.standard,
-        curve: AppMotion.enter,
-        padding: EdgeInsets.only(
-          bottom: MediaQuery.viewInsetsOf(context).bottom,
-        ),
-        child: SafeArea(
-          top: false,
-          child: HomeInputBar(
-            controller: _inputController,
-            onSubmit: _submitInput,
           ),
-        ),
-      ),
-    );
-  }
-}
-
-class _RestaurantSection extends StatelessWidget {
-  const _RestaurantSection({
-    required this.title,
-    required this.restaurants,
-    required this.onTap,
-  });
-
-  final String title;
-  final List<Restaurant> restaurants;
-  final ValueChanged<Restaurant> onTap;
-
-  @override
-  Widget build(BuildContext context) {
-    final colors = context.mizColors;
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppSpacing.xl),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-            children: [
-              Text(title, style: Theme.of(context).textTheme.titleLarge),
-              Text(
-                context.l10n.seeAll,
-                style: Theme.of(
-                  context,
-                ).textTheme.labelMedium?.copyWith(color: colors.accentPressed),
-              ),
-            ],
-          ),
-          const SizedBox(height: AppSpacing.md),
-          RestaurantRail(restaurants: restaurants, onTap: onTap),
         ],
       ),
     );

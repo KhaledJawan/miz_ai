@@ -2,6 +2,76 @@
 
 Format loosely follows [Keep a Changelog](https://keepachangelog.com/). Dates in `YYYY-MM-DD`. Entries are per-milestone, not per-commit — see [`CONTRIBUTING.md`](../CONTRIBUTING.md).
 
+## [Unreleased] — Camera vision and scanning — 2026-08-03
+
+### Added
+- Completed a cross-project, read-only schema audit and prepared the additive Central Food Catalog v2 in the Mizzz source of truth: controlled observations/proposals, field-level evidence, multilingual aliases/translations, normalized taxonomies, trust and duplicate review, immutable versions/audit, hybrid search and embedding jobs, licensed image moderation, structured imports, additive menu matching, strict RLS, versioned read RPCs for a future Miz AI backend adapter, and transactional SQL coverage. No production migration or direct Miz AI database link was applied.
+- Native camera and gallery menu-photo input through `image_picker`, Android lost-picker recovery, iOS/macOS permission declarations, up to four previewed/reorderable pages, explicit upload confirmation, and safe temporary-file cleanup that never deletes gallery originals.
+- Secure `analyze-menu` Supabase Edge Function using shallow Gemini multimodal structured output with flat dish records plus strict semantic validation, with request/MIME/size/deadline/output limits, prompt-injection resistance, no image/content logging, and provider interaction storage disabled.
+- Typed, localized English/German/Farsi menu results with overview, sections, dish explanations, printed price, dietary tags, possible-allergen warnings, notes, unreadable/error/retry states, and widget/data/controller/Deno coverage.
+- Real Food mode camera/gallery preview and explicit upload consent, backed by the deployed `analyze-food` Gemini function with up to three typed localized candidates, confidence, uncertainty/error recovery, strict photo-safety copy, and no ingredient/allergen claims from appearance.
+- Real live Miz QR decoding through `mobile_scanner`, strict local version/token/expiry/signature-shape validation, Scan again recovery, and accurate separation between device scanner failure and unavailable trusted restaurant/table verification.
+- Capability-specific camera mode resets so an unavailable food/QR backend can no longer leave the other modes stuck on “Camera unavailable.”
+
+### Still unavailable
+- Trusted Miz QR authenticity, restaurant publication, branch/table activity, and session verification remain unavailable until the restaurant backend provides a signed source of truth; local decoding never fabricates verification.
+
+### Verified
+- `flutter analyze` is clean, all 146 Flutter tests pass, all 100 Edge Function tests pass, the Android debug APK builds and installs with the camera permission declared, `analyze-menu` completed a safe unreadable-image smoke test, and `analyze-food` recognized the bundled Margherita pizza through the live deployed endpoint.
+
+## [Unreleased] — Gemini AI chat via `miz-ai` Edge Function — 2026-08-02
+
+### Added
+- Local offline chat history backed by Drift schema v3, with typed message/place snapshot serialization, review and deletion, and automatic archiving before History, New Chat, or system-back navigation.
+- Production reliability controls for `miz-ai`: a 58-second total deadline, one selective transient retry for Gemini/Places, simplified retry context, 1,024-token output cap, strict tool schemas, runtime response validation, recoverable unknown-tool handling, explicit location ownership, safe request-scoped observability, partial Places success, and typed-card-only place presentation that drops unverified model narration.
+- Structured backend failures and distinct localized Flutter states for AI timeout/unavailable/busy, Places unavailable, no results, location required, and internal request recovery.
+- Publishable-key authorization for `miz-ai`: legacy gateway JWT verification is disabled for the new key format, while the function itself validates the platform-injected named publishable keys before any paid Gemini/Places work.
+- `supabase/functions/miz-ai/`, a new Deno Edge Function that replaces the honest-unavailable chat stub with real Gemini function calling via the Interactions API (model configurable through `GEMINI_MODEL`, default `gemini-3.6-flash`), running a bounded (max 3 rounds) send/inspect/validate/execute/continue loop.
+- Two backend-validated tools: `search_nearby_places` (Google Places API (New), server-injected trusted coordinates only — the schema has no latitude/longitude field) and `get_user_food_profile` (server-revalidated, minimized summary of the local Food Profile, never raw history or precise location).
+- `MizAiService` (Flutter), calling only the `miz-ai` Edge Function through `supabase_flutter`'s `FunctionsClient` — never Gemini or Google Places directly — plus widened `ConversationRequest`/`ConversationReply` models, place-result cards, and a location-required flow reusing the existing city picker.
+- An additive `city_coordinates.dart` lookup and a permission-safe `TransientPositionReader` (never prompts, never persists) so the chat feature can pass real coordinates without changing the existing string-only `LocationService` contract.
+- 78 Deno unit tests (stubbed `fetch`, zero live network calls) and 43 Gemini/conversation Flutter unit/widget tests. New `docs/EDGE_FUNCTIONS.md` plus ADR-021/ADR-022.
+
+### Changed
+- Conversation now uses unmistakable black user bubbles and white Miz replies with a red assistant marker, removes per-message copy controls and the page-level X, dismisses the keyboard on send, keeps the newest response visible, and exposes History/New Chat actions.
+- `docs/API.md` §3 and `docs/SECURITY.md` updated to describe the real Gemini/Places architecture and secret handling in place of the prior interim-stub framing.
+
+### Backend-dependent
+- No live end-to-end call against real Gemini/Places was made (only the user holds those secrets) — verified via stubbed unit tests plus documented manual `curl`/in-app steps in `docs/EDGE_FUNCTIONS.md`.
+- True distributed per-user rate limiting is not implemented (Edge Function isolates are stateless); only request-shape limits (body size, history length, tool-round cap, result cap, timeouts) are enforced today.
+
+### Verified
+- `deno fmt`/`deno check`/`deno test` clean (78/78), `flutter analyze` clean, all 122 Flutter tests pass, Android debug build passes for the original integration.
+
+## [Unreleased] — Miz Spatial Glass — 2026-08-02
+
+### Added
+- New-project Supabase setup guide and a key-safe local verifier covering the exact client values, replacement flow, RLS requirements, and Auth/Storage/Realtime/CI boundaries.
+- Environment-validated Supabase client initialization in the existing composition root, with a git-ignored local configuration and committed placeholder template; the app itself remains intact and no demo Todos screen or unreviewed table query was introduced.
+- Real foreground approximate-location support using an injectable `geolocator` device boundary, local nearest-supported-city matching, Android/iOS/macOS permission declarations, and denial/disabled/out-of-area tests.
+- Tokenized six-level Spatial Glass material system and reusable glass surface, circle action, composer, location capsule, contextual dismiss, spatial sheet/transition, result card, camera mode selector, rotating prompt, and animated food-atmosphere components.
+- Focused Home with only the unassumed city selector, central keyboard-safe multiline input/send, exactly three icon actions, and lifecycle/reduced-motion-aware abstract local food imagery.
+- Manual/recent/default city selection with explicit requesting/denied/unavailable capability states and no cold-start location assumption.
+- Real conversation route/state architecture with user input, loading, retry, copy, new search, continued composer, and an honest secure-backend-unavailable response rather than fabricated AI output.
+- One Drift-backed unified saved-items repository/page for restaurants, cafés, foods, menu items, discoveries, and scanned dishes; existing favorites now use the same source.
+- Combined spatial Profile/Settings page preserving the complete editable Food Profile and English/Farsi/German RTL/LTR system.
+- Single three-mode camera workflow architecture (Food, Miz QR, Menu), including permission/capture/review/processing/uncertainty/error states, temporary multi-page menu operations, replaceable device/analysis interfaces, and strict version/token/expiry QR validation requiring backend verification.
+- Tests for focused Home, rotating/paused prompts, send state, keyboard/small-screen/RTL/reduced motion, navigation/back/deep links, city denial/manual fallback, persistent bookmarks, camera denial/menu page operations, and invalid/expired/unverified QR payloads.
+
+### Changed
+- `DesignGD.md` and `docs/DESIGN.md` now define Spatial Glass as the active shell identity. Secondary spatial routes no longer use standard top-left app-bar arrows.
+- Extended the approved culinary-AI artwork and control treatment from Home to conversation, bookmarks, city selection, camera, profile/settings, Food Profile, results, sheets, and shared secondary controls. Secondary pages use a calmer static 20%-blurred backdrop; interactive surfaces are solid white, borderless, zero-blur, black-forward, and separated with neutral iOS-style shadows.
+- Local Drift schema upgraded non-destructively from v1 to v2 with `saved_items` and its time-sort index.
+
+### Backend-dependent
+- Production OS camera adapters, AI recommendations, food recognition, menu OCR/correction, cloud upload consent, and QR signature/restaurant/table verification remain intentionally unavailable. No fake result is shown.
+
+### Verified
+- `dart format --set-exit-if-changed` clean, `flutter analyze` clean, all 79 unit/widget/golden tests pass, and 390×844 light/dark Spatial Home plus City/Camera reference renders were visually reviewed.
+- The supplied Supabase endpoint and publishable key were accepted by the live project, and an Android debug APK builds with `.env.json` injected through `--dart-define-from-file`.
+- Android and macOS debug builds include the live location plugin; the updated APK was installed over the existing physical Android-device app without clearing local data, and the package reports the expected ungranted coarse-location runtime permission ready for the first user tap.
+- macOS debug launch/build, Android debug APK, and Android release APK build successfully. The web target remains unsupported by the existing native Drift/SQLite FFI configuration.
+
 ## [Unreleased] — Food Preference Profile — 2026-08-01
 
 ### Added

@@ -38,4 +38,8 @@ Mirrors source path exactly (`CLAUDE.md` §3): `lib/features/home/domain/greetin
 
 ## Manual QA reference
 
-Every milestone's manual check-through uses the approved prototype (`Miz.dc.html`) as the visual reference — compare side-by-side, not from memory. Check: light + dark theme, empty states (e.g. no favorites), and the smallest supported phone width.
+Every milestone's manual check-through uses `DesignGD.md` and the approved reference imagery as the visual source — compare side-by-side, not from memory. Check light/dark, empty/unavailable states, 390×844, 320×720, keyboard-open, reduced motion, and Farsi RTL.
+
+Native capability changes also require a real-device or correctly configured simulator check. For current location, verify first-request approval, denial, device-location-disabled, and a simulated position near a supported city. For food vision, verify camera/gallery cancellation, one centered dish, non-food uncertainty, offline/retry, and English/German/Farsi output. For menu vision, verify camera permission/cancel/retake, gallery cancel, one and four pages, unreadable text, offline/retry, and all three locales. For Miz QR, verify live preview/permission denial, invalid and expired payloads, duplicate-frame suppression, and the trusted-verification-required state. Unit/widget tests replace OS and network gateways and never request real permissions or paid provider calls.
+
+The Spatial visual suite keeps approved 390×844 references for Home in light and dark themes, City in dark theme, and Camera in light theme under `test/visual/goldens/`. Regenerate them only for an intentional approved visual change, then inspect the rendered images before accepting the update.

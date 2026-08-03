@@ -32,6 +32,12 @@
 	<string>$(PRODUCT_COPYRIGHT)</string>
 	<key>NSMainNibFile</key>
 	<string>MainMenu</string>
+	<key>NSLocationUsageDescription</key>
+	<string>Miz uses your approximate location only when you ask it to select a nearby supported city.</string>
+	<key>NSPhotoLibraryUsageDescription</key>
+	<string>Miz opens your photo library only when you choose a food or menu photo to analyze.</string>
+	<key>NSCameraUsageDescription</key>
+	<string>Miz uses the camera only when you choose to identify food, scan a Miz QR code, or photograph a menu.</string>
 	<key>NSPrincipalClass</key>
 	<string>NSApplication</string>
 </dict>

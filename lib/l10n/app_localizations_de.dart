@@ -579,4 +579,526 @@ class AppLocalizationsDe extends AppLocalizations {
   @override
   String get foodProfilePrivacyNotice =>
       'Dein Geschmacksprofil wird auf diesem Gerät gespeichert und zur Personalisierung der Miz-Vorschläge genutzt. Es ersetzt nicht die Bestätigung von Allergenen direkt beim Restaurant.';
+
+  @override
+  String get spatialHomeInputLabel => 'Sag Miz, was du essen möchtest';
+
+  @override
+  String get promptWhatToday => 'Was soll ich heute essen?';
+
+  @override
+  String get promptMatchTaste => 'Finde etwas, das zu meinem Geschmack passt.';
+
+  @override
+  String get promptRestaurantsNearby =>
+      'Zeig mir großartige Restaurants in der Nähe.';
+
+  @override
+  String get promptSomethingNew => 'Ich möchte etwas Neues probieren.';
+
+  @override
+  String get promptLightMeal => 'Finde ein leichtes Essen für heute Abend.';
+
+  @override
+  String get promptNearMeNow => 'Was kann ich gerade in meiner Nähe essen?';
+
+  @override
+  String get promptSpicy => 'Ich möchte etwas Scharfes.';
+
+  @override
+  String get promptCafe => 'Finde ein gutes Café in der Nähe.';
+
+  @override
+  String get cameraAction => 'Kamera öffnen';
+
+  @override
+  String get bookmarksAction => 'Gespeicherte Elemente öffnen';
+
+  @override
+  String get profileSettingsAction => 'Profil und Einstellungen öffnen';
+
+  @override
+  String get selectCity => 'Stadt auswählen';
+
+  @override
+  String get noCitySelected => 'Stadt auswählen';
+
+  @override
+  String get locationNeededTitle => 'Standort benötigt';
+
+  @override
+  String get locationNeededBody =>
+      'Wähle eine Stadt oder teile deinen Standort, damit Miz Orte in deiner Nähe finden kann.';
+
+  @override
+  String changeCity(String city) {
+    return 'Stadt ändern: $city';
+  }
+
+  @override
+  String get searchCity => 'Stadt suchen';
+
+  @override
+  String get useCurrentLocation => 'Aktuellen Standort verwenden';
+
+  @override
+  String get currentLocationPrivacy =>
+      'Wird nur auf deinen Wunsch angefragt. Die manuelle Stadtauswahl funktioniert immer.';
+
+  @override
+  String get recentCities => 'Zuletzt verwendet';
+
+  @override
+  String get availableCities => 'Verfügbare Städte';
+
+  @override
+  String get setAsDefault => 'Diese Stadt als Standard verwenden';
+
+  @override
+  String get clearLocation => 'Ausgewählte und Standardstadt löschen';
+
+  @override
+  String get locationDeniedTitle => 'Standortzugriff verweigert';
+
+  @override
+  String get locationDeniedBody =>
+      'Wähle eine Stadt manuell oder aktiviere den ungefähren Standort in den Systemeinstellungen.';
+
+  @override
+  String get locationUnavailableTitle => 'Aktueller Standort nicht verfügbar';
+
+  @override
+  String get locationUnavailableBody =>
+      'Aktiviere den Gerätestandort oder wähle eine unterstützte Stadt manuell. Deine Koordinaten werden nicht gespeichert.';
+
+  @override
+  String get closePage => 'Seite schließen';
+
+  @override
+  String get bookmarksTitle => 'Gespeichert';
+
+  @override
+  String get searchBookmarks => 'Gespeicherte Elemente suchen';
+
+  @override
+  String get filterAll => 'Alle';
+
+  @override
+  String get filterRestaurants => 'Restaurants';
+
+  @override
+  String get filterFoods => 'Speisen';
+
+  @override
+  String get filterMenuItems => 'Menüpunkte';
+
+  @override
+  String get noBookmarksTitle => 'Noch nichts gespeichert';
+
+  @override
+  String get noBookmarksBody =>
+      'Gespeicherte Restaurants, Speisen, Menüpunkte und Entdeckungen bleiben hier offline verfügbar.';
+
+  @override
+  String get removeBookmark => 'Lesezeichen entfernen';
+
+  @override
+  String get savedOffline => 'Auf diesem Gerät gespeichert';
+
+  @override
+  String get profileSettingsTitle => 'Profil & Einstellungen';
+
+  @override
+  String get accountNotConnected => 'Miz lokal verwenden';
+
+  @override
+  String get connectAccount => 'Kontoverbindung ist noch nicht verfügbar';
+
+  @override
+  String get personalization => 'Personalisierung';
+
+  @override
+  String get appearance => 'Darstellung';
+
+  @override
+  String get locationSettings => 'Standort';
+
+  @override
+  String get dataPrivacy => 'Daten & Datenschutz';
+
+  @override
+  String get localActivity => 'Lokale Aktivität';
+
+  @override
+  String get conversationInputLabel => 'Essenssuche fortsetzen';
+
+  @override
+  String get aiUnavailableTitle => 'Miz AI ist vorübergehend nicht verfügbar';
+
+  @override
+  String get aiUnavailableBody =>
+      'Der Assistent konnte gerade nicht antworten. Deine Nachricht bleibt in dieser Sitzung.';
+
+  @override
+  String get aiTimeoutTitle => 'Miz braucht etwas länger';
+
+  @override
+  String get aiTimeoutBody =>
+      'Die Antwort hat zu lange gedauert. Versuche dieselbe Anfrage erneut.';
+
+  @override
+  String get aiRateLimitTitle => 'Miz ist gerade beschäftigt';
+
+  @override
+  String get aiRateLimitBody =>
+      'Es werden zu viele Anfragen bearbeitet. Warte kurz und versuche es erneut.';
+
+  @override
+  String get placesUnavailableTitle => 'Ortssuche nicht verfügbar';
+
+  @override
+  String get placesUnavailableBody =>
+      'Miz konnte gerade nicht nach Restaurants suchen. Versuche es gleich erneut.';
+
+  @override
+  String get noPlacesTitle => 'Keine Restaurants gefunden';
+
+  @override
+  String get noPlacesBody =>
+      'Versuche ein anderes Gericht, einen größeren Bereich oder weniger Filter.';
+
+  @override
+  String get aiRequestErrorTitle => 'Miz konnte das nicht abschließen';
+
+  @override
+  String get aiRequestErrorBody =>
+      'Ändere die Anfrage leicht oder versuche es erneut.';
+
+  @override
+  String get retry => 'Erneut versuchen';
+
+  @override
+  String get copyAction => 'Kopieren';
+
+  @override
+  String get saveDiscovery => 'Entdeckung speichern';
+
+  @override
+  String get newSearch => 'Neue Suche';
+
+  @override
+  String get closeConversation => 'Unterhaltung schließen';
+
+  @override
+  String get newChat => 'Neuer Chat';
+
+  @override
+  String get chatHistory => 'Chatverlauf';
+
+  @override
+  String get noChatHistory => 'Noch keine Unterhaltungen';
+
+  @override
+  String get noChatHistoryBody =>
+      'Starte eine Unterhaltung mit Miz. Sie erscheint hier, wenn du einen neuen Chat beginnst oder die Unterhaltung verlässt.';
+
+  @override
+  String get chatHistoryUnavailable =>
+      'Der Chatverlauf konnte nicht geladen werden.';
+
+  @override
+  String get deleteChat => 'Unterhaltung löschen';
+
+  @override
+  String restaurantResultsCount(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count Restaurantergebnisse',
+      one: '1 Restaurantergebnis',
+      zero: 'Restaurantergebnisse',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get cameraTitle => 'Kamera';
+
+  @override
+  String get foodRecognitionMode => 'Speise';
+
+  @override
+  String get mizQrMode => 'Miz QR';
+
+  @override
+  String get menuScanMode => 'Menü';
+
+  @override
+  String get changeCameraMode => 'Kameramodus ändern';
+
+  @override
+  String get cameraPermissionTitle => 'Kamerazugriff erforderlich';
+
+  @override
+  String get cameraPermissionBody =>
+      'Miz verwendet die Kamera erst nach deiner Moduswahl. Aufnahmen bleiben temporär und werden nie unbemerkt hochgeladen.';
+
+  @override
+  String get allowCamera => 'Kamera erlauben';
+
+  @override
+  String get cameraDeniedTitle => 'Kamerazugriff verweigert';
+
+  @override
+  String get cameraDeniedBody =>
+      'Aktiviere die Kamera in den Systemeinstellungen, um Speisen, Miz-QR-Codes oder Menüs zu scannen.';
+
+  @override
+  String get cameraUnavailableTitle => 'Kamera nicht verfügbar';
+
+  @override
+  String get cameraUnavailableBody =>
+      'Auf diesem Gerät ist keine nutzbare Kamera verfügbar. Für die Speise- oder Menüanalyse kannst du weiterhin ein Foto auswählen.';
+
+  @override
+  String get offlineTitle => 'Du bist offline';
+
+  @override
+  String get offlineBody =>
+      'Erkennung und Verifizierung benötigen eine Verbindung. Es wurde kein Bild hochgeladen.';
+
+  @override
+  String get liveCamera => 'Live-Kameravorschau';
+
+  @override
+  String get capture => 'Aufnehmen';
+
+  @override
+  String get preview => 'Vorschau';
+
+  @override
+  String get retake => 'Neu aufnehmen';
+
+  @override
+  String get confirm => 'Bestätigen';
+
+  @override
+  String get processing => 'Sichere Verarbeitung';
+
+  @override
+  String get noConfidentResult => 'Kein sicheres Ergebnis';
+
+  @override
+  String get resultDetails => 'Ergebnisdetails';
+
+  @override
+  String get backendRequired => 'Sicheres Backend erforderlich';
+
+  @override
+  String get cloudProcessingNotice =>
+      'Zum Fortfahren wäre eine sichere Cloud-Verarbeitung nötig. Miz fragt vor jedem Upload nach.';
+
+  @override
+  String get scanQrInstruction =>
+      'Richte einen Miz-Restaurant- oder Tisch-QR-Code im Rahmen aus.';
+
+  @override
+  String get mizQrOnlyNotice =>
+      'Nur signierte Miz-Codes für Restaurants und Tische werden akzeptiert. Andere QR-Links werden nie automatisch geöffnet.';
+
+  @override
+  String get qrScannerUnavailableTitle => 'QR-Scanner nicht verfügbar';
+
+  @override
+  String get qrScannerUnavailableBody =>
+      'Miz konnte die QR-Kamera nicht starten. Prüfe die Kameraberechtigung und versuche es erneut.';
+
+  @override
+  String get scanAgain => 'Erneut scannen';
+
+  @override
+  String get invalidQrTitle => 'Ungültiger Miz QR';
+
+  @override
+  String get invalidQrBody =>
+      'Dieser Code ist keine vertrauenswürdige Miz-Nutzlast und wurde nicht geöffnet.';
+
+  @override
+  String get expiredQrTitle => 'Dieser Miz QR ist abgelaufen';
+
+  @override
+  String get expiredQrBody => 'Bitte das Restaurant um einen aktuellen Code.';
+
+  @override
+  String get unpublishedQrTitle => 'Restaurant nicht veröffentlicht';
+
+  @override
+  String get unpublishedQrBody =>
+      'Dieses Miz-Restaurant kann derzeit nicht geöffnet werden.';
+
+  @override
+  String get inactiveTableTitle => 'Tisch ist inaktiv';
+
+  @override
+  String get inactiveTableBody =>
+      'Dieser Tisch kann momentan keine Sitzung starten oder ihr beitreten.';
+
+  @override
+  String get qrVerificationRequired =>
+      'Das QR-Format ist gültig. Vor dem Öffnen eines Restaurants oder einer Tischsitzung ist eine Netzwerkprüfung erforderlich.';
+
+  @override
+  String get foodPhotoInstruction =>
+      'Fotografiere ein einzelnes fertiges Gericht deutlich oder wähle ein Foto aus deiner Mediathek.';
+
+  @override
+  String get foodUploadConsent =>
+      'Wenn du auf Speise erkennen tippst, wird dieses temporäre Foto sicher zur KI-Analyse gesendet. Miz speichert es nicht.';
+
+  @override
+  String get identifyFood => 'Speise erkennen';
+
+  @override
+  String get foodRecognizedTitle => 'Speise erkannt';
+
+  @override
+  String get possibleMatchesTitle => 'Mögliche Treffer';
+
+  @override
+  String foodConfidence(int percent) {
+    return '$percent % Treffer';
+  }
+
+  @override
+  String get foodRecognitionDisclaimer =>
+      'KI-Erkennung kann falsch sein und Zutaten oder Allergiesicherheit nicht anhand eines Fotos bestätigen.';
+
+  @override
+  String get scanAnotherFood => 'Weitere Speise scannen';
+
+  @override
+  String get foodUncertainTitle => 'Miz konnte diese Speise nicht erkennen';
+
+  @override
+  String get foodUncertainBody =>
+      'Fotografiere ein einzelnes, gut beleuchtetes Gericht mittig und ohne Verpackung oder Unordnung.';
+
+  @override
+  String get foodAnalysisFailedTitle =>
+      'Speiseerkennung wurde nicht abgeschlossen';
+
+  @override
+  String get foodAnalysisFailedBody =>
+      'Die sichere Analyse ist fehlgeschlagen. Dein Foto wurde nicht gespeichert. Prüfe die Verbindung und versuche ein anderes Foto.';
+
+  @override
+  String get menuPagesTitle => 'Menüseiten';
+
+  @override
+  String get addPage => 'Seite hinzufügen';
+
+  @override
+  String pageNumber(int number) {
+    return 'Seite $number';
+  }
+
+  @override
+  String get reorderPage => 'Seite verschieben';
+
+  @override
+  String get deletePage => 'Seite löschen';
+
+  @override
+  String get confirmPages => 'Alle Seiten bestätigen';
+
+  @override
+  String get menuIncompleteTitle => 'Menüscan unvollständig';
+
+  @override
+  String get menuIncompleteBody =>
+      'Nimm mindestens eine lesbare Seite auf. Preise und Zutaten müssen möglicherweise manuell korrigiert werden.';
+
+  @override
+  String get takePhoto => 'Foto aufnehmen';
+
+  @override
+  String get choosePhoto => 'Foto auswählen';
+
+  @override
+  String get menuPhotoInstruction =>
+      'Fotografiere die Speisekarte klar und gerade oder wähle ein Bild aus deiner Mediathek.';
+
+  @override
+  String get menuImageUnavailableBody =>
+      'Dieses Foto konnte nicht geöffnet werden. Wähle ein anderes Bild.';
+
+  @override
+  String get menuUploadConsent =>
+      'Wenn du auf Menü erklären tippst, werden diese temporären Fotos sicher zur KI-Analyse gesendet. Miz speichert die Fotos nicht.';
+
+  @override
+  String get explainMenu => 'Menü erklären';
+
+  @override
+  String get menuExplainedTitle => 'Deine Speisekarte, erklärt';
+
+  @override
+  String get menuNotesTitle => 'Hilfreiche Hinweise';
+
+  @override
+  String possibleAllergens(String allergens) {
+    return 'Mögliche Allergene: $allergens';
+  }
+
+  @override
+  String get menuAllergenDisclaimer =>
+      'KI kann Fehler machen. Bestätige Zutaten und Allergene vor der Bestellung immer beim Restaurant.';
+
+  @override
+  String get scanAnotherMenu => 'Weiteres Menü scannen';
+
+  @override
+  String get tryAnotherPhoto => 'Anderes Foto versuchen';
+
+  @override
+  String get menuUnreadableTitle => 'Die Speisekarte war nicht deutlich genug';
+
+  @override
+  String get menuUnreadableBody =>
+      'Versuche ein helleres, gerades Foto, auf dem der gesamte Menütext scharf ist.';
+
+  @override
+  String get menuAnalysisFailedTitle => 'Miz konnte dieses Menü nicht erklären';
+
+  @override
+  String get menuAnalysisFailedBody =>
+      'Die sichere Analyse wurde nicht abgeschlossen. Deine Fotos wurden nicht gespeichert. Versuche es mit einem deutlichen Foto erneut.';
+
+  @override
+  String get menuImageTooLargeTitle => 'Foto ist zu groß';
+
+  @override
+  String get menuImageTooLargeBody =>
+      'Wähle ein kleineres Foto oder fotografiere weniger Menüseiten gleichzeitig.';
+
+  @override
+  String get menuImageUnsupportedTitle => 'Fotoformat wird nicht unterstützt';
+
+  @override
+  String get menuImageUnsupportedBody =>
+      'Wähle ein JPEG-, PNG-, WebP-, HEIC- oder HEIF-Foto.';
+
+  @override
+  String get menuTooManyPagesTitle => 'Zu viele Menüseiten';
+
+  @override
+  String get menuTooManyPagesBody =>
+      'Du kannst bis zu vier Menüseiten gleichzeitig erklären lassen.';
+
+  @override
+  String get localDatabaseErrorTitle => 'Gespeicherte Elemente nicht verfügbar';
+
+  @override
+  String get localDatabaseErrorBody =>
+      'Miz konnte die gespeicherten Elemente auf diesem Gerät nicht lesen. Schließe und öffne diese Seite erneut.';
 }

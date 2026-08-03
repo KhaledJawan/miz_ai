@@ -2,7 +2,6 @@ import 'package:flutter/material.dart';
 
 import '../../../../core/theme/app_radii.dart';
 import '../../../../core/theme/app_spacing.dart';
-import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/miz_switch.dart';
 
 class SettingsRow extends StatelessWidget {
@@ -42,7 +41,6 @@ class SettingsRow extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final colors = context.mizColors;
     final isLink = trailingText == null && value == null;
     final row = Padding(
       padding: const EdgeInsets.symmetric(
@@ -55,18 +53,23 @@ class SettingsRow extends StatelessWidget {
             width: AppSpacing.xxlPlus,
             height: AppSpacing.xxlPlus,
             decoration: BoxDecoration(
-              color: colors.surfaceSoft,
+              color: const Color(0xFFF2F2F2),
               shape: BoxShape.circle,
             ),
             child: Icon(
               leadingIcon,
               size: AppSpacing.lgPlus,
-              color: colors.textSecondary,
+              color: Colors.black54,
             ),
           ),
           const SizedBox(width: AppSpacing.md),
           Expanded(
-            child: Text(label, style: Theme.of(context).textTheme.bodyMedium),
+            child: Text(
+              label,
+              style: Theme.of(
+                context,
+              ).textTheme.bodyMedium?.copyWith(color: Colors.black),
+            ),
           ),
           if (trailingText != null)
             Flexible(
@@ -76,7 +79,7 @@ class SettingsRow extends StatelessWidget {
                 overflow: TextOverflow.ellipsis,
                 style: Theme.of(
                   context,
-                ).textTheme.bodySmall?.copyWith(color: colors.textSecondary),
+                ).textTheme.bodySmall?.copyWith(color: Colors.black54),
               ),
             ),
           if (value != null && onChanged != null)
@@ -85,7 +88,7 @@ class SettingsRow extends StatelessWidget {
             Icon(
               Icons.chevron_right,
               size: AppSpacing.xl,
-              color: colors.textTertiary,
+              color: Colors.black38,
             ),
         ],
       ),

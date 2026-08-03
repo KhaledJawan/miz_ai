@@ -1,4 +1,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <!-- Miz requests only foreground, approximate location after a user tap. -->
+    <uses-permission android:name="android.permission.ACCESS_COARSE_LOCATION" />
+    <!-- Required for the Supabase client and the miz-ai Edge Function call. -->
+    <uses-permission android:name="android.permission.INTERNET" />
     <application
         android:label="miz_ai"
         android:name="${applicationName}"

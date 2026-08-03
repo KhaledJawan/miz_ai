@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-/// Soft Orbit semantic color tokens. Feature widgets consume these through
+/// Spatial Glass semantic color tokens. Feature widgets consume these through
 /// [BuildContext.mizColors] and never introduce one-off color literals.
 class AppColors {
   const AppColors({
@@ -72,10 +72,10 @@ class AppColors {
   final Color shadow;
 
   static const light = AppColors(
-    background: Color(0xFFF7F7F5),
-    backgroundSecondary: Color(0xFFEDEDE9),
+    background: Color(0xFFF4F1EC),
+    backgroundSecondary: Color(0xFFE9E5DE),
     surface: Color(0xFFFFFFFF),
-    surfaceSoft: Color(0xFFF1F1EE),
+    surfaceSoft: Color(0xFFF0ECE6),
     surfaceGlass: Color(0xE6FFFFFF),
     text: Color(0xFF111111),
     textSecondary: Color(0xFF555555),
@@ -106,11 +106,11 @@ class AppColors {
   );
 
   static const dark = AppColors(
-    background: Color(0xFF0E0E0E),
-    backgroundSecondary: Color(0xFF151515),
-    surface: Color(0xFF1B1B1B),
-    surfaceSoft: Color(0xFF242424),
-    surfaceGlass: Color(0xEB1B1B1B),
+    background: Color(0xFF0C0B0B),
+    backgroundSecondary: Color(0xFF141313),
+    surface: Color(0xFF1A1818),
+    surfaceSoft: Color(0xFF242121),
+    surfaceGlass: Color(0xEB1A1818),
     text: Color(0xFFFFFFFF),
     textSecondary: Color(0xFFC8C8C8),
     textTertiary: Color(0xFF929292),
