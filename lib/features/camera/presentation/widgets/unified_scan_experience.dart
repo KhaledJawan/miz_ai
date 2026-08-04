@@ -8,21 +8,31 @@ import '../../../../core/theme/app_radii.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/widgets.dart';
 
-class MizQrScannerExperience extends StatefulWidget {
-  const MizQrScannerExperience({
-    required this.onDetected,
-    required this.onUnavailable,
+/// The single unified camera screen: a live QR-watching camera preview
+/// (any valid Miz QR code is detected automatically, no tap required) with
+/// "Take Photo" / "Choose from Library" always available for a still
+/// capture — which is then classified automatically as a menu or a single
+/// dish (see `CameraWorkflowController.analyzeCapture`). There is no
+/// manual mode picker.
+class UnifiedScanExperience extends StatefulWidget {
+  const UnifiedScanExperience({
+    required this.onQrDetected,
+    required this.onQrUnavailable,
+    required this.onCapture,
+    required this.onChoosePhoto,
     super.key,
   });
 
-  final ValueChanged<String> onDetected;
-  final ValueChanged<String> onUnavailable;
+  final ValueChanged<String> onQrDetected;
+  final ValueChanged<String> onQrUnavailable;
+  final VoidCallback onCapture;
+  final VoidCallback onChoosePhoto;
 
   @override
-  State<MizQrScannerExperience> createState() => _MizQrScannerExperienceState();
+  State<UnifiedScanExperience> createState() => _UnifiedScanExperienceState();
 }
 
-class _MizQrScannerExperienceState extends State<MizQrScannerExperience> {
+class _UnifiedScanExperienceState extends State<UnifiedScanExperience> {
   late final MobileScannerController _controller;
   bool _handlingDetection = false;
 
@@ -55,7 +65,7 @@ class _MizQrScannerExperienceState extends State<MizQrScannerExperience> {
     if (raw == null) return;
     _handlingDetection = true;
     await _controller.stop();
-    widget.onDetected(raw);
+    widget.onQrDetected(raw);
   }
 
   @override
@@ -76,7 +86,7 @@ class _MizQrScannerExperienceState extends State<MizQrScannerExperience> {
                   tapToFocus: true,
                   onDetect: _onDetect,
                   onDetectError: (error, stackTrace) =>
-                      widget.onUnavailable('QR_SCAN_FAILED'),
+                      widget.onQrUnavailable('QR_SCAN_FAILED'),
                   errorBuilder: (context, error) => MizResultCard(
                     title: l10n.qrScannerUnavailableTitle,
                     body: l10n.qrScannerUnavailableBody,
@@ -87,13 +97,27 @@ class _MizQrScannerExperienceState extends State<MizQrScannerExperience> {
                     child: Center(child: CircularProgressIndicator.adaptive()),
                   ),
                 ),
-                IgnorePointer(
-                  child: Padding(
-                    padding: const EdgeInsets.all(AppSpacing.xxl),
+                PositionedDirectional(
+                  start: AppSpacing.xl,
+                  end: AppSpacing.xl,
+                  bottom: AppSpacing.xl,
+                  child: IgnorePointer(
                     child: DecoratedBox(
                       decoration: BoxDecoration(
-                        border: Border.all(color: Colors.white, width: 3),
-                        borderRadius: BorderRadius.circular(AppRadii.xl),
+                        color: Colors.black.withValues(alpha: 0.45),
+                        borderRadius: BorderRadius.circular(AppRadii.lg),
+                      ),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: AppSpacing.md,
+                          vertical: AppSpacing.sm,
+                        ),
+                        child: Text(
+                          l10n.scanUnifiedInstruction,
+                          textAlign: TextAlign.center,
+                          style: Theme.of(context).textTheme.bodySmall
+                              ?.copyWith(color: Colors.white),
+                        ),
                       ),
                     ),
                   ),
@@ -102,17 +126,19 @@ class _MizQrScannerExperienceState extends State<MizQrScannerExperience> {
             ),
           ),
         ),
-        const SizedBox(height: AppSpacing.md),
-        Text(
-          l10n.scanQrInstruction,
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.bodyMedium,
+        const SizedBox(height: AppSpacing.lg),
+        MizButton.primary(
+          label: l10n.takePhoto,
+          leading: const Icon(Icons.photo_camera_rounded),
+          expand: true,
+          onPressed: widget.onCapture,
         ),
-        const SizedBox(height: AppSpacing.xs),
-        Text(
-          l10n.mizQrOnlyNotice,
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.bodySmall,
+        const SizedBox(height: AppSpacing.sm),
+        MizButton.secondary(
+          label: l10n.choosePhoto,
+          leading: const Icon(Icons.photo_library_outlined),
+          expand: true,
+          onPressed: widget.onChoosePhoto,
         ),
       ],
     );

@@ -9,6 +9,7 @@ import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/theme/app_theme.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../domain/camera_models.dart';
+import '../../domain/menu_context_summary.dart';
 
 class MenuCaptureExperience extends StatelessWidget {
   const MenuCaptureExperience({
@@ -210,11 +211,16 @@ class MenuAnalysisResults extends StatelessWidget {
   const MenuAnalysisResults({
     required this.result,
     required this.onReset,
+    required this.onAskMiz,
     super.key,
   });
 
   final MenuAnalysisResult result;
   final VoidCallback onReset;
+
+  /// Navigates to a Stage 4 follow-up chat carrying a deterministic
+  /// summary of [result] — see `buildMenuContextSummary`.
+  final ValueChanged<String> onAskMiz;
 
   @override
   Widget build(BuildContext context) {
@@ -224,15 +230,15 @@ class MenuAnalysisResults extends StatelessWidget {
       children: [
         MizResultCard(
           title: l10n.menuExplainedTitle,
-          body: result.overview,
+          body: l10n.menuExplainedBody(result.dishCount),
           icon: Icons.auto_awesome_rounded,
         ),
         const SizedBox(height: AppSpacing.lg),
-        for (final section in result.sections) ...[
-          Text(section.title, style: Theme.of(context).textTheme.titleLarge),
+        for (final category in result.categories) ...[
+          Text(category.name, style: Theme.of(context).textTheme.titleLarge),
           const SizedBox(height: AppSpacing.sm),
-          for (final item in section.items) ...[
-            _MenuItemCard(item: item),
+          for (final dish in category.dishes) ...[
+            _DishCard(dish: dish, currency: result.currency),
             const SizedBox(height: AppSpacing.md),
           ],
           const SizedBox(height: AppSpacing.sm),
@@ -274,6 +280,13 @@ class MenuAnalysisResults extends StatelessWidget {
           ),
         ),
         const SizedBox(height: AppSpacing.md),
+        MizButton.primary(
+          label: l10n.menuAskAboutThisMenu,
+          leading: const Icon(Icons.chat_bubble_outline_rounded),
+          expand: true,
+          onPressed: () => onAskMiz(buildMenuContextSummary(result)),
+        ),
+        const SizedBox(height: AppSpacing.sm),
         MizButton.secondary(
           label: l10n.scanAnotherMenu,
           expand: true,
@@ -284,14 +297,34 @@ class MenuAnalysisResults extends StatelessWidget {
   }
 }
 
-class _MenuItemCard extends StatelessWidget {
-  const _MenuItemCard({required this.item});
+class _DishCard extends StatelessWidget {
+  const _DishCard({required this.dish, required this.currency});
 
-  final MenuItemExplanation item;
+  final MatchedDish dish;
+  final String? currency;
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
+    final colors = context.mizColors;
+    final displayName = dish.matchedName ?? dish.extractedName;
+    final priceLabel = dish.price == null
+        ? null
+        : currency == null
+        ? dish.price!.toStringAsFixed(2)
+        : '${dish.price!.toStringAsFixed(2)} $currency';
+    final priceColor = switch (dish.priceIndicator) {
+      PriceIndicator.good => colors.priceGood,
+      PriceIndicator.high => colors.priceElevated,
+      PriceIndicator.veryHigh => colors.error,
+      PriceIndicator.unknown => Colors.black,
+    };
+    final priceSemanticLabel = switch (dish.priceIndicator) {
+      PriceIndicator.good => l10n.menuPriceGood,
+      PriceIndicator.high => l10n.menuPriceHigh,
+      PriceIndicator.veryHigh => l10n.menuPriceVeryHigh,
+      PriceIndicator.unknown => '',
+    };
     return MizGlassSurface(
       level: MizGlassLevel.secondary,
       prominent: true,
@@ -305,49 +338,119 @@ class _MenuItemCard extends StatelessWidget {
             children: [
               Expanded(
                 child: Text(
-                  item.name,
+                  displayName,
                   style: Theme.of(
                     context,
                   ).textTheme.titleMedium?.copyWith(color: Colors.black),
                 ),
               ),
-              if (item.price != null && item.price!.isNotEmpty)
-                Text(
-                  item.price!,
-                  style: Theme.of(
-                    context,
-                  ).textTheme.labelLarge?.copyWith(color: Colors.black),
+              if (priceLabel != null)
+                Semantics(
+                  label: priceSemanticLabel.isEmpty
+                      ? priceLabel
+                      : '$priceLabel — $priceSemanticLabel',
+                  child: ExcludeSemantics(
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.attach_money_rounded,
+                          size: 18,
+                          color: priceColor,
+                        ),
+                        Text(
+                          priceLabel,
+                          style: Theme.of(context).textTheme.labelLarge
+                              ?.copyWith(color: Colors.black),
+                        ),
+                      ],
+                    ),
+                  ),
                 ),
             ],
           ),
-          const SizedBox(height: AppSpacing.sm),
-          Text(item.explanation, style: const TextStyle(color: Colors.black87)),
-          if (item.dietaryTags.isNotEmpty) ...[
+          if (dish.shortDescription != null &&
+              dish.shortDescription!.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.sm),
+            Text(
+              dish.shortDescription!,
+              style: const TextStyle(color: Colors.black87),
+            ),
+          ],
+          if (dish.safetyStatus != null) ...[
             const SizedBox(height: AppSpacing.md),
             Wrap(
               spacing: AppSpacing.sm,
               runSpacing: AppSpacing.sm,
               children: [
-                for (final tag in item.dietaryTags)
-                  Chip(
-                    label: Text(tag),
-                    backgroundColor: Colors.white,
-                    side: BorderSide.none,
-                  ),
+                _StatusChip(
+                  label: switch (dish.safetyStatus!) {
+                    DishSafetyStatus.safe => l10n.menuDishSafe,
+                    DishSafetyStatus.warning => l10n.menuDishWarning,
+                    DishSafetyStatus.restricted => l10n.menuDishRestricted,
+                  },
+                  color: switch (dish.safetyStatus!) {
+                    DishSafetyStatus.safe => colors.success,
+                    DishSafetyStatus.warning => colors.accent2,
+                    DishSafetyStatus.restricted => colors.error,
+                  },
+                ),
               ],
             ),
           ],
-          if (item.possibleAllergens.isNotEmpty) ...[
-            const SizedBox(height: AppSpacing.md),
-            Text(
-              l10n.possibleAllergens(item.possibleAllergens.join(', ')),
-              style: Theme.of(
-                context,
-              ).textTheme.bodySmall?.copyWith(color: context.mizColors.error),
-            ),
+          if (dish.safetyReasons.isNotEmpty) ...[
+            const SizedBox(height: AppSpacing.sm),
+            for (final reason in dish.safetyReasons)
+              Text(
+                '• ${_reasonLabel(l10n, reason.code)}',
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: colors.textSecondary),
+              ),
           ],
         ],
       ),
     );
   }
+
+  String _reasonLabel(AppLocalizations l10n, String code) => switch (code) {
+    'notHalal' => l10n.menuReasonNotHalal,
+    'halalUncertain' => l10n.menuReasonHalalUncertain,
+    'halalUnknown' => l10n.menuReasonHalalUnknown,
+    'halalPreferenceNotMet' => l10n.menuReasonHalalPreferenceNotMet,
+    'notVegan' => l10n.menuReasonNotVegan,
+    'veganUncertain' => l10n.menuReasonVeganUncertain,
+    'notVegetarian' => l10n.menuReasonNotVegetarian,
+    'vegetarianUncertain' => l10n.menuReasonVegetarianUncertain,
+    'containsAlcohol' => l10n.menuReasonContainsAlcohol,
+    'mayContainAlcohol' => l10n.menuReasonMayContainAlcohol,
+    'alcoholUnknown' => l10n.menuReasonAlcoholUnknown,
+    'allergensNotVerifiable' => l10n.menuReasonAllergensNotVerifiable,
+    _ => code,
+  };
+}
+
+class _StatusChip extends StatelessWidget {
+  const _StatusChip({required this.label, required this.color});
+
+  final String label;
+  final Color color;
+
+  @override
+  Widget build(BuildContext context) => Container(
+    padding: const EdgeInsets.symmetric(
+      horizontal: AppSpacing.sm,
+      vertical: 4,
+    ),
+    decoration: BoxDecoration(
+      color: color.withValues(alpha: 0.14),
+      borderRadius: BorderRadius.circular(AppRadii.full),
+    ),
+    child: Text(
+      label,
+      style: Theme.of(
+        context,
+      ).textTheme.labelSmall?.copyWith(color: color, fontWeight: FontWeight.w600),
+    ),
+  );
 }

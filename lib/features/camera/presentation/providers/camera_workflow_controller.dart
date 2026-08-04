@@ -4,6 +4,8 @@ import 'package:riverpod_annotation/riverpod_annotation.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
 
 import '../../../../core/config/app_config.dart';
+import '../../../food_profile/domain/food_profile_ai_context.dart';
+import '../../../food_profile/presentation/providers/food_profile_providers.dart';
 import '../../../profile_settings/presentation/providers/app_settings_controller.dart';
 import '../../data/image_picker_camera_capture_service.dart';
 import '../../data/supabase_camera_analysis_service.dart';
@@ -13,6 +15,25 @@ import '../../domain/camera_services.dart';
 import '../../domain/miz_qr_validator.dart';
 
 part 'camera_workflow_controller.g.dart';
+
+/// Same minimized Food Profile context `ConversationController` sends —
+/// duplicated as its own provider (rather than imported from the
+/// conversation feature) so `camera/` doesn't reach into another feature's
+/// presentation internals for what is otherwise a shared domain function.
+@riverpod
+class MenuScanFoodProfileContext extends _$MenuScanFoodProfileContext {
+  @override
+  Future<Map<String, dynamic>?> build() async {
+    try {
+      final snapshot = await ref.watch(foodProfileSnapshotProvider.future);
+      return buildFoodProfileAiContext(snapshot);
+    } catch (_) {
+      // Best-effort only — a menu can always be analyzed without
+      // personalization context.
+      return null;
+    }
+  }
+}
 
 @riverpod
 CameraCaptureService cameraCaptureService(CameraCaptureServiceRef ref) =>
@@ -31,6 +52,12 @@ CameraAnalysisService cameraAnalysisService(CameraAnalysisServiceRef ref) {
 @riverpod
 MizQrValidator mizQrValidator(MizQrValidatorRef ref) => const MizQrValidator();
 
+/// A single unified camera screen: no manual mode picker. QR codes are
+/// decoded live, on-device, while [CameraWorkflowState.stage] is
+/// [CameraStage.live]. A still capture (photo or gallery pick) is reviewed
+/// once, then [analyzeCapture] classifies it (`classify-capture`) and
+/// routes automatically to the menu or food-recognition pipeline — see
+/// [CameraMode]/[CaptureKind].
 @riverpod
 class CameraWorkflowController extends _$CameraWorkflowController {
   @override
@@ -86,19 +113,6 @@ class CameraWorkflowController extends _$CameraWorkflowController {
           state = state.copyWith(stage: CameraStage.error);
         }
     }
-  }
-
-  void selectMode(CameraMode mode) {
-    if (mode == state.mode) return;
-    final service = ref.read(cameraCaptureServiceProvider);
-    for (final capture in state.captures) {
-      unawaited(service.deleteTemporary(capture));
-    }
-    final protectedStage = switch (state.stage) {
-      CameraStage.permission || CameraStage.denied => state.stage,
-      _ => CameraStage.live,
-    };
-    state = CameraWorkflowState(mode: mode, stage: protectedStage);
   }
 
   Future<void> capture() async {
@@ -177,6 +191,7 @@ class CameraWorkflowController extends _$CameraWorkflowController {
       captures: captures,
       stage: captures.isEmpty ? CameraStage.live : CameraStage.preview,
       clearActiveCapture: captures.isEmpty,
+      clearMode: captures.isEmpty,
       activeCaptureIndex: captures.isEmpty ? null : captures.length - 1,
       clearMenuAnalysis: true,
       clearFoodAnalysis: true,
@@ -198,6 +213,86 @@ class CameraWorkflowController extends _$CameraWorkflowController {
     if (index != null) unawaited(retake(index));
   }
 
+  /// The single confirm step after a *first*, not-yet-classified capture:
+  /// calls `classify-capture` and routes automatically to the menu or
+  /// food-recognition pipeline — no manual mode picker.
+  Future<void> analyzeCapture() async {
+    if (state.captures.isEmpty) {
+      state = state.copyWith(stage: CameraStage.error);
+      return;
+    }
+    state = state.copyWith(stage: CameraStage.processing);
+    try {
+      final kind = await ref
+          .read(cameraAnalysisServiceProvider)
+          .classifyCapture(
+            state.captures.last,
+            locale: ref.read(appSettingsControllerProvider).languageCode,
+          );
+      switch (kind) {
+        case CaptureKind.menu:
+          state = state.copyWith(
+            mode: CameraMode.menuScan,
+            stage: CameraStage.preview,
+          );
+        case CaptureKind.singleDish:
+          state = state.copyWith(mode: CameraMode.foodRecognition);
+          await _runFoodRecognition();
+        case CaptureKind.unrecognized:
+          state = state.copyWith(
+            stage: CameraStage.uncertain,
+            errorCode: 'CAPTURE_UNRECOGNIZED',
+          );
+      }
+    } on CameraNetworkException catch (error) {
+      state = state.copyWith(stage: CameraStage.offline, errorCode: error.code);
+    } on CaptureClassificationException catch (error) {
+      state = state.copyWith(stage: CameraStage.error, errorCode: error.code);
+    } on CameraCapabilityException catch (error) {
+      state = state.copyWith(
+        stage: CameraStage.unavailable,
+        errorCode: error.code,
+      );
+    } catch (_) {
+      state = state.copyWith(stage: CameraStage.error);
+    }
+  }
+
+  Future<void> _runFoodRecognition() async {
+    state = state.copyWith(stage: CameraStage.processing);
+    try {
+      final result = await ref
+          .read(cameraAnalysisServiceProvider)
+          .recognizeFood(
+            state.captures.last,
+            locale: ref.read(appSettingsControllerProvider).languageCode,
+          );
+      state = state.copyWith(
+        stage: !result.recognized || result.candidates.isEmpty
+            ? CameraStage.uncertain
+            : result.candidates.length > 1
+            ? CameraStage.multipleMatches
+            : CameraStage.result,
+        foodCandidates: result.candidates,
+        foodOverview: result.overview,
+      );
+    } on CameraNetworkException catch (error) {
+      state = state.copyWith(stage: CameraStage.offline, errorCode: error.code);
+    } on FoodRecognitionException catch (error) {
+      state = state.copyWith(stage: CameraStage.error, errorCode: error.code);
+    } on CameraCapabilityException catch (error) {
+      state = state.copyWith(
+        stage: CameraStage.unavailable,
+        errorCode: error.code,
+      );
+    } catch (_) {
+      state = state.copyWith(stage: CameraStage.error);
+    }
+  }
+
+  /// The final "Explain menu" step, once the user has finished adding pages
+  /// (only reachable once [analyzeCapture] has already classified this scan
+  /// as a menu — see [CameraMode.menuScan]).
   Future<void> confirmCapture() async {
     if (state.captures.isEmpty) {
       state = state.copyWith(stage: CameraStage.error);
@@ -205,41 +300,25 @@ class CameraWorkflowController extends _$CameraWorkflowController {
     }
     state = state.copyWith(stage: CameraStage.processing);
     try {
-      if (state.mode == CameraMode.foodRecognition) {
-        final result = await ref
-            .read(cameraAnalysisServiceProvider)
-            .recognizeFood(
-              state.captures.last,
-              locale: ref.read(appSettingsControllerProvider).languageCode,
-            );
-        state = state.copyWith(
-          stage: !result.recognized || result.candidates.isEmpty
-              ? CameraStage.uncertain
-              : result.candidates.length > 1
-              ? CameraStage.multipleMatches
-              : CameraStage.result,
-          foodCandidates: result.candidates,
-          foodOverview: result.overview,
-        );
-      } else if (state.mode == CameraMode.menuScan) {
-        final status = await ref
-            .read(cameraAnalysisServiceProvider)
-            .analyzeMenu(
-              state.captures,
-              locale: ref.read(appSettingsControllerProvider).languageCode,
-            );
-        state = state.copyWith(
-          stage: status.readable && status.itemCount > 0
-              ? CameraStage.result
-              : CameraStage.uncertain,
-          menuAnalysis: status,
-        );
-      }
+      final foodProfileContext = await ref.read(
+        menuScanFoodProfileContextProvider.future,
+      );
+      final status = await ref
+          .read(cameraAnalysisServiceProvider)
+          .analyzeMenu(
+            state.captures,
+            locale: ref.read(appSettingsControllerProvider).languageCode,
+            foodProfileContext: foodProfileContext,
+          );
+      state = state.copyWith(
+        stage: status.readable && status.dishCount > 0
+            ? CameraStage.result
+            : CameraStage.uncertain,
+        menuAnalysis: status,
+      );
     } on CameraNetworkException catch (error) {
       state = state.copyWith(stage: CameraStage.offline, errorCode: error.code);
     } on MenuAnalysisException catch (error) {
-      state = state.copyWith(stage: CameraStage.error, errorCode: error.code);
-    } on FoodRecognitionException catch (error) {
       state = state.copyWith(stage: CameraStage.error, errorCode: error.code);
     } on CameraCapabilityException catch (error) {
       state = state.copyWith(
@@ -256,7 +335,7 @@ class CameraWorkflowController extends _$CameraWorkflowController {
     for (final capture in state.captures) {
       await service.deleteTemporary(capture);
     }
-    state = CameraWorkflowState(mode: state.mode, stage: CameraStage.live);
+    state = const CameraWorkflowState(stage: CameraStage.live);
   }
 
   Future<void> handleQrPayload(String raw) async {
@@ -301,7 +380,7 @@ class CameraWorkflowController extends _$CameraWorkflowController {
   }
 
   void reportQrScannerUnavailable([String code = 'QR_SCANNER_UNAVAILABLE']) {
-    if (state.mode != CameraMode.mizQr) return;
+    if (state.stage != CameraStage.live) return;
     state = state.copyWith(stage: CameraStage.error, errorCode: code);
   }
 }

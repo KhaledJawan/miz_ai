@@ -35,3 +35,25 @@ Deno.test("rejects unsupported image types and malformed base64", () => {
     parseMenuAnalysisRequest({ images: [{ mimeType: "image/jpeg", data: "not base64" }] })
   );
 });
+
+Deno.test("foodProfileContext defaults to null and passes through an opaque object", () => {
+  const withoutContext = parseMenuAnalysisRequest({
+    images: [{ mimeType: "image/jpeg", data: "YWJj" }],
+  });
+  assertEquals(withoutContext.foodProfileContext, null);
+
+  const withContext = parseMenuAnalysisRequest({
+    images: [{ mimeType: "image/jpeg", data: "YWJj" }],
+    foodProfileContext: { dietType: "vegan" },
+  });
+  assertEquals(withContext.foodProfileContext, { dietType: "vegan" });
+});
+
+Deno.test("rejects a non-object foodProfileContext", () => {
+  assertThrows(() =>
+    parseMenuAnalysisRequest({
+      images: [{ mimeType: "image/jpeg", data: "YWJj" }],
+      foodProfileContext: "not an object",
+    })
+  );
+});

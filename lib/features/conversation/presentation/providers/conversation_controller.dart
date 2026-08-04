@@ -61,18 +61,23 @@ class ConversationController extends _$ConversationController {
   var _requestInFlight = false;
 
   @override
-  ConversationState build(String initialPrompt) {
-    final prompt = initialPrompt.trim();
+  ConversationState build(ConversationLaunchArgs launchArgs) {
+    final prompt = launchArgs.prompt.trim();
     final now = DateTime.now();
     final archiveId = 'conversation-${now.microsecondsSinceEpoch}';
     if (prompt.isEmpty) {
-      return ConversationState(localArchiveId: archiveId, createdAt: now);
+      return ConversationState(
+        localArchiveId: archiveId,
+        createdAt: now,
+        menuContext: launchArgs.menuContext,
+      );
     }
     final initial = ConversationState(
       messages: [_userMessage(prompt)],
       status: ConversationStatus.loading,
       localArchiveId: archiveId,
       createdAt: now,
+      menuContext: launchArgs.menuContext,
     );
     unawaited(Future<void>.microtask(() => _request(prompt)));
     return initial;
@@ -203,6 +208,7 @@ class ConversationController extends _$ConversationController {
                       longitude: selectedCity.longitude,
                     ),
               foodProfileContext: foodProfileContext,
+              menuContext: state.menuContext,
             ),
           );
 

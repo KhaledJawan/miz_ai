@@ -38,19 +38,23 @@ void main() {
           'analysis': {
             'readable': true,
             'detectedLanguage': 'German',
-            'overview': 'A short menu.',
             'currency': 'EUR',
-            'sections': [
+            'categories': [
               {
-                'title': 'Mains',
-                'items': [
+                'name': 'Mains',
+                'dishes': [
                   {
-                    'name': 'Pasta',
-                    'explanation': 'Pasta with tomato sauce.',
-                    'price': '€12',
-                    'dietaryTags': ['vegetarian'],
-                    'possibleAllergens': ['wheat'],
-                    'confidence': 'high',
+                    'extractedName': 'Pasta',
+                    'price': 12.0,
+                    'priceIndicator': 'good',
+                    'matchedFoodId': 'food-1',
+                    'matchedName': 'Pasta al Pomodoro',
+                    'shortDescription': 'Pasta with tomato sauce.',
+                    'imagePath': null,
+                    'matchConfidence': 0.9,
+                    'safetyStatus': 'safe',
+                    'safetyReasons': <Map<String, dynamic>>[],
+                    'safetyCertain': true,
                   },
                 ],
               },
@@ -73,10 +77,10 @@ void main() {
 
     expect(capturedBody?['locale'], 'de');
     expect(capturedBody?['images'], hasLength(1));
-    expect(result.itemCount, 1);
+    expect(result.dishCount, 1);
     expect(
-      result.sections.single.items.single.confidence,
-      MenuItemConfidence.high,
+      result.categories.single.dishes.single.safetyStatus,
+      DishSafetyStatus.safe,
     );
   });
 
@@ -142,5 +146,67 @@ void main() {
     expect(capturedBody?['image'], isA<Map>());
     expect(result.recognized, isTrue);
     expect(result.candidates.single.name, 'Pizza Margherita');
+  });
+
+  test('classifies a capture and maps the wire kind to CaptureKind', () async {
+    final image = File('${temporaryDirectory.path}/capture.jpg');
+    await image.writeAsBytes([0xff, 0xd8, 0xff, 0xd9]);
+    Map<String, dynamic>? capturedBody;
+    String? capturedFunctionName;
+    when(
+      () => functionsClient.invoke(any(), body: any(named: 'body')),
+    ).thenAnswer((invocation) async {
+      capturedFunctionName = invocation.positionalArguments.first as String;
+      capturedBody = invocation.namedArguments[#body] as Map<String, dynamic>;
+      return const FunctionResponse(
+        data: {
+          'success': true,
+          'result': {'kind': 'menu'},
+        },
+        status: 200,
+      );
+    });
+
+    final kind = await service.classifyCapture(
+      TemporaryCapture(
+        id: 'capture-1',
+        path: image.path,
+        createdAt: DateTime(2026),
+        mimeType: 'image/jpeg',
+      ),
+      locale: 'en',
+    );
+
+    expect(capturedFunctionName, 'classify-capture');
+    expect(capturedBody?['locale'], 'en');
+    expect(kind, CaptureKind.menu);
+  });
+
+  test('an unknown classify kind falls back to unrecognized rather than throwing', () async {
+    final image = File('${temporaryDirectory.path}/capture2.jpg');
+    await image.writeAsBytes([0xff, 0xd8, 0xff, 0xd9]);
+    when(
+      () => functionsClient.invoke(any(), body: any(named: 'body')),
+    ).thenAnswer(
+      (_) async => const FunctionResponse(
+        data: {
+          'success': true,
+          'result': {'kind': 'something_new'},
+        },
+        status: 200,
+      ),
+    );
+
+    final kind = await service.classifyCapture(
+      TemporaryCapture(
+        id: 'capture-2',
+        path: image.path,
+        createdAt: DateTime(2026),
+        mimeType: 'image/jpeg',
+      ),
+      locale: 'en',
+    );
+
+    expect(kind, CaptureKind.unrecognized);
   });
 }

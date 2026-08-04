@@ -825,23 +825,11 @@ class AppLocalizationsDe extends AppLocalizations {
   String get cameraTitle => 'Kamera';
 
   @override
-  String get foodRecognitionMode => 'Speise';
-
-  @override
-  String get mizQrMode => 'Miz QR';
-
-  @override
-  String get menuScanMode => 'Menü';
-
-  @override
-  String get changeCameraMode => 'Kameramodus ändern';
-
-  @override
   String get cameraPermissionTitle => 'Kamerazugriff erforderlich';
 
   @override
   String get cameraPermissionBody =>
-      'Miz verwendet die Kamera erst nach deiner Moduswahl. Aufnahmen bleiben temporär und werden nie unbemerkt hochgeladen.';
+      'Richte die Kamera auf einen Miz-QR-Code, eine Speisekarte oder ein Gericht -- Miz erkennt automatisch, worum es sich handelt. Aufnahmen bleiben temporär und werden nie unbemerkt hochgeladen.';
 
   @override
   String get allowCamera => 'Kamera erlauben';
@@ -899,12 +887,8 @@ class AppLocalizationsDe extends AppLocalizations {
       'Zum Fortfahren wäre eine sichere Cloud-Verarbeitung nötig. Miz fragt vor jedem Upload nach.';
 
   @override
-  String get scanQrInstruction =>
-      'Richte einen Miz-Restaurant- oder Tisch-QR-Code im Rahmen aus.';
-
-  @override
-  String get mizQrOnlyNotice =>
-      'Nur signierte Miz-Codes für Restaurants und Tische werden akzeptiert. Andere QR-Links werden nie automatisch geöffnet.';
+  String get scanUnifiedInstruction =>
+      'Richte die Kamera auf einen Miz-QR-Code, um ihn automatisch zu öffnen, oder fotografiere eine Speisekarte oder ein Gericht.';
 
   @override
   String get qrScannerUnavailableTitle => 'QR-Scanner nicht verfügbar';
@@ -948,15 +932,27 @@ class AppLocalizationsDe extends AppLocalizations {
       'Das QR-Format ist gültig. Vor dem Öffnen eines Restaurants oder einer Tischsitzung ist eine Netzwerkprüfung erforderlich.';
 
   @override
-  String get foodPhotoInstruction =>
-      'Fotografiere ein einzelnes fertiges Gericht deutlich oder wähle ein Foto aus deiner Mediathek.';
+  String get captureUploadConsent =>
+      'Wenn du auf Analysieren tippst, wird dieses temporäre Foto sicher zur KI-Analyse gesendet. Miz speichert es nicht.';
 
   @override
-  String get foodUploadConsent =>
-      'Wenn du auf Speise erkennen tippst, wird dieses temporäre Foto sicher zur KI-Analyse gesendet. Miz speichert es nicht.';
+  String get analyzePhoto => 'Analysieren';
 
   @override
-  String get identifyFood => 'Speise erkennen';
+  String get captureUnrecognizedTitle =>
+      'Miz konnte nicht erkennen, was das war';
+
+  @override
+  String get captureUnrecognizedBody =>
+      'Versuche ein deutlicheres Foto einer Speisekarte oder eines einzelnen fertigen Gerichts, zentriert und scharf.';
+
+  @override
+  String get captureAnalysisFailedTitle =>
+      'Miz konnte dieses Foto nicht analysieren';
+
+  @override
+  String get captureAnalysisFailedBody =>
+      'Die sichere Analyse wurde nicht abgeschlossen. Dein Foto wurde nicht gespeichert. Prüfe die Verbindung und versuche es erneut.';
 
   @override
   String get foodRecognizedTitle => 'Speise erkannt';
@@ -1043,16 +1039,84 @@ class AppLocalizationsDe extends AppLocalizations {
   String get menuExplainedTitle => 'Deine Speisekarte, erklärt';
 
   @override
-  String get menuNotesTitle => 'Hilfreiche Hinweise';
+  String menuExplainedBody(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other:
+          '$count Gerichte gefunden und mit deinem Food Profile abgeglichen.',
+      one: '1 Gericht gefunden und mit deinem Food Profile abgeglichen.',
+      zero: 'Noch keine Gerichte in Miz\' Essensdatenbank gefunden.',
+    );
+    return '$_temp0';
+  }
 
   @override
-  String possibleAllergens(String allergens) {
-    return 'Mögliche Allergene: $allergens';
-  }
+  String get menuNotesTitle => 'Hilfreiche Hinweise';
 
   @override
   String get menuAllergenDisclaimer =>
       'KI kann Fehler machen. Bestätige Zutaten und Allergene vor der Bestellung immer beim Restaurant.';
+
+  @override
+  String get menuDishSafe => 'Passt zu deinem Profil';
+
+  @override
+  String get menuDishWarning => 'Vor der Bestellung prüfen';
+
+  @override
+  String get menuDishRestricted => 'Passt nicht zu deinem Profil';
+
+  @override
+  String get menuPriceGood => 'Guter Preis';
+
+  @override
+  String get menuPriceHigh => 'Etwas teurer als im Durchschnitt';
+
+  @override
+  String get menuPriceVeryHigh => 'Hoher Preis';
+
+  @override
+  String get menuAskAboutThisMenu => 'Miz zu diesem Menü fragen';
+
+  @override
+  String get menuReasonNotHalal => 'Enthält nicht-halal Zutaten';
+
+  @override
+  String get menuReasonHalalUncertain =>
+      'Halal-Status hängt von der Zubereitung ab';
+
+  @override
+  String get menuReasonHalalUnknown => 'Halal-Status unbekannt';
+
+  @override
+  String get menuReasonHalalPreferenceNotMet =>
+      'Nicht als halal bestätigt (deine Präferenz)';
+
+  @override
+  String get menuReasonNotVegan => 'Nicht vegan';
+
+  @override
+  String get menuReasonVeganUncertain => 'Veganer Status unsicher';
+
+  @override
+  String get menuReasonNotVegetarian => 'Nicht vegetarisch';
+
+  @override
+  String get menuReasonVegetarianUncertain => 'Vegetarischer Status unsicher';
+
+  @override
+  String get menuReasonContainsAlcohol => 'Enthält Alkohol';
+
+  @override
+  String get menuReasonMayContainAlcohol => 'Kann Alkohol enthalten';
+
+  @override
+  String get menuReasonAlcoholUnknown => 'Alkoholgehalt unbekannt';
+
+  @override
+  String get menuReasonAllergensNotVerifiable =>
+      'Allergene konnten nicht mit deinem Profil abgeglichen werden';
 
   @override
   String get scanAnotherMenu => 'Weiteres Menü scannen';

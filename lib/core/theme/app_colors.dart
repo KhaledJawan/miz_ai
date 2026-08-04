@@ -19,6 +19,8 @@ class AppColors {
     required this.divider,
     required this.error,
     required this.success,
+    required this.priceGood,
+    required this.priceElevated,
     required this.neutral100,
     required this.neutral200,
     required this.neutral300,
@@ -52,6 +54,14 @@ class AppColors {
   final Color divider;
   final Color error;
   final Color success;
+
+  /// Traffic-light price tiers (menu dish price relative to its category
+  /// median) — the one deliberate exception to this app's otherwise
+  /// monochrome/red palette, per explicit product direction: a red $ mark
+  /// already exists via [error]; these two cover green ("good") and amber
+  /// ("high").
+  final Color priceGood;
+  final Color priceElevated;
 
   // Tonal compatibility tokens used by MizTag and existing feature widgets.
   final Color neutral100;
@@ -87,6 +97,8 @@ class AppColors {
     divider: Color(0x1A111111),
     error: Color(0xFFA91F16),
     success: Color(0xFF292929),
+    priceGood: Color(0xFF1E8E3E),
+    priceElevated: Color(0xFFB98900),
     neutral100: Color(0xFFF5F5F2),
     neutral200: Color(0xFFEDEDE9),
     neutral300: Color(0xFFDCDCD7),
@@ -121,6 +133,8 @@ class AppColors {
     divider: Color(0x1FFFFFFF),
     error: Color(0xFFFF7564),
     success: Color(0xFFE4E4E4),
+    priceGood: Color(0xFF66BB6A),
+    priceElevated: Color(0xFFFFC94D),
     neutral100: Color(0xFF242424),
     neutral200: Color(0xFF2D2D2D),
     neutral300: Color(0xFF3A3A3A),

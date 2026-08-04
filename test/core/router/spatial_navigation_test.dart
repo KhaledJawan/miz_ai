@@ -33,9 +33,8 @@ void main() {
     await tester.pump(const Duration(milliseconds: 320));
     await tester.pump();
     expect(find.text('Camera'), findsOneWidget);
-    expect(find.text('Food'), findsOneWidget);
-    expect(find.text('Miz QR'), findsOneWidget);
-    expect(find.text('Menu'), findsOneWidget);
+    expect(find.text('Take photo'), findsOneWidget);
+    expect(find.text('Choose photo'), findsOneWidget);
     expect(find.byType(BackButton), findsNothing);
 
     await tester.binding.handlePopRoute();

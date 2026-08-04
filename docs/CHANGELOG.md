@@ -2,6 +2,39 @@
 
 Format loosely follows [Keep a Changelog](https://keepachangelog.com/). Dates in `YYYY-MM-DD`. Entries are per-milestone, not per-commit — see [`CONTRIBUTING.md`](../CONTRIBUTING.md).
 
+## [Unreleased] — Colored price indicator, guest-facing polish, and organic catalog growth — 2026-08-04
+
+### Added
+- Menu dish prices now show a colored $ mark (green/amber/red for good/high/very-high, relative to the category median) instead of a text badge; `PriceValueIndicator` narrowed from 4 states to a clearer 3-tier `good`/`high`/`very_high` scale.
+- Unmatched dishes are now automatically proposed to Mizzz as pending `create_food` candidates (new anon-safe Mizzz RPC `food_catalog_v1_propose_candidate`, deduplicated by normalized name, never auto-approved, never carries a description or dietary claim) — real menu scans now organically grow the review queue instead of only the curated German seed set.
+
+### Changed
+- Removed guest-facing wording that exposed backend implementation details: the "Not in Miz's food database yet" badge and the "pairing suggestions... not available from the catalog" note are gone; an unmatched dish now simply shows its name and price with no badge and no explanation.
+
+### Fixed
+- (carried from the previous entry) `analyze-menu`/`classify-capture` output-token budgets that were truncating real Gemini responses to nothing.
+
+### Verified
+- deno fmt/check clean, all 163 Edge Function tests pass, flutter analyze clean, all 152 Flutter tests pass. The new Mizzz-side RPC was validated end-to-end in a disposable clone (dedup, input validation, anon-role privilege isolation, and a full round-trip through `approve_food_proposal`) before deployment, and the full live pipeline was re-verified against a real restaurant menu photo after both sides went live.
+
+## [Unreleased] — Menu Assistant pipeline and unified camera flow — 2026-08-03
+
+### Added
+- Replaced `analyze-menu`'s single Gemini-explains-everything call with a 4-stage low-token pipeline: JSON-only vision extraction (Stage 1); deterministic, zero-LLM-call Mizzz Central Food Catalog fuzzy matching, Safe/Warning/Restricted classification against the user's Food Profile, and a relative price indicator (Stage 2); a typed structured result with no LLM text (Stage 3); and a lightweight `miz-ai` follow-up chat ("Ask Miz about this menu") gated by a new `menuContext` field with its own minimal no-tools system prompt and a tighter 5-turn history cap (Stage 4).
+- New `MIZZZ_SUPABASE_URL`/`MIZZZ_SUPABASE_ANON_KEY` Edge Function secrets for the Stage 2 Mizzz catalog client (anon-key only, read-only, lowest privilege).
+- New `classify-capture` Edge Function: a minimal-token Gemini call that classifies one still photo as a menu, a single dish, or unrecognized, letting the camera route to the right pipeline automatically.
+- Removed the manual Food/Miz QR/Menu mode picker entirely (see ADR-026). The camera is now one live screen: a real live preview watches continuously for a Miz QR code while Take photo/Choose photo are always available; a captured photo is reviewed once, then classified and routed automatically — a single dish calls food recognition immediately with no extra tap, a menu enters the existing multi-page review, and an unrecognized photo shows an honest fallback.
+
+### Fixed
+- `analyze-menu` Stage 1 was encoding extracted dishes as a hand-rolled `category|||name<TAB>price` delimited string that was never validated against a real Gemini response and was failing to parse on essentially every real menu photo, always surfacing "the menu was not clear enough." Replaced with a plain nested JSON schema, which structured-output schemas already support natively.
+
+### Still unavailable
+- The Mizzz catalog currently holds a curated ~200-dish German seed set awaiting human review (`pending` proposals) — most scanned menus will show dishes as unmatched until that review happens; Miz AI never approves or fabricates a catalog entry itself.
+- Matched-dish images are not renderable yet — Mizzz's `food-images` Storage bucket is private and no signed-URL flow exists between the two projects.
+
+### Verified
+- `deno fmt`/`deno check` clean, all 157 Edge Function tests pass (`miz-ai`, `analyze-food`, `analyze-menu`, `classify-capture`), `flutter analyze` clean, all 152 Flutter tests pass, and both new functions are deployed to the linked Supabase project.
+
 ## [Unreleased] — Camera vision and scanning — 2026-08-03
 
 ### Added

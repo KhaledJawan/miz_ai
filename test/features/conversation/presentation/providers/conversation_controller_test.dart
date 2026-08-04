@@ -82,7 +82,7 @@ void main() {
       (request) => ConversationReply(text: 'Sushi is a Japanese dish.'),
     );
     final container = buildContainer(fake);
-    final provider = conversationControllerProvider('What is sushi?');
+    final provider = conversationControllerProvider(ConversationLaunchArgs(prompt: 'What is sushi?'));
 
     // The initial send happens in a microtask scheduled from build() —
     // wait for the state to leave "loading" rather than guessing a delay.
@@ -112,7 +112,7 @@ void main() {
       return const ConversationReply(text: 'ok');
     });
     final container = buildContainer(fake);
-    final provider = conversationControllerProvider('');
+    final provider = conversationControllerProvider(ConversationLaunchArgs(prompt: ''));
     final notifier = container.read(provider.notifier);
 
     final first = notifier.send('Find sushi near me');
@@ -127,7 +127,7 @@ void main() {
       (request) => const ConversationReply(text: '', requiresLocation: true),
     );
     final container = buildContainer(fake);
-    final provider = conversationControllerProvider('');
+    final provider = conversationControllerProvider(ConversationLaunchArgs(prompt: ''));
     final notifier = container.read(provider.notifier);
 
     await notifier.send('Find a café near me');
@@ -150,7 +150,7 @@ void main() {
         (request) => const ConversationReply(text: '', requiresLocation: true),
       );
       final container = buildContainer(fake);
-      final provider = conversationControllerProvider('');
+      final provider = conversationControllerProvider(ConversationLaunchArgs(prompt: ''));
       final notifier = container.read(provider.notifier);
 
       await notifier.send('Find sushi near me');
@@ -180,7 +180,7 @@ void main() {
         ),
       );
       final container = buildContainer(fake);
-      final provider = conversationControllerProvider('');
+      final provider = conversationControllerProvider(ConversationLaunchArgs(prompt: ''));
       final notifier = container.read(provider.notifier);
 
       await notifier.send('Find a café near me');
@@ -204,7 +204,7 @@ void main() {
         return result;
       });
       final container = buildContainer(fake);
-      final provider = conversationControllerProvider('');
+      final provider = conversationControllerProvider(ConversationLaunchArgs(prompt: ''));
       final notifier = container.read(provider.notifier);
 
       await notifier.send('Find a café near me');
@@ -220,7 +220,7 @@ void main() {
       (request) => const ConversationReply(text: 'ok'),
     );
     final container = buildContainer(fake);
-    final provider = conversationControllerProvider('');
+    final provider = conversationControllerProvider(ConversationLaunchArgs(prompt: ''));
     final notifier = container.read(provider.notifier);
 
     await notifier.send('Find sushi near me');
@@ -238,7 +238,7 @@ void main() {
       const ConversationUnavailableException(),
     );
     final container = buildContainer(throwing);
-    final provider = conversationControllerProvider('');
+    final provider = conversationControllerProvider(ConversationLaunchArgs(prompt: ''));
     final notifier = container.read(provider.notifier);
 
     await notifier.send('Find sushi near me');
@@ -249,7 +249,7 @@ void main() {
   test('an unexpected exception sets status to error', () async {
     final throwing = _ThrowingConversationService(Exception('boom'));
     final container = buildContainer(throwing);
-    final provider = conversationControllerProvider('');
+    final provider = conversationControllerProvider(ConversationLaunchArgs(prompt: ''));
     final notifier = container.read(provider.notifier);
 
     await notifier.send('Find sushi near me');
@@ -265,7 +265,7 @@ void main() {
         TypeError(), // stands in for a real cast failure
       );
       final container = buildContainer(throwing);
-      final provider = conversationControllerProvider('');
+      final provider = conversationControllerProvider(ConversationLaunchArgs(prompt: ''));
 
       await container.read(provider.notifier).send('Find sushi near me');
 
@@ -283,7 +283,7 @@ void main() {
         const ConversationAiException('AI_TIMEOUT', 'timed out'),
       );
       final container = buildContainer(throwing);
-      final provider = conversationControllerProvider('');
+      final provider = conversationControllerProvider(ConversationLaunchArgs(prompt: ''));
 
       await container.read(provider.notifier).send('Find sushi near me');
 
@@ -302,7 +302,7 @@ void main() {
         const AiResponseFormatException('List<dynamic>', '[1, 2, 3]'),
       );
       final container = buildContainer(throwing);
-      final provider = conversationControllerProvider('');
+      final provider = conversationControllerProvider(ConversationLaunchArgs(prompt: ''));
 
       await container.read(provider.notifier).send('Find sushi near me');
 
@@ -332,7 +332,7 @@ void main() {
         return const ConversationReply(text: 'ok');
       });
       final container = buildContainer(fake);
-      final provider = conversationControllerProvider('');
+      final provider = conversationControllerProvider(ConversationLaunchArgs(prompt: ''));
       final notifier = container.read(provider.notifier);
 
       try {
@@ -362,7 +362,7 @@ void main() {
         ConversationAiException(entry.key, 'safe message'),
       );
       final container = buildContainer(throwing);
-      final provider = conversationControllerProvider('');
+      final provider = conversationControllerProvider(ConversationLaunchArgs(prompt: ''));
 
       await container.read(provider.notifier).send('Find dinner');
 
@@ -375,7 +375,7 @@ void main() {
       const ConversationAiException('LOCATION_REQUIRED', 'Location needed'),
     );
     final container = buildContainer(throwing);
-    final provider = conversationControllerProvider('');
+    final provider = conversationControllerProvider(ConversationLaunchArgs(prompt: ''));
 
     await container.read(provider.notifier).send('Find pizza near me');
 
@@ -392,7 +392,7 @@ void main() {
       ),
     );
     final container = buildContainer(throwing);
-    final provider = conversationControllerProvider('');
+    final provider = conversationControllerProvider(ConversationLaunchArgs(prompt: ''));
 
     await container.read(provider.notifier).send('Find dinner');
 
@@ -406,7 +406,7 @@ void main() {
         (request) => const ConversationReply(text: 'ok'),
       );
       final container = buildContainer(fake);
-      final provider = conversationControllerProvider('');
+      final provider = conversationControllerProvider(ConversationLaunchArgs(prompt: ''));
       final notifier = container.read(provider.notifier);
 
       for (var i = 0; i < 8; i++) {
@@ -425,7 +425,7 @@ void main() {
       (request) => const ConversationReply(text: 'ok'),
     );
     final container = buildContainer(fake);
-    final provider = conversationControllerProvider('');
+    final provider = conversationControllerProvider(ConversationLaunchArgs(prompt: ''));
     final notifier = container.read(provider.notifier);
 
     await notifier.send('Find sushi near me');
@@ -441,7 +441,7 @@ void main() {
       (request) => const ConversationReply(text: 'Two good options.'),
     );
     final container = buildContainer(fake);
-    final provider = conversationControllerProvider('');
+    final provider = conversationControllerProvider(ConversationLaunchArgs(prompt: ''));
     final notifier = container.read(provider.notifier);
 
     await notifier.send('Find ramen');

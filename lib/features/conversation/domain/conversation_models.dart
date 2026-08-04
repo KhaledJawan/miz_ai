@@ -193,6 +193,7 @@ class ConversationRequest {
     this.location,
     this.selectedCity,
     this.foodProfileContext,
+    this.menuContext,
   });
 
   final String message;
@@ -202,6 +203,33 @@ class ConversationRequest {
   final ConversationLocation? location;
   final ConversationCity? selectedCity;
   final Map<String, dynamic>? foodProfileContext;
+
+  /// Non-null only for a Menu Assistant Stage 4 follow-up chat — see
+  /// `ChatLaunchArgs`/`ConversationLaunchArgs`. Forwarded verbatim to the
+  /// Edge Function, which is the only place it's interpreted.
+  final String? menuContext;
+}
+
+/// Keys a [ConversationController] instance — a plain `String` initial
+/// prompt was sufficient before the Menu Assistant, but Stage 4 follow-up
+/// chats also need to carry a `menuContext` for the lifetime of that
+/// conversation. A custom class (rather than a record) so this stays a
+/// clearly-named, single-purpose type at the one place that needs it.
+class ConversationLaunchArgs {
+  const ConversationLaunchArgs({required this.prompt, this.menuContext});
+
+  final String prompt;
+  final String? menuContext;
+
+  @override
+  bool operator ==(Object other) =>
+      identical(this, other) ||
+      (other is ConversationLaunchArgs &&
+          other.prompt == prompt &&
+          other.menuContext == menuContext);
+
+  @override
+  int get hashCode => Object.hash(prompt, menuContext);
 }
 
 class ConversationReply {
@@ -269,6 +297,7 @@ class ConversationState {
     this.debugErrorDetail,
     this.localArchiveId,
     this.createdAt,
+    this.menuContext,
   });
 
   final List<ConversationMessage> messages;
@@ -276,6 +305,11 @@ class ConversationState {
   final String? conversationId;
   final bool requiresLocation;
   final bool retryAvailable;
+
+  /// Set once, at conversation creation, from [ConversationLaunchArgs] —
+  /// never changes afterward. Non-null means every request in this thread
+  /// is a Menu Assistant Stage 4 follow-up (see [ConversationRequest]).
+  final String? menuContext;
 
   /// The originating `miz-ai` error code (e.g. `AI_TIMEOUT`) or, for an
   /// unclassified exception, its runtime type. Never shown to users in a
@@ -311,5 +345,8 @@ class ConversationState {
     debugErrorDetail: debugErrorDetail,
     localArchiveId: localArchiveId ?? this.localArchiveId,
     createdAt: createdAt ?? this.createdAt,
+    // Deliberately absent from the parameter list above — see the doc
+    // comment on the field itself.
+    menuContext: menuContext,
   );
 }

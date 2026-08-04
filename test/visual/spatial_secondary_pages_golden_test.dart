@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:miz_ai/core/localization/localization.dart';
@@ -21,6 +22,26 @@ void main() {
   });
 
   testWidgets('Spatial Camera light visual reference', (tester) async {
+    // The unified camera screen always mounts a real MobileScanner (live QR
+    // watching) — this environment has no native mobile_scanner plugin, so
+    // stub its method channel rather than let a MissingPluginException
+    // reach the widget's own (unrelated) start-up error handling.
+    final channels = [
+      const MethodChannel('dev.steenbakker.mobile_scanner/scanner/method'),
+      const MethodChannel('dev.steenbakker.mobile_scanner/scanner/event'),
+      const MethodChannel(
+        'dev.steenbakker.mobile_scanner/scanner/deviceOrientation',
+      ),
+    ];
+    for (final channel in channels) {
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (call) async => null);
+      addTearDown(
+        () => TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(channel, null),
+      );
+    }
+
     await _pumpReference(
       tester,
       theme: AppTheme.light(),

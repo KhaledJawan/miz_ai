@@ -1,6 +1,12 @@
 import { assertEquals, assertThrows } from "jsr:@std/assert@1";
 import { MizAiError } from "./errors.ts";
-import { MAX_HISTORY_TURNS, MAX_MESSAGE_LENGTH, parseMizAiRequest } from "./request_schema.ts";
+import {
+  MAX_HISTORY_TURNS,
+  MAX_MENU_CONTEXT_LENGTH,
+  MAX_MENU_FOLLOWUP_HISTORY_TURNS,
+  MAX_MESSAGE_LENGTH,
+  parseMizAiRequest,
+} from "./request_schema.ts";
 
 Deno.test("parseMizAiRequest accepts a minimal valid request", () => {
   const result = parseMizAiRequest({ message: "Find sushi near me" });
@@ -141,4 +147,44 @@ Deno.test("parseMizAiRequest passes through an opaque foodProfileContext object"
     foodProfileContext: { dietType: "vegan" },
   });
   assertEquals(result.foodProfileContext, { dietType: "vegan" });
+});
+
+Deno.test("parseMizAiRequest: menuContext defaults to null, trims, and is bounded", () => {
+  const withoutContext = parseMizAiRequest({ message: "hi" });
+  assertEquals(withoutContext.menuContext, null);
+
+  const withContext = parseMizAiRequest({ message: "hi", menuContext: "  Safe: Sauerbraten  " });
+  assertEquals(withContext.menuContext, "Safe: Sauerbraten");
+
+  const tooLong = parseMizAiRequest({ message: "hi", menuContext: "x".repeat(5000) });
+  assertEquals(tooLong.menuContext?.length, MAX_MENU_CONTEXT_LENGTH);
+});
+
+Deno.test("parseMizAiRequest: an empty-string menuContext is treated as absent (null)", () => {
+  const result = parseMizAiRequest({ message: "hi", menuContext: "   " });
+  assertEquals(result.menuContext, null);
+});
+
+Deno.test("parseMizAiRequest: rejects a non-string menuContext", () => {
+  assertThrows(() => parseMizAiRequest({ message: "hi", menuContext: 42 }), MizAiError);
+});
+
+Deno.test("parseMizAiRequest: when menuContext is present, history is capped to MAX_MENU_FOLLOWUP_HISTORY_TURNS server-side", () => {
+  const history = Array.from({ length: MAX_HISTORY_TURNS }, (_, i) => ({
+    role: i % 2 === 0 ? "user" : "assistant",
+    text: `turn ${i}`,
+  }));
+  const result = parseMizAiRequest({ message: "hi", menuContext: "Safe: X", history });
+  assertEquals(result.history.length, MAX_MENU_FOLLOWUP_HISTORY_TURNS);
+  // Keeps the most recent turns, not the oldest.
+  assertEquals(result.history[result.history.length - 1].text, `turn ${MAX_HISTORY_TURNS - 1}`);
+});
+
+Deno.test("parseMizAiRequest: without menuContext, history keeps the normal MAX_HISTORY_TURNS cap", () => {
+  const history = Array.from({ length: MAX_HISTORY_TURNS }, (_, i) => ({
+    role: i % 2 === 0 ? "user" : "assistant",
+    text: `turn ${i}`,
+  }));
+  const result = parseMizAiRequest({ message: "hi", history });
+  assertEquals(result.history.length, MAX_HISTORY_TURNS);
 });

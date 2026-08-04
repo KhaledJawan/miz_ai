@@ -31,7 +31,6 @@ Shared UI lives under `core/widgets/` with the `Miz` prefix. The Spatial Glass a
 | `MizFloatingDismissButton` | Discoverable non-app-bar return/close control |
 | `MizSpatialSheet` | Modal glass overlay with an opaque accessibility fallback |
 | `MizResultCard` | Result, empty, unavailable, and error object |
-| `MizCameraModeSelector` | Three-mode contextual camera selector |
 | `MizAnimatedFoodBackground` | Isolated, lifecycle-aware abstract food atmosphere |
 | `MizPromptPlaceholder` | Configurable localized fade rotation that pauses on interaction |
 | `MizSpatialTransition` | Fade/0.98 scale page transition with reduced-motion fallback |
@@ -78,11 +77,13 @@ When AI results exist, food and restaurant responses render as `MizResultCard`-s
 
 ## 7. Camera
 
-Camera is one shell with Food, Miz QR, and Menu modes. The shared state model covers permission, live, capture, preview, retake, processing, multiple matches, uncertainty, result, invalid/expired QR, denial, unavailable, offline, and error.
+Camera is one unified shell with no mode picker (see `docs/DECISIONS.md` "Unified camera flow"). A single live view watches continuously for a Miz QR code (a real full-frame `mobile_scanner` preview) while Take photo/Choose photo are always available for a still capture. The shared state model covers permission, live, capture, preview, retake, processing, multiple matches, uncertainty, result, invalid/expired QR, denial, unavailable, offline, and error.
 
-- Food recognition offers equal Take photo and Choose photo actions, a preview and explicit upload notice, then renders up to three typed candidates from the secure `analyze-food` adapter with confidence and an image-recognition safety disclaimer.
-- Miz QR uses a real full-frame `mobile_scanner` preview for QR codes and accepts only `miz://v1/{restaurant|table}/…` payloads with safe public tokens, expiry, and signature shape. Invalid/expired codes offer Scan again. Local validation never grants trust; successful format validation still requires the future restaurant/table verification backend.
-- Menu scan opens as the default camera mode. It offers equal, explicit Take photo and Choose photo actions, previews one to four pages, supports review/reorder/delete, and places a plain-language upload notice immediately above Explain menu. Results use readable section and dish cards with printed price, short explanation, dietary tags, possible-allergen warnings, and notes. Unreadable, oversized, unsupported, offline, timeout, and backend failures preserve the captured pages when retry is useful and never claim allergy safety.
+- A captured/chosen photo is reviewed once (one photo, one explicit "Analyze" consent tap), then `classify-capture` decides automatically whether it's a menu, a single dish, or unrecognized -- the user never picks a mode up front.
+- A single dish calls the secure `analyze-food` adapter immediately (no further tap) and renders up to three typed candidates with confidence and an image-recognition safety disclaimer.
+- A menu reaches the same multi-page review as before: previews one to four pages, supports review/reorder/delete, and places a plain-language upload notice immediately above Explain menu. Results use readable category and dish cards with printed price, a relative price indicator, a Safe/Warning/Restricted badge from the Mizzz catalog when matched, and notes. Unreadable, oversized, unsupported, offline, timeout, and backend failures preserve the captured pages when retry is useful and never claim allergy safety.
+- An unrecognized photo shows an honest "couldn't tell what this was" card rather than guessing.
+- Miz QR still accepts only `miz://v1/{restaurant|table}/…` payloads with safe public tokens, expiry, and signature shape. Invalid/expired codes offer Scan again. Local validation never grants trust; successful format validation still requires the future restaurant/table verification backend.
 
 Camera-created temporary captures are deleted by the capture service on removal or controller disposal; gallery originals are never deleted. No image is silently uploaded or persisted by Miz.
 

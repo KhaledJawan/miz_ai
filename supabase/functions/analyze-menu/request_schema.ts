@@ -21,6 +21,14 @@ function isBase64(value: string): boolean {
   return value.length % 4 === 0 && /^[A-Za-z0-9+/]+={0,2}$/.test(value);
 }
 
+function parseFoodProfileContext(raw: unknown): MenuAnalysisRequest["foodProfileContext"] {
+  if (raw === undefined || raw === null) return null;
+  if (!isPlainObject(raw)) {
+    throw mizAiError("INVALID_REQUEST", "foodProfileContext must be an object");
+  }
+  return raw;
+}
+
 export function parseMenuAnalysisRequest(raw: unknown): MenuAnalysisRequest {
   if (!isPlainObject(raw) || !Array.isArray(raw.images)) {
     throw mizAiError("INVALID_REQUEST", "menu request must contain images");
@@ -29,6 +37,7 @@ export function parseMenuAnalysisRequest(raw: unknown): MenuAnalysisRequest {
     throw mizAiError("INVALID_REQUEST", "invalid menu page count");
   }
   const locale = raw.locale === "de" || raw.locale === "fa" ? raw.locale : "en";
+  const foodProfileContext = parseFoodProfileContext(raw.foodProfileContext);
   let totalChars = 0;
   const images = raw.images.map((rawImage) => {
     if (!isPlainObject(rawImage)) {
@@ -51,5 +60,5 @@ export function parseMenuAnalysisRequest(raw: unknown): MenuAnalysisRequest {
     }
     return { mimeType, data };
   });
-  return { locale, images };
+  return { locale, images, foodProfileContext };
 }

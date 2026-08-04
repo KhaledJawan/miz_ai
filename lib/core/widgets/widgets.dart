@@ -1,7 +1,6 @@
 export 'miz_button.dart';
 export 'miz_backdrop.dart';
 export 'miz_animated_food_background.dart';
-export 'miz_camera_mode_selector.dart';
 export 'miz_card.dart';
 export 'miz_divider.dart';
 export 'miz_icon_button.dart';

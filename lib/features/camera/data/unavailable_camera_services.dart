@@ -37,9 +37,16 @@ class UnavailableCameraAnalysisService implements CameraAnalysisService {
   const UnavailableCameraAnalysisService();
 
   @override
+  Future<CaptureKind> classifyCapture(
+    TemporaryCapture capture, {
+    required String locale,
+  }) => throw const CameraCapabilityException();
+
+  @override
   Future<MenuAnalysisResult> analyzeMenu(
     List<TemporaryCapture> captures, {
     required String locale,
+    Map<String, dynamic>? foodProfileContext,
   }) => throw const CameraCapabilityException();
 
   @override

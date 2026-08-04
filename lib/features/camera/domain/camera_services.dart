@@ -28,6 +28,13 @@ class FoodRecognitionException implements Exception {
   final bool retryAvailable;
 }
 
+class CaptureClassificationException implements Exception {
+  const CaptureClassificationException(this.code, {this.retryAvailable = true});
+
+  final String code;
+  final bool retryAvailable;
+}
+
 abstract interface class CameraCaptureService {
   Future<CameraPermissionState> permissionState();
   Future<CameraPermissionState> requestPermission();
@@ -40,6 +47,14 @@ abstract interface class CameraCaptureService {
 }
 
 abstract interface class CameraAnalysisService {
+  /// Classifies a single still photo as a menu, a single prepared dish, or
+  /// unrecognized -- the step that lets the camera screen route to the
+  /// right pipeline automatically, with no manual mode picker. QR codes are
+  /// decoded live, on-device, and never reach this call.
+  Future<CaptureKind> classifyCapture(
+    TemporaryCapture capture, {
+    required String locale,
+  });
   Future<FoodRecognitionResult> recognizeFood(
     TemporaryCapture capture, {
     required String locale,
@@ -47,6 +62,7 @@ abstract interface class CameraAnalysisService {
   Future<MenuAnalysisResult> analyzeMenu(
     List<TemporaryCapture> captures, {
     required String locale,
+    Map<String, dynamic>? foodProfileContext,
   });
   Future<MizQrVerificationStatus> verifyMizQr(MizQrPayload payload);
 }

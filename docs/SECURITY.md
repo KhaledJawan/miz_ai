@@ -10,6 +10,8 @@ Related: [`CLAUDE.md`](../CLAUDE.md) §10, [`docs/DATABASE.md`](DATABASE.md), [`
 - `dart run tool/verify_supabase_config.dart` validates the selected project without logging the publishable key. See `docs/SUPABASE_SETUP.md` for project replacement and Dashboard setup.
 - Server-side/service-role secrets never enter the Flutter client at all — they live only in Supabase Edge Function environment config or equivalent backend secret storage.
 - `GEMINI_API_KEY` and `GOOGLE_PLACES_API_KEY` (plus the optional `GEMINI_MODEL` override) are Supabase Edge Function secrets read only via `Deno.env.get(...)` inside `supabase/functions/`. They are never logged, never included in an error response, and never passed through `--dart-define`. See `docs/EDGE_FUNCTIONS.md`.
+- `MIZZZ_SUPABASE_URL` and `MIZZZ_SUPABASE_ANON_KEY` are a second project's credentials, held only by `analyze-menu`'s `mizzz_catalog_client.ts` as Edge Function secrets — never by the Flutter client, and never any Mizzz key other than its lowest-privilege `anon` key (CLAUDE.md §1: Miz never touches Mizzz's database directly, API only). **Not yet provisioned** — see `docs/EDGE_FUNCTIONS.md` "Mizzz Central Food Catalog secrets."
+- Gemini never receives a coordinate the backend didn't already trust: `search_nearby_places`'s tool schema has no lat/lng field at all — the server injects `request.location` or a known city's coordinates itself, so the model can select *which* place-type/radius/query to search but can never supply or forge a location.
 
 ## Authentication & session
 

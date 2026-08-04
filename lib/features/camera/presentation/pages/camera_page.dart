@@ -2,17 +2,21 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
+import 'package:go_router/go_router.dart';
 
 import '../../../../core/localization/localization.dart';
+import '../../../../core/router/app_router.dart';
+import '../../../../core/router/chat_launch_args.dart';
 import '../../../../core/theme/app_glass.dart';
 import '../../../../core/theme/app_radii.dart';
 import '../../../../core/theme/app_spacing.dart';
 import '../../../../core/widgets/widgets.dart';
 import '../../domain/camera_models.dart';
 import '../providers/camera_workflow_controller.dart';
+import '../widgets/capture_preview_experience.dart';
 import '../widgets/food_camera_experience.dart';
 import '../widgets/menu_camera_experience.dart';
-import '../widgets/miz_qr_scanner_experience.dart';
+import '../widgets/unified_scan_experience.dart';
 
 class CameraPage extends ConsumerStatefulWidget {
   const CameraPage({super.key});
@@ -39,17 +43,6 @@ class _CameraPageState extends ConsumerState<CameraPage> {
     final l10n = context.l10n;
     final state = ref.watch(cameraWorkflowControllerProvider);
     final notifier = ref.read(cameraWorkflowControllerProvider.notifier);
-    final options = [
-      MizCameraModeOption(
-        label: l10n.foodRecognitionMode,
-        icon: Icons.restaurant_rounded,
-      ),
-      MizCameraModeOption(label: l10n.mizQrMode, icon: Icons.qr_code_rounded),
-      MizCameraModeOption(
-        label: l10n.menuScanMode,
-        icon: Icons.menu_book_rounded,
-      ),
-    ];
 
     return PopScope(
       canPop: true,
@@ -82,18 +75,6 @@ class _CameraPageState extends ConsumerState<CameraPage> {
                           onPressed: () => Navigator.of(context).maybePop(),
                         ),
                       ],
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: AppSpacing.lgPlus,
-                    ),
-                    child: MizCameraModeSelector(
-                      options: options,
-                      selectedIndex: state.mode.index,
-                      semanticLabel: l10n.changeCameraMode,
-                      onSelected: (index) =>
-                          notifier.selectMode(CameraMode.values[index]),
                     ),
                   ),
                   const SizedBox(height: AppSpacing.lg),
@@ -130,6 +111,10 @@ class _CameraStageContent extends StatelessWidget {
   final CameraWorkflowState state;
   final CameraWorkflowController notifier;
 
+  bool get _isQrError =>
+      state.errorCode == 'QR_SCANNER_UNAVAILABLE' ||
+      state.errorCode == 'QR_SCAN_FAILED';
+
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
@@ -161,7 +146,9 @@ class _CameraStageContent extends StatelessWidget {
             ? null
             : MizButton.primary(
                 label: l10n.retry,
-                onPressed: notifier.confirmCapture,
+                onPressed: state.mode == CameraMode.menuScan
+                    ? notifier.confirmCapture
+                    : notifier.analyzeCapture,
               ),
       ),
       CameraStage.invalidQr => MizResultCard(
@@ -213,20 +200,22 @@ class _CameraStageContent extends StatelessWidget {
           ],
         ),
       ),
-      CameraStage.multipleMatches
-          when state.mode == CameraMode.foodRecognition =>
-        FoodRecognitionResults(
-          overview: state.foodOverview ?? '',
-          candidates: state.foodCandidates,
-          onReset: notifier.reset,
-        ),
-      CameraStage.uncertain || CameraStage.multipleMatches => MizResultCard(
-        title: state.mode == CameraMode.menuScan
-            ? l10n.menuUnreadableTitle
-            : l10n.foodUncertainTitle,
-        body: state.mode == CameraMode.menuScan
-            ? l10n.menuUnreadableBody
-            : l10n.foodUncertainBody,
+      CameraStage.multipleMatches => FoodRecognitionResults(
+        overview: state.foodOverview ?? '',
+        candidates: state.foodCandidates,
+        onReset: notifier.reset,
+      ),
+      CameraStage.uncertain => MizResultCard(
+        title: switch (state.mode) {
+          CameraMode.menuScan => l10n.menuUnreadableTitle,
+          CameraMode.foodRecognition => l10n.foodUncertainTitle,
+          null => l10n.captureUnrecognizedTitle,
+        },
+        body: switch (state.mode) {
+          CameraMode.menuScan => l10n.menuUnreadableBody,
+          CameraMode.foodRecognition => l10n.foodUncertainBody,
+          null => l10n.captureUnrecognizedBody,
+        },
         icon: Icons.help_outline_rounded,
         action: MizButton.secondary(
           label: l10n.tryAnotherPhoto,
@@ -243,6 +232,10 @@ class _CameraStageContent extends StatelessWidget {
             : MenuAnalysisResults(
                 result: state.menuAnalysis!,
                 onReset: notifier.reset,
+                onAskMiz: (menuContext) => context.push(
+                  AppRoutes.chat,
+                  extra: ChatLaunchArgs(prompt: '', menuContext: menuContext),
+                ),
               ),
       CameraStage.result when state.mode == CameraMode.foodRecognition =>
         FoodRecognitionResults(
@@ -250,40 +243,41 @@ class _CameraStageContent extends StatelessWidget {
           candidates: state.foodCandidates,
           onReset: notifier.reset,
         ),
+      // Only a verified Miz QR reaches `result` with no mode set — menu/food
+      // always set one before getting here.
       CameraStage.result => MizResultCard(
         title: l10n.resultDetails,
-        body: state.mode == CameraMode.mizQr
-            ? l10n.qrVerificationRequired
-            : l10n.cloudProcessingNotice,
+        body: l10n.qrVerificationRequired,
         icon: Icons.verified_outlined,
       ),
       CameraStage.error => MizResultCard(
-        title: state.mode == CameraMode.menuScan
-            ? _menuErrorTitle(l10n, state.errorCode)
-            : state.mode == CameraMode.foodRecognition
-            ? l10n.foodAnalysisFailedTitle
-            : state.errorCode == 'QR_SCANNER_UNAVAILABLE' ||
-                  state.errorCode == 'QR_SCAN_FAILED'
-            ? l10n.qrScannerUnavailableTitle
-            : l10n.backendRequired,
-        body: state.mode == CameraMode.menuScan
-            ? _menuErrorBody(l10n, state.errorCode)
-            : state.mode == CameraMode.foodRecognition
-            ? l10n.foodAnalysisFailedBody
-            : state.errorCode == 'QR_SCANNER_UNAVAILABLE' ||
-                  state.errorCode == 'QR_SCAN_FAILED'
-            ? l10n.qrScannerUnavailableBody
-            : l10n.qrVerificationRequired,
+        title: switch (state.mode) {
+          CameraMode.menuScan => _menuErrorTitle(l10n, state.errorCode),
+          CameraMode.foodRecognition => l10n.foodAnalysisFailedTitle,
+          null when _isQrError => l10n.qrScannerUnavailableTitle,
+          null => l10n.captureAnalysisFailedTitle,
+        },
+        body: switch (state.mode) {
+          CameraMode.menuScan => _menuErrorBody(l10n, state.errorCode),
+          CameraMode.foodRecognition => l10n.foodAnalysisFailedBody,
+          null when _isQrError => l10n.qrScannerUnavailableBody,
+          null => l10n.captureAnalysisFailedBody,
+        },
         icon: Icons.error_outline_rounded,
         action: MizButton.secondary(
-          label: state.mode == CameraMode.mizQr
+          label: state.mode == null && _isQrError
               ? l10n.scanAgain
               : l10n.tryAnotherPhoto,
           onPressed: notifier.reset,
         ),
       ),
-      CameraStage.live || CameraStage.preview
-          when state.mode == CameraMode.menuScan =>
+      CameraStage.live => UnifiedScanExperience(
+        onQrDetected: notifier.handleQrPayload,
+        onQrUnavailable: notifier.reportQrScannerUnavailable,
+        onCapture: notifier.capture,
+        onChoosePhoto: notifier.pickFromGallery,
+      ),
+      CameraStage.preview when state.mode == CameraMode.menuScan =>
         MenuCaptureExperience(
           state: state,
           onCapture: notifier.capture,
@@ -292,22 +286,10 @@ class _CameraStageContent extends StatelessWidget {
           onReorder: notifier.reorderPage,
           onAnalyze: notifier.confirmCapture,
         ),
-      CameraStage.live || CameraStage.preview
-          when state.mode == CameraMode.foodRecognition =>
-        FoodCaptureExperience(
-          state: state,
-          onCapture: notifier.capture,
-          onChoosePhoto: notifier.pickFromGallery,
-          onAnalyze: notifier.confirmCapture,
-        ),
-      CameraStage.live when state.mode == CameraMode.mizQr =>
-        MizQrScannerExperience(
-          onDetected: notifier.handleQrPayload,
-          onUnavailable: notifier.reportQrScannerUnavailable,
-        ),
-      CameraStage.live || CameraStage.preview => _LiveCameraExperience(
-        state: state,
-        notifier: notifier,
+      CameraStage.preview => CapturePreviewExperience(
+        capture: state.captures.last,
+        onRetake: notifier.retakeCurrent,
+        onAnalyze: notifier.analyzeCapture,
       ),
     };
   }
@@ -328,127 +310,3 @@ String _menuErrorBody(AppLocalizations l10n, String? errorCode) =>
       'TOO_MANY_PAGES' || 'INVALID_PAGE_COUNT' => l10n.menuTooManyPagesBody,
       _ => l10n.menuAnalysisFailedBody,
     };
-
-class _LiveCameraExperience extends StatelessWidget {
-  const _LiveCameraExperience({required this.state, required this.notifier});
-
-  final CameraWorkflowState state;
-  final CameraWorkflowController notifier;
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.l10n;
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.stretch,
-      children: [
-        AspectRatio(
-          aspectRatio: 3 / 4,
-          child: MizGlassSurface(
-            level: MizGlassLevel.subtle,
-            prominent: true,
-            borderRadius: AppRadii.xl,
-            child: Stack(
-              alignment: Alignment.center,
-              children: [
-                Icon(
-                  state.mode == CameraMode.mizQr
-                      ? Icons.qr_code_scanner_rounded
-                      : Icons.camera_alt_outlined,
-                  size: 92,
-                  color: Colors.black38,
-                ),
-                if (state.mode == CameraMode.mizQr)
-                  PositionedDirectional(
-                    start: AppSpacing.xl,
-                    end: AppSpacing.xl,
-                    bottom: AppSpacing.xl,
-                    child: Text(
-                      l10n.scanQrInstruction,
-                      textAlign: TextAlign.center,
-                      style: Theme.of(
-                        context,
-                      ).textTheme.bodyMedium?.copyWith(color: Colors.black),
-                    ),
-                  ),
-              ],
-            ),
-          ),
-        ),
-        if (state.mode == CameraMode.menuScan && state.captures.isNotEmpty) ...[
-          const SizedBox(height: AppSpacing.lg),
-          Text(
-            l10n.menuPagesTitle,
-            style: Theme.of(context).textTheme.titleMedium,
-          ),
-          const SizedBox(height: AppSpacing.sm),
-          ReorderableListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: state.captures.length,
-            onReorderItem: notifier.reorderPage,
-            itemBuilder: (context, index) => Container(
-              key: ValueKey(state.captures[index].id),
-              margin: const EdgeInsets.only(bottom: AppSpacing.sm),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(AppRadii.lg),
-                boxShadow: [
-                  BoxShadow(
-                    color: Colors.black.withValues(alpha: 0.16),
-                    blurRadius: 18,
-                    spreadRadius: -4,
-                    offset: const Offset(0, 10),
-                  ),
-                ],
-              ),
-              child: ListTile(
-                textColor: Colors.black,
-                iconColor: Colors.black,
-                leading: const Icon(Icons.description_rounded),
-                title: Text(l10n.pageNumber(index + 1)),
-                trailing: IconButton(
-                  tooltip: l10n.deletePage,
-                  onPressed: () => notifier.deletePage(index),
-                  icon: const Icon(Icons.delete_outline_rounded),
-                  color: Colors.black,
-                ),
-              ),
-            ),
-          ),
-        ],
-        const SizedBox(height: AppSpacing.lg),
-        if (state.mode != CameraMode.mizQr)
-          Row(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              if (state.stage == CameraStage.preview &&
-                  state.mode == CameraMode.foodRecognition)
-                MizButton.secondary(
-                  label: l10n.retake,
-                  onPressed: notifier.retakeCurrent,
-                ),
-              if (state.stage == CameraStage.preview &&
-                  state.mode == CameraMode.foodRecognition)
-                const SizedBox(width: AppSpacing.md),
-              MizButton.primary(
-                label: state.mode == CameraMode.menuScan
-                    ? l10n.addPage
-                    : l10n.capture,
-                onPressed: notifier.capture,
-              ),
-            ],
-          ),
-        if (state.captures.isNotEmpty) ...[
-          const SizedBox(height: AppSpacing.md),
-          MizButton.secondary(
-            label: state.mode == CameraMode.menuScan
-                ? l10n.confirmPages
-                : l10n.confirm,
-            expand: true,
-            onPressed: notifier.confirmCapture,
-          ),
-        ],
-      ],
-    );
-  }
-}

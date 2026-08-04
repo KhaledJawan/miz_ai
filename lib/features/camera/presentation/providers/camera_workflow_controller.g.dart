@@ -26,7 +26,7 @@ final cameraCaptureServiceProvider =
 // ignore: unused_element
 typedef CameraCaptureServiceRef = AutoDisposeProviderRef<CameraCaptureService>;
 String _$cameraAnalysisServiceHash() =>
-    r'78a3a109e90b08da7085d0c18932f21a3a2728d2';
+    r'53b4539f4d0cb2b4b23fe724d762d06516feb2fc';
 
 /// See also [cameraAnalysisService].
 @ProviderFor(cameraAnalysisService)
@@ -62,10 +62,43 @@ final mizQrValidatorProvider = AutoDisposeProvider<MizQrValidator>.internal(
 @Deprecated('Will be removed in 3.0. Use Ref instead')
 // ignore: unused_element
 typedef MizQrValidatorRef = AutoDisposeProviderRef<MizQrValidator>;
-String _$cameraWorkflowControllerHash() =>
-    r'42e0bc453f93023790cb2a66fa4a2fbea3a7b9c0';
+String _$menuScanFoodProfileContextHash() =>
+    r'387b8a96d9a15eb80612e3c70c6854fb61b977a5';
 
-/// See also [CameraWorkflowController].
+/// Same minimized Food Profile context `ConversationController` sends —
+/// duplicated as its own provider (rather than imported from the
+/// conversation feature) so `camera/` doesn't reach into another feature's
+/// presentation internals for what is otherwise a shared domain function.
+///
+/// Copied from [MenuScanFoodProfileContext].
+@ProviderFor(MenuScanFoodProfileContext)
+final menuScanFoodProfileContextProvider =
+    AutoDisposeAsyncNotifierProvider<
+      MenuScanFoodProfileContext,
+      Map<String, dynamic>?
+    >.internal(
+      MenuScanFoodProfileContext.new,
+      name: r'menuScanFoodProfileContextProvider',
+      debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
+          ? null
+          : _$menuScanFoodProfileContextHash,
+      dependencies: null,
+      allTransitiveDependencies: null,
+    );
+
+typedef _$MenuScanFoodProfileContext =
+    AutoDisposeAsyncNotifier<Map<String, dynamic>?>;
+String _$cameraWorkflowControllerHash() =>
+    r'f1e5dbe07dd7b70611681cf20d59bede25a1b6d7';
+
+/// A single unified camera screen: no manual mode picker. QR codes are
+/// decoded live, on-device, while [CameraWorkflowState.stage] is
+/// [CameraStage.live]. A still capture (photo or gallery pick) is reviewed
+/// once, then [analyzeCapture] classifies it (`classify-capture`) and
+/// routes automatically to the menu or food-recognition pipeline — see
+/// [CameraMode]/[CaptureKind].
+///
+/// Copied from [CameraWorkflowController].
 @ProviderFor(CameraWorkflowController)
 final cameraWorkflowControllerProvider =
     AutoDisposeNotifierProvider<

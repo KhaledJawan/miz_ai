@@ -820,23 +820,11 @@ class AppLocalizationsFa extends AppLocalizations {
   String get cameraTitle => 'دوربین';
 
   @override
-  String get foodRecognitionMode => 'غذا';
-
-  @override
-  String get mizQrMode => 'QR میز';
-
-  @override
-  String get menuScanMode => 'منو';
-
-  @override
-  String get changeCameraMode => 'تغییر حالت دوربین';
-
-  @override
   String get cameraPermissionTitle => 'دسترسی دوربین لازم است';
 
   @override
   String get cameraPermissionBody =>
-      'Miz فقط پس از انتخاب حالت از دوربین استفاده می‌کند. عکس‌ها موقت‌اند و بی‌اجازه بارگذاری نمی‌شوند.';
+      'دوربین را به سمت یک کد QR میز، یک منو، یا یک غذا بگیرید -- Miz به‌طور خودکار تشخیص می‌دهد. عکس‌ها موقت‌اند و بی‌اجازه بارگذاری نمی‌شوند.';
 
   @override
   String get allowCamera => 'اجازه به دوربین';
@@ -894,12 +882,8 @@ class AppLocalizationsFa extends AppLocalizations {
       'ادامه به پردازش امن ابری نیاز دارد. Miz پیش از هر بارگذاری اجازه می‌گیرد.';
 
   @override
-  String get scanQrInstruction =>
-      'QR رستوران یا میز Miz را داخل قاب قرار دهید.';
-
-  @override
-  String get mizQrOnlyNotice =>
-      'فقط کدهای امضاشده رستوران و میز Miz پذیرفته می‌شوند. لینک‌های QR دیگر هرگز خودکار باز نمی‌شوند.';
+  String get scanUnifiedInstruction =>
+      'دوربین را به سمت یک کد QR میز بگیرید تا خودکار باز شود، یا از یک منو یا غذا عکس بگیرید.';
 
   @override
   String get qrScannerUnavailableTitle => 'اسکنر QR در دسترس نیست';
@@ -941,15 +925,25 @@ class AppLocalizationsFa extends AppLocalizations {
       'قالب QR معتبر است. پیش از باز کردن رستوران یا نشست میز، تأیید شبکه لازم است.';
 
   @override
-  String get foodPhotoInstruction =>
-      'از یک غذای آماده عکس واضح بگیرید یا عکسی از گالری انتخاب کنید.';
+  String get captureUploadConsent =>
+      'با زدن «تحلیل»، این عکس موقت برای تحلیل امن هوش مصنوعی ارسال می‌شود. Miz آن را ذخیره نمی‌کند.';
 
   @override
-  String get foodUploadConsent =>
-      'با زدن شناسایی غذا، این عکس موقت برای تحلیل امن هوش مصنوعی ارسال می‌شود. Miz آن را ذخیره نمی‌کند.';
+  String get analyzePhoto => 'تحلیل';
 
   @override
-  String get identifyFood => 'شناسایی غذا';
+  String get captureUnrecognizedTitle => 'Miz نتوانست تشخیص دهد این چیست';
+
+  @override
+  String get captureUnrecognizedBody =>
+      'عکسی واضح‌تر از یک منو یا یک غذای آمادهٔ تکی بگیرید، در مرکز و با فوکوس مناسب.';
+
+  @override
+  String get captureAnalysisFailedTitle => 'Miz نتوانست این عکس را تحلیل کند';
+
+  @override
+  String get captureAnalysisFailedBody =>
+      'تحلیل امن کامل نشد. عکس شما ذخیره نشد. اتصال را بررسی کرده و دوباره تلاش کنید.';
 
   @override
   String get foodRecognizedTitle => 'غذا شناسایی شد';
@@ -1035,16 +1029,83 @@ class AppLocalizationsFa extends AppLocalizations {
   String get menuExplainedTitle => 'توضیح منوی شما';
 
   @override
-  String get menuNotesTitle => 'نکته‌های مفید';
+  String menuExplainedBody(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count غذا پیدا شد و با پروفایل غذایی شما بررسی شد.',
+      one: '۱ غذا پیدا شد و با پروفایل غذایی شما بررسی شد.',
+      zero: 'هنوز غذایی در پایگاه دادهٔ Miz پیدا نشد.',
+    );
+    return '$_temp0';
+  }
 
   @override
-  String possibleAllergens(String allergens) {
-    return 'آلرژن‌های احتمالی: $allergens';
-  }
+  String get menuNotesTitle => 'نکته‌های مفید';
 
   @override
   String get menuAllergenDisclaimer =>
       'هوش مصنوعی ممکن است اشتباه کند. پیش از سفارش، مواد و آلرژن‌ها را حتماً با رستوران تأیید کنید.';
+
+  @override
+  String get menuDishSafe => 'با پروفایل شما سازگار است';
+
+  @override
+  String get menuDishWarning => 'پیش از سفارش بررسی کنید';
+
+  @override
+  String get menuDishRestricted => 'با پروفایل شما سازگار نیست';
+
+  @override
+  String get menuPriceGood => 'قیمت مناسب';
+
+  @override
+  String get menuPriceHigh => 'کمی گران‌تر از میانگین';
+
+  @override
+  String get menuPriceVeryHigh => 'قیمت بالا';
+
+  @override
+  String get menuAskAboutThisMenu => 'دربارهٔ این منو از Miz بپرس';
+
+  @override
+  String get menuReasonNotHalal => 'شامل مواد غیرحلال است';
+
+  @override
+  String get menuReasonHalalUncertain =>
+      'وضعیت حلال بودن به نحوهٔ تهیه بستگی دارد';
+
+  @override
+  String get menuReasonHalalUnknown => 'وضعیت حلال بودن نامشخص است';
+
+  @override
+  String get menuReasonHalalPreferenceNotMet =>
+      'حلال بودن تأیید نشده (بر اساس ترجیح شما)';
+
+  @override
+  String get menuReasonNotVegan => 'وگان نیست';
+
+  @override
+  String get menuReasonVeganUncertain => 'وضعیت وگان بودن نامشخص است';
+
+  @override
+  String get menuReasonNotVegetarian => 'گیاهی نیست';
+
+  @override
+  String get menuReasonVegetarianUncertain => 'وضعیت گیاهی بودن نامشخص است';
+
+  @override
+  String get menuReasonContainsAlcohol => 'حاوی الکل است';
+
+  @override
+  String get menuReasonMayContainAlcohol => 'ممکن است حاوی الکل باشد';
+
+  @override
+  String get menuReasonAlcoholUnknown => 'میزان الکل نامشخص است';
+
+  @override
+  String get menuReasonAllergensNotVerifiable =>
+      'آلرژن‌ها با پروفایل شما بررسی نشدند';
 
   @override
   String get scanAnotherMenu => 'اسکن منوی دیگر';

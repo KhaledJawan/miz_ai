@@ -28,6 +28,7 @@ export interface IncomingRequest {
   selectedCity?: unknown;
   locale?: unknown;
   foodProfileContext?: unknown;
+  menuContext?: unknown;
 }
 
 /** Validated, clamped request — safe to use everywhere else in the function. */
@@ -37,6 +38,13 @@ export interface MizAiRequest {
   history: IncomingHistoryTurn[];
   location: IncomingLocation | null;
   selectedCity: IncomingSelectedCity | null;
+  /** Stage 4 (Menu Assistant) only: a bounded plain-text summary of the
+   * already-extracted/filtered menu state, e.g. "Safe: Sauerbraten (DE12.50).
+   * Warning: Currywurst (may contain pork, uncertain halal)." When present,
+   * the Edge Function uses a minimal system prompt and a much tighter
+   * history window instead of the full Miz persona/tool loop — see
+   * request_schema.ts MAX_MENU_FOLLOWUP_HISTORY_TURNS. */
+  menuContext: string | null;
   locale: string;
   foodProfileContext: RawFoodProfileContext | null;
 }

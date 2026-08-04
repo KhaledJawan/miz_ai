@@ -1600,30 +1600,6 @@ abstract class AppLocalizations {
   /// **'Camera'**
   String get cameraTitle;
 
-  /// No description provided for @foodRecognitionMode.
-  ///
-  /// In en, this message translates to:
-  /// **'Food'**
-  String get foodRecognitionMode;
-
-  /// No description provided for @mizQrMode.
-  ///
-  /// In en, this message translates to:
-  /// **'Miz QR'**
-  String get mizQrMode;
-
-  /// No description provided for @menuScanMode.
-  ///
-  /// In en, this message translates to:
-  /// **'Menu'**
-  String get menuScanMode;
-
-  /// No description provided for @changeCameraMode.
-  ///
-  /// In en, this message translates to:
-  /// **'Change camera mode'**
-  String get changeCameraMode;
-
   /// No description provided for @cameraPermissionTitle.
   ///
   /// In en, this message translates to:
@@ -1633,7 +1609,7 @@ abstract class AppLocalizations {
   /// No description provided for @cameraPermissionBody.
   ///
   /// In en, this message translates to:
-  /// **'Miz only uses the camera after you choose a mode. Captures stay temporary and are never uploaded silently.'**
+  /// **'Point the camera at a Miz QR code, a menu, or a dish -- Miz figures out which. Captures stay temporary and are never uploaded silently.'**
   String get cameraPermissionBody;
 
   /// No description provided for @allowCamera.
@@ -1738,17 +1714,11 @@ abstract class AppLocalizations {
   /// **'Continuing would require secure cloud processing. Miz will ask before any upload.'**
   String get cloudProcessingNotice;
 
-  /// No description provided for @scanQrInstruction.
+  /// No description provided for @scanUnifiedInstruction.
   ///
   /// In en, this message translates to:
-  /// **'Align a Miz restaurant or table QR code inside the frame.'**
-  String get scanQrInstruction;
-
-  /// No description provided for @mizQrOnlyNotice.
-  ///
-  /// In en, this message translates to:
-  /// **'Only signed Miz restaurant and table codes are accepted. Other QR links are never opened automatically.'**
-  String get mizQrOnlyNotice;
+  /// **'Point at a Miz QR code to open it automatically, or take a photo of a menu or a dish.'**
+  String get scanUnifiedInstruction;
 
   /// No description provided for @qrScannerUnavailableTitle.
   ///
@@ -1822,23 +1792,41 @@ abstract class AppLocalizations {
   /// **'The QR format is valid. Network verification is required before opening a restaurant or table session.'**
   String get qrVerificationRequired;
 
-  /// No description provided for @foodPhotoInstruction.
+  /// No description provided for @captureUploadConsent.
   ///
   /// In en, this message translates to:
-  /// **'Take a clear photo of one prepared dish, or choose one from your library.'**
-  String get foodPhotoInstruction;
+  /// **'When you tap Analyze, this temporary photo is sent securely for AI analysis. Miz does not save it.'**
+  String get captureUploadConsent;
 
-  /// No description provided for @foodUploadConsent.
+  /// No description provided for @analyzePhoto.
   ///
   /// In en, this message translates to:
-  /// **'When you tap Identify food, this temporary photo is sent securely for AI analysis. Miz does not save it.'**
-  String get foodUploadConsent;
+  /// **'Analyze'**
+  String get analyzePhoto;
 
-  /// No description provided for @identifyFood.
+  /// No description provided for @captureUnrecognizedTitle.
   ///
   /// In en, this message translates to:
-  /// **'Identify food'**
-  String get identifyFood;
+  /// **'Miz couldn\'t tell what this was'**
+  String get captureUnrecognizedTitle;
+
+  /// No description provided for @captureUnrecognizedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'Try a clearer photo of a menu or a single prepared dish, centered and in focus.'**
+  String get captureUnrecognizedBody;
+
+  /// No description provided for @captureAnalysisFailedTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Miz could not analyze this photo'**
+  String get captureAnalysisFailedTitle;
+
+  /// No description provided for @captureAnalysisFailedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'The secure analysis did not finish. Your photo was not saved. Check your connection and try again.'**
+  String get captureAnalysisFailedBody;
 
   /// No description provided for @foodRecognizedTitle.
   ///
@@ -1984,23 +1972,137 @@ abstract class AppLocalizations {
   /// **'Your menu, explained'**
   String get menuExplainedTitle;
 
+  /// No description provided for @menuExplainedBody.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =0{No dishes matched Miz\'s food database yet.} =1{1 dish found and checked against your Food Profile.} other{{count} dishes found and checked against your Food Profile.}}'**
+  String menuExplainedBody(int count);
+
   /// No description provided for @menuNotesTitle.
   ///
   /// In en, this message translates to:
   /// **'Helpful notes'**
   String get menuNotesTitle;
 
-  /// No description provided for @possibleAllergens.
-  ///
-  /// In en, this message translates to:
-  /// **'Possible allergens: {allergens}'**
-  String possibleAllergens(String allergens);
-
   /// No description provided for @menuAllergenDisclaimer.
   ///
   /// In en, this message translates to:
   /// **'AI can make mistakes. Always confirm ingredients and allergens with the restaurant before ordering.'**
   String get menuAllergenDisclaimer;
+
+  /// No description provided for @menuDishSafe.
+  ///
+  /// In en, this message translates to:
+  /// **'Fits your profile'**
+  String get menuDishSafe;
+
+  /// No description provided for @menuDishWarning.
+  ///
+  /// In en, this message translates to:
+  /// **'Check before ordering'**
+  String get menuDishWarning;
+
+  /// No description provided for @menuDishRestricted.
+  ///
+  /// In en, this message translates to:
+  /// **'Doesn\'t fit your profile'**
+  String get menuDishRestricted;
+
+  /// No description provided for @menuPriceGood.
+  ///
+  /// In en, this message translates to:
+  /// **'Good price'**
+  String get menuPriceGood;
+
+  /// No description provided for @menuPriceHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'A little pricier than average'**
+  String get menuPriceHigh;
+
+  /// No description provided for @menuPriceVeryHigh.
+  ///
+  /// In en, this message translates to:
+  /// **'High price'**
+  String get menuPriceVeryHigh;
+
+  /// No description provided for @menuAskAboutThisMenu.
+  ///
+  /// In en, this message translates to:
+  /// **'Ask Miz about this menu'**
+  String get menuAskAboutThisMenu;
+
+  /// No description provided for @menuReasonNotHalal.
+  ///
+  /// In en, this message translates to:
+  /// **'Contains non-halal ingredients'**
+  String get menuReasonNotHalal;
+
+  /// No description provided for @menuReasonHalalUncertain.
+  ///
+  /// In en, this message translates to:
+  /// **'Halal status depends on preparation'**
+  String get menuReasonHalalUncertain;
+
+  /// No description provided for @menuReasonHalalUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Halal status unknown'**
+  String get menuReasonHalalUnknown;
+
+  /// No description provided for @menuReasonHalalPreferenceNotMet.
+  ///
+  /// In en, this message translates to:
+  /// **'Not confirmed halal (your preference)'**
+  String get menuReasonHalalPreferenceNotMet;
+
+  /// No description provided for @menuReasonNotVegan.
+  ///
+  /// In en, this message translates to:
+  /// **'Not vegan'**
+  String get menuReasonNotVegan;
+
+  /// No description provided for @menuReasonVeganUncertain.
+  ///
+  /// In en, this message translates to:
+  /// **'Vegan status uncertain'**
+  String get menuReasonVeganUncertain;
+
+  /// No description provided for @menuReasonNotVegetarian.
+  ///
+  /// In en, this message translates to:
+  /// **'Not vegetarian'**
+  String get menuReasonNotVegetarian;
+
+  /// No description provided for @menuReasonVegetarianUncertain.
+  ///
+  /// In en, this message translates to:
+  /// **'Vegetarian status uncertain'**
+  String get menuReasonVegetarianUncertain;
+
+  /// No description provided for @menuReasonContainsAlcohol.
+  ///
+  /// In en, this message translates to:
+  /// **'Contains alcohol'**
+  String get menuReasonContainsAlcohol;
+
+  /// No description provided for @menuReasonMayContainAlcohol.
+  ///
+  /// In en, this message translates to:
+  /// **'May contain alcohol'**
+  String get menuReasonMayContainAlcohol;
+
+  /// No description provided for @menuReasonAlcoholUnknown.
+  ///
+  /// In en, this message translates to:
+  /// **'Alcohol content unknown'**
+  String get menuReasonAlcoholUnknown;
+
+  /// No description provided for @menuReasonAllergensNotVerifiable.
+  ///
+  /// In en, this message translates to:
+  /// **'Allergens could not be checked against your profile'**
+  String get menuReasonAllergensNotVerifiable;
 
   /// No description provided for @scanAnotherMenu.
   ///

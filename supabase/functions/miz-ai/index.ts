@@ -6,7 +6,10 @@ import { sanitizeFoodProfileContext } from "./food_profile.ts";
 import { runGeminiLoop } from "./gemini_loop.ts";
 import { MAX_MESSAGE_LENGTH, parseMizAiRequest } from "./request_schema.ts";
 import { logEvent } from "./observability.ts";
-import { buildSystemInstruction } from "./system_instruction.ts";
+import {
+  buildMenuFollowUpSystemInstruction,
+  buildSystemInstruction,
+} from "./system_instruction.ts";
 import { TOOL_DECLARATIONS } from "./tools.ts";
 import type { MizAiResponse, ToolExecutionContext } from "./types.ts";
 
@@ -100,15 +103,23 @@ Deno.serve(async (req) => {
     // does and neither `request.location` nor `request.selectedCity` was
     // supplied, the tool call fails fast with LOCATION_REQUIRED and the
     // loop short-circuits into `requiresLocation: true` below.
+    // Stage 4 (Menu Assistant follow-up): a distinct, minimal prompt and no
+    // tools at all — the dish data was already deterministically computed
+    // by analyze-menu's Stage 2, so this agent only explains it, never
+    // re-derives or contradicts it. History is already capped tighter by
+    // request_schema.ts for this path.
+    const isMenuFollowUp = request.menuContext !== null;
     const loopResult = await runGeminiLoop({
       apiKey: geminiApiKey,
       model,
       input: buildInputWithHistory(request.message.slice(0, MAX_MESSAGE_LENGTH), request.history),
-      systemInstruction: buildSystemInstruction(
-        request.locale,
-        request.location !== null || request.selectedCity !== null,
-      ),
-      tools: TOOL_DECLARATIONS,
+      systemInstruction: isMenuFollowUp
+        ? buildMenuFollowUpSystemInstruction(request.locale, request.menuContext!)
+        : buildSystemInstruction(
+          request.locale,
+          request.location !== null || request.selectedCity !== null,
+        ),
+      tools: isMenuFollowUp ? [] : TOOL_DECLARATIONS,
       context,
       // A single retry uses only the current bounded message rather than
       // resending conversation history.

@@ -15,6 +15,7 @@ class SupabaseCameraAnalysisService implements CameraAnalysisService {
 
   static const _functionName = 'analyze-menu';
   static const _foodFunctionName = 'analyze-food';
+  static const _classifyFunctionName = 'classify-capture';
   static const maxPages = 4;
   static const maxImageBytes = 3 * 1024 * 1024;
   static const maxTotalImageBytes = 8 * 1024 * 1024;
@@ -30,6 +31,7 @@ class SupabaseCameraAnalysisService implements CameraAnalysisService {
   Future<MenuAnalysisResult> analyzeMenu(
     List<TemporaryCapture> captures, {
     required String locale,
+    Map<String, dynamic>? foodProfileContext,
   }) async {
     if (captures.isEmpty || captures.length > maxPages) {
       throw const MenuAnalysisException(
@@ -73,7 +75,14 @@ class SupabaseCameraAnalysisService implements CameraAnalysisService {
 
     try {
       final response = await functionsClient
-          .invoke(_functionName, body: {'locale': locale, 'images': images})
+          .invoke(
+            _functionName,
+            body: {
+              'locale': locale,
+              'images': images,
+              'foodProfileContext': foodProfileContext,
+            },
+          )
           .timeout(const Duration(seconds: 75));
       final json = _asJson(response.data);
       _throwStructuredError(json);
@@ -138,6 +147,88 @@ class SupabaseCameraAnalysisService implements CameraAnalysisService {
       'heif' => 'image/heif',
       _ => null,
     };
+  }
+
+  @override
+  Future<CaptureKind> classifyCapture(
+    TemporaryCapture capture, {
+    required String locale,
+  }) async {
+    final mimeType = capture.mimeType ?? _mimeTypeForPath(capture.path);
+    if (mimeType == null || !_supportedMimeTypes.contains(mimeType)) {
+      throw const CaptureClassificationException(
+        'IMAGE_UNSUPPORTED',
+        retryAvailable: false,
+      );
+    }
+    final file = File(capture.path);
+    List<int> bytes;
+    try {
+      bytes = await file.readAsBytes();
+    } on FileSystemException {
+      throw const CaptureClassificationException(
+        'IMAGE_UNAVAILABLE',
+        retryAvailable: false,
+      );
+    }
+    if (bytes.length > maxImageBytes) {
+      throw const CaptureClassificationException(
+        'IMAGE_TOO_LARGE',
+        retryAvailable: false,
+      );
+    }
+
+    try {
+      final response = await functionsClient
+          .invoke(
+            _classifyFunctionName,
+            body: {
+              'locale': locale,
+              'image': {'mimeType': mimeType, 'data': base64Encode(bytes)},
+            },
+          )
+          .timeout(const Duration(seconds: 35));
+      final json = _asJson(response.data);
+      _throwClassifyStructuredError(json);
+      final rawResult = json['result'];
+      if (rawResult is! Map) {
+        throw const CaptureClassificationException('INVALID_RESPONSE');
+      }
+      final kind = rawResult['kind'] as String?;
+      return switch (kind) {
+        'menu' => CaptureKind.menu,
+        'single_dish' => CaptureKind.singleDish,
+        _ => CaptureKind.unrecognized,
+      };
+    } on FunctionException catch (error) {
+      final details = error.details;
+      if (details is Map) {
+        _throwClassifyStructuredError(Map<String, dynamic>.from(details));
+      }
+      if (details is String) {
+        try {
+          final decoded = jsonDecode(details);
+          if (decoded is Map) {
+            _throwClassifyStructuredError(Map<String, dynamic>.from(decoded));
+          }
+        } on FormatException {
+          // Fall through to a safe generic error.
+        }
+      }
+      throw const CaptureClassificationException('SERVER_ERROR');
+    } on TimeoutException {
+      throw const CameraNetworkException('AI_TIMEOUT');
+    } on SocketException {
+      throw const CameraNetworkException();
+    }
+  }
+
+  void _throwClassifyStructuredError(Map<String, dynamic> json) {
+    if (json['success'] != false) return;
+    throw CaptureClassificationException(
+      json['errorCode'] as String? ?? 'SERVER_ERROR',
+      retryAvailable: json['retryAvailable'] as bool? ?? true,
+    );
   }
 
   @override

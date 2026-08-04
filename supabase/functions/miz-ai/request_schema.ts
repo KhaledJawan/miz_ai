@@ -11,6 +11,12 @@ import type {
 export const MAX_MESSAGE_LENGTH = 1000;
 export const MAX_HISTORY_TURNS = 12;
 export const MAX_HISTORY_TURN_LENGTH = 1000;
+export const MAX_MENU_CONTEXT_LENGTH = 4000;
+/** Stage 4's lightweight menu follow-up chat gets a much tighter sliding
+ * window than a normal conversation, regardless of what the client sends —
+ * this is what actually keeps its token cost low, not just client
+ * discipline. See docs/CENTRAL_FOOD_CATALOG.md-adjacent menu assistant notes. */
+export const MAX_MENU_FOLLOWUP_HISTORY_TURNS = 5;
 const SUPPORTED_LOCALES = new Set(["en", "de", "fa"]);
 
 function isFiniteNumber(value: unknown): value is number {
@@ -93,6 +99,16 @@ function validateHistory(value: unknown): IncomingHistoryTurn[] {
   });
 }
 
+function validateMenuContext(value: unknown): string | null {
+  if (value === undefined || value === null) return null;
+  if (typeof value !== "string") {
+    throw mizAiError("INVALID_REQUEST", "menuContext must be a string");
+  }
+  const trimmed = value.trim();
+  if (trimmed.length === 0) return null;
+  return trimmed.slice(0, MAX_MENU_CONTEXT_LENGTH);
+}
+
 function validateFoodProfileContext(value: unknown): RawFoodProfileContext | null {
   if (value === undefined || value === null) return null;
   if (!isPlainObject(value)) {
@@ -135,13 +151,22 @@ export function parseMizAiRequest(raw: unknown): MizAiRequest {
     locale = body.locale;
   }
 
+  const menuContext = validateMenuContext(body.menuContext);
+  let history = validateHistory(body.history);
+  if (menuContext !== null && history.length > MAX_MENU_FOLLOWUP_HISTORY_TURNS) {
+    // Enforced server-side, not just by client discipline — this is what
+    // actually keeps Stage 4's token cost bounded.
+    history = history.slice(history.length - MAX_MENU_FOLLOWUP_HISTORY_TURNS);
+  }
+
   return {
     message,
     conversationId,
-    history: validateHistory(body.history),
+    history,
     location: validateLocation(body.location),
     selectedCity: validateSelectedCity(body.selectedCity),
     locale,
     foodProfileContext: validateFoodProfileContext(body.foodProfileContext),
+    menuContext,
   };
 }

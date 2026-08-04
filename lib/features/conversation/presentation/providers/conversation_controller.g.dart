@@ -72,7 +72,7 @@ final foodProfileAiContextForRequestProvider =
 typedef _$FoodProfileAiContextForRequest =
     AutoDisposeAsyncNotifier<Map<String, dynamic>?>;
 String _$conversationControllerHash() =>
-    r'cddbe3372c2c57b05b9338be83a67b947d556a27';
+    r'a89ae56c848bb4717cafad499c74f02531e0d736';
 
 /// Copied from Dart SDK
 class _SystemHash {
@@ -97,9 +97,9 @@ class _SystemHash {
 
 abstract class _$ConversationController
     extends BuildlessAutoDisposeNotifier<ConversationState> {
-  late final String initialPrompt;
+  late final ConversationLaunchArgs launchArgs;
 
-  ConversationState build(String initialPrompt);
+  ConversationState build(ConversationLaunchArgs launchArgs);
 }
 
 /// See also [ConversationController].
@@ -112,15 +112,15 @@ class ConversationControllerFamily extends Family<ConversationState> {
   const ConversationControllerFamily();
 
   /// See also [ConversationController].
-  ConversationControllerProvider call(String initialPrompt) {
-    return ConversationControllerProvider(initialPrompt);
+  ConversationControllerProvider call(ConversationLaunchArgs launchArgs) {
+    return ConversationControllerProvider(launchArgs);
   }
 
   @override
   ConversationControllerProvider getProviderOverride(
     covariant ConversationControllerProvider provider,
   ) {
-    return call(provider.initialPrompt);
+    return call(provider.launchArgs);
   }
 
   static const Iterable<ProviderOrFamily>? _dependencies = null;
@@ -146,9 +146,9 @@ class ConversationControllerProvider
           ConversationState
         > {
   /// See also [ConversationController].
-  ConversationControllerProvider(String initialPrompt)
+  ConversationControllerProvider(ConversationLaunchArgs launchArgs)
     : this._internal(
-        () => ConversationController()..initialPrompt = initialPrompt,
+        () => ConversationController()..launchArgs = launchArgs,
         from: conversationControllerProvider,
         name: r'conversationControllerProvider',
         debugGetCreateSourceHash: const bool.fromEnvironment('dart.vm.product')
@@ -157,7 +157,7 @@ class ConversationControllerProvider
         dependencies: ConversationControllerFamily._dependencies,
         allTransitiveDependencies:
             ConversationControllerFamily._allTransitiveDependencies,
-        initialPrompt: initialPrompt,
+        launchArgs: launchArgs,
       );
 
   ConversationControllerProvider._internal(
@@ -167,16 +167,16 @@ class ConversationControllerProvider
     required super.allTransitiveDependencies,
     required super.debugGetCreateSourceHash,
     required super.from,
-    required this.initialPrompt,
+    required this.launchArgs,
   }) : super.internal();
 
-  final String initialPrompt;
+  final ConversationLaunchArgs launchArgs;
 
   @override
   ConversationState runNotifierBuild(
     covariant ConversationController notifier,
   ) {
-    return notifier.build(initialPrompt);
+    return notifier.build(launchArgs);
   }
 
   @override
@@ -184,13 +184,13 @@ class ConversationControllerProvider
     return ProviderOverride(
       origin: this,
       override: ConversationControllerProvider._internal(
-        () => create()..initialPrompt = initialPrompt,
+        () => create()..launchArgs = launchArgs,
         from: from,
         name: null,
         dependencies: null,
         allTransitiveDependencies: null,
         debugGetCreateSourceHash: null,
-        initialPrompt: initialPrompt,
+        launchArgs: launchArgs,
       ),
     );
   }
@@ -204,13 +204,13 @@ class ConversationControllerProvider
   @override
   bool operator ==(Object other) {
     return other is ConversationControllerProvider &&
-        other.initialPrompt == initialPrompt;
+        other.launchArgs == launchArgs;
   }
 
   @override
   int get hashCode {
     var hash = _SystemHash.combine(0, runtimeType.hashCode);
-    hash = _SystemHash.combine(hash, initialPrompt.hashCode);
+    hash = _SystemHash.combine(hash, launchArgs.hashCode);
 
     return _SystemHash.finish(hash);
   }
@@ -220,8 +220,8 @@ class ConversationControllerProvider
 // ignore: unused_element
 mixin ConversationControllerRef
     on AutoDisposeNotifierProviderRef<ConversationState> {
-  /// The parameter `initialPrompt` of this provider.
-  String get initialPrompt;
+  /// The parameter `launchArgs` of this provider.
+  ConversationLaunchArgs get launchArgs;
 }
 
 class _ConversationControllerProviderElement
@@ -234,8 +234,8 @@ class _ConversationControllerProviderElement
   _ConversationControllerProviderElement(super.provider);
 
   @override
-  String get initialPrompt =>
-      (origin as ConversationControllerProvider).initialPrompt;
+  ConversationLaunchArgs get launchArgs =>
+      (origin as ConversationControllerProvider).launchArgs;
 }
 
 // ignore_for_file: type=lint

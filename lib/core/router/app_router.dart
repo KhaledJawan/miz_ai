@@ -14,6 +14,7 @@ import '../../features/location/presentation/pages/city_selector_page.dart';
 import '../../features/profile_settings/presentation/pages/profile_settings_page.dart';
 import '../theme/app_motion.dart';
 import '../widgets/miz_spatial_transition.dart';
+import 'chat_launch_args.dart';
 import 'coming_soon_page.dart';
 
 /// Every screen named in docs/DESIGN.md §6 has a route from Milestone 0.
@@ -73,11 +74,19 @@ final appRouterProvider = Provider<GoRouter>((ref) {
         pageBuilder: (context, state) {
           final extra = state.extra;
           final queryPrompt = state.uri.queryParameters['q'];
-          final rawPrompt = extra is String ? extra : queryPrompt ?? '';
+          final rawPrompt = switch (extra) {
+            ChatLaunchArgs args => args.prompt,
+            String value => value,
+            _ => queryPrompt ?? '',
+          };
           final prompt = rawPrompt.length > 1000
               ? rawPrompt.substring(0, 1000)
               : rawPrompt;
-          return _spatialPage(state, ConversationPage(initialPrompt: prompt));
+          final menuContext = extra is ChatLaunchArgs ? extra.menuContext : null;
+          return _spatialPage(
+            state,
+            ConversationPage(initialPrompt: prompt, menuContext: menuContext),
+          );
         },
       ),
       GoRoute(

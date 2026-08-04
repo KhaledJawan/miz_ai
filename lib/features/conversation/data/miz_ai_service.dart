@@ -45,6 +45,7 @@ class MizAiService implements ConversationService {
         'selectedCity': request.selectedCity!.toJson(),
       if (request.foodProfileContext != null)
         'foodProfileContext': request.foodProfileContext,
+      if (request.menuContext != null) 'menuContext': request.menuContext,
     };
 
     if (kDebugMode) {

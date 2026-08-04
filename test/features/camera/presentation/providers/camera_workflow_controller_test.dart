@@ -1,5 +1,8 @@
+import 'package:drift/native.dart';
 import 'package:flutter_riverpod/flutter_riverpod.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:miz_ai/core/database/app_database.dart';
+import 'package:miz_ai/core/database/app_database_provider.dart';
 import 'package:miz_ai/features/camera/domain/camera_models.dart';
 import 'package:miz_ai/features/camera/domain/camera_services.dart';
 import 'package:miz_ai/features/camera/presentation/providers/camera_workflow_controller.dart';
@@ -22,49 +25,69 @@ void main() {
     );
   });
 
-  test('menu mode supports capture, reorder, delete, and confirm', () async {
-    final capture = _FakeCameraService();
-    final analysis = _FakeAnalysisService();
-    final container = ProviderContainer(
-      overrides: [
-        cameraCaptureServiceProvider.overrideWithValue(capture),
-        cameraAnalysisServiceProvider.overrideWithValue(analysis),
-      ],
-    );
-    addTearDown(container.dispose);
-    final notifier = container.read(cameraWorkflowControllerProvider.notifier);
-    await notifier.initialize();
-    notifier.selectMode(CameraMode.menuScan);
-    await notifier.capture();
-    await notifier.capture();
+  test(
+    'a captured photo classified as a menu supports adding pages, reorder, delete, and confirm',
+    () async {
+      final capture = _FakeCameraService();
+      final analysis = _FakeAnalysisService(classifyKind: CaptureKind.menu);
+      // A real Drift DB (not the platform-channel-backed default) so building
+      // the Menu Assistant's foodProfileContext doesn't need Flutter bindings.
+      final database = AppDatabase.forTesting(NativeDatabase.memory());
+      addTearDown(database.close);
+      final container = ProviderContainer(
+        overrides: [
+          cameraCaptureServiceProvider.overrideWithValue(capture),
+          cameraAnalysisServiceProvider.overrideWithValue(analysis),
+          appDatabaseProvider.overrideWithValue(database),
+        ],
+      );
+      addTearDown(container.dispose);
+      final notifier = container.read(
+        cameraWorkflowControllerProvider.notifier,
+      );
+      await notifier.initialize();
+      await notifier.capture();
+      expect(
+        container.read(cameraWorkflowControllerProvider).stage,
+        CameraStage.preview,
+      );
+      expect(container.read(cameraWorkflowControllerProvider).mode, isNull);
 
-    expect(
-      container.read(cameraWorkflowControllerProvider).captures,
-      hasLength(2),
-    );
-    final firstId = container
-        .read(cameraWorkflowControllerProvider)
-        .captures
-        .first
-        .id;
-    notifier.reorderPage(0, 1);
-    expect(
-      container.read(cameraWorkflowControllerProvider).captures.last.id,
-      firstId,
-    );
+      await notifier.analyzeCapture();
+      expect(analysis.classifyCalls, 1);
+      final classified = container.read(cameraWorkflowControllerProvider);
+      expect(classified.mode, CameraMode.menuScan);
+      expect(classified.stage, CameraStage.preview);
 
-    await notifier.deletePage(0);
-    expect(
-      container.read(cameraWorkflowControllerProvider).captures,
-      hasLength(1),
-    );
-    await notifier.confirmCapture();
-    expect(analysis.menuCalls, 1);
-    expect(
-      container.read(cameraWorkflowControllerProvider).stage,
-      CameraStage.result,
-    );
-  });
+      await notifier.capture();
+      expect(
+        container.read(cameraWorkflowControllerProvider).captures,
+        hasLength(2),
+      );
+      final firstId = container
+          .read(cameraWorkflowControllerProvider)
+          .captures
+          .first
+          .id;
+      notifier.reorderPage(0, 1);
+      expect(
+        container.read(cameraWorkflowControllerProvider).captures.last.id,
+        firstId,
+      );
+
+      await notifier.deletePage(0);
+      expect(
+        container.read(cameraWorkflowControllerProvider).captures,
+        hasLength(1),
+      );
+      await notifier.confirmCapture();
+      expect(analysis.menuCalls, 1);
+      expect(
+        container.read(cameraWorkflowControllerProvider).stage,
+        CameraStage.result,
+      );
+    },
+  );
 
   test('valid QR still respects unpublished restaurant verification', () async {
     final analysis = _FakeAnalysisService(
@@ -96,10 +119,12 @@ void main() {
   });
 
   test(
-    'food mode stores recognized candidates from the secure service',
+    'a captured photo classified as a single dish runs food recognition automatically',
     () async {
       final capture = _FakeCameraService();
-      final analysis = _FakeAnalysisService();
+      final analysis = _FakeAnalysisService(
+        classifyKind: CaptureKind.singleDish,
+      );
       final container = ProviderContainer(
         overrides: [
           cameraCaptureServiceProvider.overrideWithValue(capture),
@@ -111,33 +136,101 @@ void main() {
         cameraWorkflowControllerProvider.notifier,
       );
       await notifier.initialize();
-      notifier.selectMode(CameraMode.foodRecognition);
       await notifier.capture();
-      await notifier.confirmCapture();
+      await notifier.analyzeCapture();
 
       final state = container.read(cameraWorkflowControllerProvider);
+      expect(state.mode, CameraMode.foodRecognition);
       expect(state.stage, CameraStage.result);
       expect(state.foodCandidates.single.name, 'Pizza Margherita');
     },
   );
 
   test(
-    'switching modes clears a capability-specific unavailable state',
+    'a captured photo classified as unrecognized shows an honest uncertain state',
     () async {
-      final container = ProviderContainer();
+      final capture = _FakeCameraService();
+      final analysis = _FakeAnalysisService(
+        classifyKind: CaptureKind.unrecognized,
+      );
+      final container = ProviderContainer(
+        overrides: [
+          cameraCaptureServiceProvider.overrideWithValue(capture),
+          cameraAnalysisServiceProvider.overrideWithValue(analysis),
+        ],
+      );
       addTearDown(container.dispose);
       final notifier = container.read(
         cameraWorkflowControllerProvider.notifier,
       );
-      notifier.selectMode(CameraMode.mizQr);
+      await notifier.initialize();
+      await notifier.capture();
+      await notifier.analyzeCapture();
+
+      final state = container.read(cameraWorkflowControllerProvider);
+      expect(state.mode, isNull);
+      expect(state.stage, CameraStage.uncertain);
+      expect(state.errorCode, 'CAPTURE_UNRECOGNIZED');
+    },
+  );
+
+  test(
+    'reportQrScannerUnavailable only takes effect while on the live scanning stage',
+    () async {
+      final container = ProviderContainer(
+        overrides: [
+          cameraCaptureServiceProvider.overrideWithValue(_FakeCameraService()),
+        ],
+      );
+      addTearDown(container.dispose);
+      final notifier = container.read(
+        cameraWorkflowControllerProvider.notifier,
+      );
+
+      // Before initialize(), the stage is still `permission` -- a no-op.
       notifier.reportQrScannerUnavailable();
-      notifier.selectMode(CameraMode.foodRecognition);
+      expect(
+        container.read(cameraWorkflowControllerProvider).stage,
+        CameraStage.permission,
+      );
+
+      await notifier.initialize();
       expect(
         container.read(cameraWorkflowControllerProvider).stage,
         CameraStage.live,
       );
+      notifier.reportQrScannerUnavailable();
+      final state = container.read(cameraWorkflowControllerProvider);
+      expect(state.stage, CameraStage.error);
+      expect(state.errorCode, 'QR_SCANNER_UNAVAILABLE');
     },
   );
+
+  test('reset returns to the live scanning stage with no mode set', () async {
+    final capture = _FakeCameraService();
+    final analysis = _FakeAnalysisService(classifyKind: CaptureKind.menu);
+    final container = ProviderContainer(
+      overrides: [
+        cameraCaptureServiceProvider.overrideWithValue(capture),
+        cameraAnalysisServiceProvider.overrideWithValue(analysis),
+      ],
+    );
+    addTearDown(container.dispose);
+    final notifier = container.read(cameraWorkflowControllerProvider.notifier);
+    await notifier.initialize();
+    await notifier.capture();
+    await notifier.analyzeCapture();
+    expect(
+      container.read(cameraWorkflowControllerProvider).mode,
+      CameraMode.menuScan,
+    );
+
+    await notifier.reset();
+    final state = container.read(cameraWorkflowControllerProvider);
+    expect(state.stage, CameraStage.live);
+    expect(state.mode, isNull);
+    expect(state.captures, isEmpty);
+  });
 }
 
 class _DeniedCameraService extends _FakeCameraService {
@@ -192,31 +285,50 @@ class _FakeCameraService implements CameraCaptureService {
 }
 
 class _FakeAnalysisService implements CameraAnalysisService {
-  _FakeAnalysisService({this.qrStatus = MizQrVerificationStatus.verified});
+  _FakeAnalysisService({
+    this.qrStatus = MizQrVerificationStatus.verified,
+    this.classifyKind = CaptureKind.menu,
+  });
 
   var menuCalls = 0;
+  var classifyCalls = 0;
   final MizQrVerificationStatus qrStatus;
+  final CaptureKind classifyKind;
+
+  @override
+  Future<CaptureKind> classifyCapture(
+    TemporaryCapture capture, {
+    required String locale,
+  }) async {
+    classifyCalls += 1;
+    return classifyKind;
+  }
 
   @override
   Future<MenuAnalysisResult> analyzeMenu(
     List<TemporaryCapture> captures, {
     required String locale,
+    Map<String, dynamic>? foodProfileContext,
   }) async {
     menuCalls += 1;
     return const MenuAnalysisResult(
       readable: true,
-      overview: 'A concise menu overview.',
-      sections: [
-        MenuSectionExplanation(
-          title: 'Mains',
-          items: [
-            MenuItemExplanation(
-              name: 'Pasta',
-              explanation: 'Pasta with tomato sauce.',
-              price: '12',
-              dietaryTags: [],
-              possibleAllergens: ['Wheat'],
-              confidence: MenuItemConfidence.high,
+      categories: [
+        MenuAnalysisCategory(
+          name: 'Mains',
+          dishes: [
+            MatchedDish(
+              extractedName: 'Pasta',
+              price: 12,
+              priceIndicator: PriceIndicator.good,
+              matchedFoodId: 'food-1',
+              matchedName: 'Pasta al Pomodoro',
+              shortDescription: 'Pasta with tomato sauce.',
+              imagePath: null,
+              matchConfidence: 0.9,
+              safetyStatus: DishSafetyStatus.safe,
+              safetyReasons: [],
+              safetyCertain: true,
             ),
           ],
         ),

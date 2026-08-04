@@ -19,9 +19,18 @@ import '../../domain/conversation_models.dart';
 import '../providers/conversation_controller.dart';
 
 class ConversationPage extends ConsumerStatefulWidget {
-  const ConversationPage({required this.initialPrompt, super.key});
+  const ConversationPage({
+    required this.initialPrompt,
+    this.menuContext,
+    super.key,
+  });
 
   final String initialPrompt;
+
+  /// Non-null only when launched from the Menu Assistant's "Ask Miz about
+  /// this menu" action — see `ChatLaunchArgs`. Turns this whole
+  /// conversation into a Stage 4 follow-up chat for its entire lifetime.
+  final String? menuContext;
 
   @override
   ConsumerState<ConversationPage> createState() => _ConversationPageState();
@@ -92,7 +101,12 @@ class _ConversationPageState extends ConsumerState<ConversationPage> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.l10n;
-    final provider = conversationControllerProvider(widget.initialPrompt);
+    final provider = conversationControllerProvider(
+      ConversationLaunchArgs(
+        prompt: widget.initialPrompt,
+        menuContext: widget.menuContext,
+      ),
+    );
     final state = ref.watch(provider);
     final notifier = ref.read(provider.notifier);
     final inset = MediaQuery.viewInsetsOf(context).bottom;

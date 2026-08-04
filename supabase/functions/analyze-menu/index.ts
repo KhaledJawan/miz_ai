@@ -1,9 +1,12 @@
 import { CORS_HEADERS } from "../_shared/cors.ts";
 import { requireValidClientKey } from "../miz-ai/client_auth.ts";
 import { mizAiError, toSafeResponse } from "../miz-ai/errors.ts";
+import { sanitizeFoodProfileContext } from "../miz-ai/food_profile.ts";
 import { logEvent } from "../miz-ai/observability.ts";
-import { analyzeMenuWithGemini } from "./gemini_menu_client.ts";
 import { parseMenuAnalysisRequest } from "./request_schema.ts";
+import { matchAndClassifyCategories } from "./stage2_matcher.ts";
+import type { MenuAnalysisResult } from "./types.ts";
+import { parseMenuVision } from "./vision_parser.ts";
 
 const MAX_BODY_BYTES = 13 * 1024 * 1024;
 const DEFAULT_MODEL = "gemini-3.6-flash";
@@ -34,6 +37,7 @@ Deno.serve(async (req) => {
 
   const requestId = crypto.randomUUID();
   const startedAt = Date.now();
+  const deadlineMs = startedAt + TOTAL_BUDGET_MS;
   const responseHeaders = { ...CORS_HEADERS, "X-Request-Id": requestId };
   try {
     requireValidClientKey(req);
@@ -47,18 +51,53 @@ Deno.serve(async (req) => {
       pageCount: request.images.length,
       encodedChars: totalBase64Chars,
     });
-    const analysis = await analyzeMenuWithGemini({
-      apiKey,
-      model,
-      request,
-      requestId,
-      deadlineMs: startedAt + TOTAL_BUDGET_MS,
-    });
+
+    // Stage 1: bare vision extraction (Gemini, JSON-only).
+    const vision = await parseMenuVision({ apiKey, model, request, requestId, deadlineMs });
+
+    let analysis: MenuAnalysisResult;
+    if (!vision.readable || vision.categories.length === 0) {
+      analysis = {
+        readable: vision.readable,
+        detectedLanguage: vision.detectedLanguage,
+        currency: vision.currency,
+        categories: [],
+        notes: vision.readable
+          ? [
+            "No dishes could be extracted from this photo. Try a clearer, closer photo of the menu.",
+          ]
+          : [],
+      };
+    } else {
+      // Stage 2: deterministic local matching + database filtering
+      // (no Gemini call in this stage at all).
+      const profile = sanitizeFoodProfileContext(request.foodProfileContext);
+      const { categories, truncated } = await matchAndClassifyCategories(
+        vision.categories,
+        profile,
+        request.locale,
+        deadlineMs,
+      );
+      const notes: string[] = [];
+      if (truncated) notes.push("Only the first 40 items on this menu were checked.");
+      analysis = {
+        readable: vision.readable,
+        detectedLanguage: vision.detectedLanguage,
+        currency: vision.currency,
+        categories,
+        notes,
+      };
+    }
+
     logEvent(requestId, "menu_request_completed", {
       success: true,
       readable: analysis.readable,
-      sectionCount: analysis.sections.length,
-      itemCount: analysis.sections.reduce((sum, section) => sum + section.items.length, 0),
+      categoryCount: analysis.categories.length,
+      dishCount: analysis.categories.reduce((sum, c) => sum + c.dishes.length, 0),
+      matchedCount: analysis.categories.reduce(
+        (sum, c) => sum + c.dishes.filter((d) => d.matchedFoodId !== null).length,
+        0,
+      ),
       durationMs: Date.now() - startedAt,
     });
     return Response.json({ success: true, analysis }, { headers: responseHeaders });
